@@ -197,7 +197,7 @@ record Ball(String color){}
 + HashMap: Null allowed
     + LinkedHashMap: Null Allowed, doubly linkedlisted based impl, slow
 + SortedMap
-    + NaviagableMap
+    + NavigableMap
     + TreeMap: Sorted, null not allowed
 1. A map cnanot contain duplicate keys.
 2. Each key can map to at most one value.
