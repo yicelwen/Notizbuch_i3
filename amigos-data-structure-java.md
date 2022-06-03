@@ -201,3 +201,5 @@ record Ball(String color){}
     + TreeMap: Sorted, null not allowed
 1. A map cnanot contain duplicate keys.
 2. Each key can map to at most one value.
+
+1:Value		2:Value		3:Value		KN:VN
