@@ -1,36 +1,27 @@
 # Hibernate 資料庫應用程式開發
 ### Object-Relational Mapping
-ORM：將物件導向程式中的物件，對應到關聯式資料庫中相關欄位資料的技術，主要使用在 MVC 架構
++ ORM：將物件導向程式中的物件，對應到關聯式資料庫中相關欄位資料的技術，主要使用在 MVC 架構
 中的 Model 的 Domain Object 部分(Java Bean)。
-資料庫遷移時可以不用重寫 SQL 敘述，由 Hibernate 產生 JDBC 的 Java 程式並執行該資料庫的 SQL Dialect。
-實務上，JDBC和ORM技術會同時使用，因過於複雜的 SQL 語法寫原生的效率較佳，也因有些資料庫的 SQL(特殊功能) 無法使用 Hibernate 產生。
-一個 Java 物件會對應資料庫一筆資料 row，這個動作稱為 Mapping(對應)。
-
-
-
-
-
-
-
-
-
-Java程式透過 Hibernate，由 Hibernate 幫我們操作 JDBC ，達到與資料庫互動的功能。
-(JDBC 效能比 Hibernate 佳)
++ 資料庫遷移時可以不用重寫 SQL 敘述，由 Hibernate 產生 JDBC 的 Java 程式並執行該資料庫的 SQL Dialect。
++ 實務上，JDBC和ORM技術會同時使用，因過於複雜的 SQL 語法寫原生的效率較佳，也因有些資料庫的 SQL(特殊功能) 無法使用 Hibernate 產生。
++ 一個 Java 物件會對應資料庫一筆資料 row，這個動作稱為 Mapping(對應)。
++ Java程式透過 Hibernate，由 Hibernate 幫我們操作 JDBC ，達到與資料庫互動的功能。(JDBC 效能比 Hibernate 佳)
 
 
 
 
 ### 準備 Hibernate 框架需要的組態資訊
 可以用多種方式設定資料庫所需的連線資訊(Hibernate Configuration File)設定檔
-(1)寫 Java 程式: org.hibernate.cfg.Configuration
-(2)使用hibernate.properties設定檔
-(3)使用hibernate.cfg.xml設定檔(最常用)
+1. 寫 Java 程式: org.hibernate.cfg.Configuration
+2. 使用hibernate.properties設定檔
+3. 使用hibernate.cfg.xml設定檔(最常用)
 
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-configuration PUBLIC
     "-//Hibernate/Hibernate Configuratoin DTD 3.0//EN"
     "http://www.hibernate.org/dtd/hibernate=configuration-3.0.dtd">
 
+```xml
 <hibernate-configuration>
 
   <session-factory>
@@ -58,56 +49,62 @@ Java程式透過 Hibernate，由 Hibernate 幫我們操作 JDBC ，達到與資�
         -->
     </session-factory>
   </hibernate-configuration>
+```
 
-說明設定檔案裡面的意義，以及常用的屬性設定
-↠ 設定檔基本語法: <property name="屬性名稱">屬性值</property>
-↠ hibernate.dialect: 告訴 Hibernate 產生 SQL 語法時，產生適合特定資料庫
-(ex. MySQL, MSSQL) 的 SQL 語法規格
-必需實作 org.hibernate.dialect.XXX 該介面的類別全名
-↠ hibernate.connection.driver_class: 資料庫驅動程式的 Driver Class
-↠ hibernate.connection.url: 資料庫連線的 URL
-↠ hibernate.connection.username: 資料庫連線使用者帳號
-↠ hibernate.connection.password: 資料庫連線使用者密碼
-↠ hibernate.connection.datasource: 用來設定 JNDI DataSource，例如：
-java:/comp/env/xxxxxxx/xxx
-↠ hibernate.connection.show_sql: 是否在 console 印出 Hibernate 所產生的語法(true/false)
-↠ hibernate.format_sql: 排版上述印出的 SQL，會換行(可讀性較高)
-↠ 註: xml 內設定不用寫前面的 hibernate 也可以。
-ex: <property name="connection.username">sa</property>
-https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#database-diatect
+#### 說明設定檔案裡面的意義，以及常用的屬性設定
++ 設定檔基本語法：`<property name="屬性名稱">屬性值</property>`
++ Hibernate.dialect：
+  + 告訴 Hibernate 產生 SQL 語法時，產生適合特定資料庫
+  (ex. MySQL, MSSQL) 的 SQL 語法規格
+  + 必需實作 org.hibernate.dialect.XXX 該介面的類別全名
++ hibernate.connection.driver_class: 資料庫驅動程式的 Driver Class
++ hibernate.connection.url: 資料庫連線的 URL
++ hibernate.connection.username：資料庫連線使用者帳號
++ hibernate.connection.password：資料庫連線使用者密碼
++ hibernate.connection.datasource：用來設定 JNDI DataSource 
+  + 例如：java:/comp/env/xxxxxxx/xxx
++ hibernate.connection.show_sql: 是否在 console 印出 Hibernate 所產生的語法(true/false)
++ hibernate.format_sql: 排版上述印出的 SQL，會換行（可讀性較高）
+  + 註: xml 內設定不用寫前面的 hibernate 也可以。
+  + ex: `<property name="connection.username">sa</property>`
+  + https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#database-diatect
 
 1. 新建上課所需的表格table
-   CREATE DATABASE hibernateDB
+```SQL
+      CREATE DATABASE hibernateDB
 
-   USE hibernateDB
+      USE hibernateDB
 
-   CREATE TABLE company(
-   companyId int primary key NOT NULL,
-   companyName nvarchar(50) NOT NULL,
-   )
+      CREATE TABLE company(
+      companyId int primary key NOT NULL,
+      companyName nvarchar(50) NOT NULL,
+      )
+```
 
 2. 新建 Java 物件對應表格
 
-3. 新建 Table 與 Java 物件之對應設定檔案(xxx.hbm.xml)(Mapping動作)
-   新建 CompanyBean 物件再寫應對的 xxx.hbm.xml
+3. 新建 Table 與 Java 物件之對應設定檔案 (xxx.hbm.xml) (Mapping動作) <br>
+   新建 CompanyBean 物件再寫對應的 xxx.hbm.xml
+```xml
    public class CompanyBean{
    private int companyId;
    private String companyName;
 
    //....constructor, getter and setter
    }
+```
 
-4. 在 hibernate.cfg.xml 內註冊剛剛產生的 hbm 檔案
-   用來定義 Hibernate Persisten Class 與資料庫 Table 間的對應關係，可使用多種方式定義：
-   (1)透過 xxx.hbm.xml 檔案設定：與 Persistent Class 放置在相同目錄，
-   需要在 hibernate.cfg.xml 檔中設定其位置:
-   例如：<mapping resource="tw/jerryhibernate/model/Users.hbm.xml"/>
-   (2)利用 Hibernate 自訂的 Annotation 語法：直接定義在 Java 程式內，不需要設定檔。
-   (3)利用 JPa (Java Persistence API) 規格定義的 Annotation 語法：
-   直接定義在 Java 程式內，不需要設定檔。
-   註：(2)(3)其實只有些微差異，Hibernate官方建議使用JPA規格來定義，避免因Hibernate版本
-   問題而產生錯誤。
-   example: 透過 xxx.hbm.xml 檔案設定
+4. 在 hibernate.cfg.xml 內註冊剛剛產生的 hbm 檔案 <br>
+   + 用來定義 Hibernate Persisten Class 與資料庫 Table 間的對應關係，可使用多種方式定義： 
+     1. 透過 xxx.hbm.xml 檔案設定：與 Persistent Class 放置在相同目錄，<br>
+        需要在 hibernate.cfg.xml 檔中設定其位置: <br>
+        例如：<mapping resource="tw/jerryhibernate/model/Users.hbm.xml"/>
+     2. 利用 Hibernate 自訂的 Annotation 語法：直接定義在 Java 程式內，不需要設定檔。
+     3. 利用 JPa (Java Persistence API) 規格定義的 Annotation 語法：<br>
+        直接定義在 Java 程式內，不需要設定檔。 <br>
+        + 註：2. 3. 其實只有些微差異，Hibernate官方建議使用JPA規格來定義，避免因Hibernate版本問題而產生錯誤。
+        + example: 透過 xxx.hbm.xml 檔案設定
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
@@ -123,20 +120,16 @@ https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Gu
     </property>
   </class>
 </hibernate-mapping>
+```
 
-常用的 Hibernate 對應型別(Hibernate TypeRegistry key)
-ANSI SQL Type   │  Hibernate TypeRegistry key(s)  │  Java Type
-──────────────┼────────────────────────────┼───────────────────
-VARCHAR,NVARCHAR│ string, java.lang.String        │  java.lang.String
-──────────────┼────────────────────────────┼───────────────────
-INTEGER, INT    │ integer,int,java.lang.Integer   │ int,java.langInteger
-──────────────┼────────────────────────────┼───────────────────
-TIME            │ time,java.sql.Time              │ java.sql.Time
-──────────────┼────────────────────────────┼───────────────────
-TIMESTAMP       │ timestamp,java.sql.Timestamp,   │ java.util.Date
-│ java.util.Date                  │
-──────────────┼────────────────────────────┼───────────────────
-BLOB            │  blob, java.sql.Blob            │ java.sql.Blob
+#### 常用的 Hibernate 對應型別(Hibernate TypeRegistry key)
+|ANSI SQL Type    | Hibernate TypeRegistry key(s) | Java Type           |
+|-----------------|-------------------------------|---------------------|
+|VARCHAR,NVARCHAR |string, java.lang.String       | java.lang.String    |
+|INTEGER, INT     | integer,int,java.lang.Integer | int,java.langInteger|
+|TIME             | time,java.sql.Time            | java.sql.Time       |
+|TIMESTAMP        |timestamp,java.sql.Timestamp,<br>java.util.Date    | java.util.Date      |
+|BLOB             |blob, java.sql.Blob            | java.sql.Blob       |
 
 其他 Type 詳情請見 Hibernate 官方文件：User Guide > 2.Domain Model > 2.3 Basic Type
 docs.jboss.org/hibernate/orm/5.6/userguide/html_single/Hibernate_User_Guide.html#basic
