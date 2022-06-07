@@ -16,10 +16,12 @@
 2. 使用hibernate.properties設定檔
 3. 使用hibernate.cfg.xml設定檔(最常用)
 
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-configuration PUBLIC
     "-//Hibernate/Hibernate Configuratoin DTD 3.0//EN"
     "http://www.hibernate.org/dtd/hibernate=configuration-3.0.dtd">
+```
 
 ```xml
 <hibernate-configuration>
@@ -69,7 +71,7 @@
   + ex: `<property name="connection.username">sa</property>`
   + https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html#database-diatect
 
-1. 新建上課所需的表格table
+**1.** 新建上課所需的表格table
 ```SQL
       CREATE DATABASE hibernateDB
 
@@ -81,9 +83,9 @@
       )
 ```
 
-2. 新建 Java 物件對應表格
+**2.** 新建 Java 物件對應表格
 
-3. 新建 Table 與 Java 物件之對應設定檔案 (xxx.hbm.xml) (Mapping動作) <br>
+**3.** 新建 Table 與 Java 物件之對應設定檔案 (xxx.hbm.xml) (Mapping動作) <br>
    新建 CompanyBean 物件再寫對應的 xxx.hbm.xml
 ```xml
    public class CompanyBean{
@@ -94,11 +96,11 @@
    }
 ```
 
-4. 在 hibernate.cfg.xml 內註冊剛剛產生的 hbm 檔案 <br>
+**4.** 在 hibernate.cfg.xml 內註冊剛剛產生的 hbm 檔案 <br>
    + 用來定義 Hibernate Persisten Class 與資料庫 Table 間的對應關係，可使用多種方式定義： 
      1. 透過 xxx.hbm.xml 檔案設定：與 Persistent Class 放置在相同目錄，<br>
         需要在 hibernate.cfg.xml 檔中設定其位置: <br>
-        例如：<mapping resource="tw/jerryhibernate/model/Users.hbm.xml"/>
+        例如：`<mapping resource="tw/jerryhibernate/model/Users.hbm.xml"/>`
      2. 利用 Hibernate 自訂的 Annotation 語法：直接定義在 Java 程式內，不需要設定檔。
      3. 利用 JPa (Java Persistence API) 規格定義的 Annotation 語法：<br>
         直接定義在 Java 程式內，不需要設定檔。 <br>
@@ -131,22 +133,23 @@
 |TIMESTAMP        |timestamp,java.sql.Timestamp,<br>java.util.Date    | java.util.Date      |
 |BLOB             |blob, java.sql.Blob            | java.sql.Blob       |
 
-其他 Type 詳情請見 Hibernate 官方文件：User Guide > 2.Domain Model > 2.3 Basic Type
-docs.jboss.org/hibernate/orm/5.6/userguide/html_single/Hibernate_User_Guide.html#basic
++ 其他 Type 詳情請見 Hibernate 官方文件：User Guide > 2.Domain Model > 2.3 Basic Type
++ docs.jboss.org/hibernate/orm/5.6/userguide/html_single/Hibernate_User_Guide.html#basic
 
-進行 O/R Mapping所需的映射資訊
-example. 透過 xxx.hbm.xml 檔案設定
++ 進行 O/R Mapping所需的映射資訊
++ example. 透過 xxx.hbm.xml 檔案設定
 
-<generator class="給予ID的方式"/>
-給予 ID 的方式有下列
-  (1) assigned: 自己編寫程式給予id
-  (2) identity: 採用資料庫提供的 Primary 生成機制
-        例如-在SQL Server內產生Table時有設定 identity(1,1)
-  (3) sequence: 採用資料庫提供的 Sequence 機制(Oracle與PostgreSQL常用)
-        例如-在SQL Server內CREATE SEQUENCE, 可在資料庫>可程式性>順序
-  (4) foreign:使用外來鍵當作本表格主鍵，搭配<one-to-many class="ClassName"/>使用
+`<generator class="給予ID的方式"/>`
++ 給予 ID 的方式有下列 
+  1. assigned: 自己編寫程式給予id
+  2. identity: 採用資料庫提供的 Primary 生成機制 
+     + 例如-在SQL Server內產生Table時有設定 identity(1,1)
+  3. sequence: 採用資料庫提供的 Sequence 機制(Oracle與PostgreSQL常用)
+     + 例如-在SQL Server內CREATE SEQUENCE, 可在資料庫>可程式性>順序
+  4. foreign:使用外來鍵當作本表格主鍵，搭配`<one-to-many class="ClassName"/>`使用
 
 Example: 透過 xxx.hbm.xml 檔案設定
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
@@ -162,76 +165,80 @@ Example: 透過 xxx.hbm.xml 檔案設定
     </property>
   </class>
 </hibernate-mapping>
+```
 註: 若欄位是字串 (String) 時 sql-type 沒有指定，則會是 varchar(255)
 
 記得回到 hibernate.cfg.xml 註冊對應關係
-<mapping resource="tw/jerryhibernate/model/CompanyBean.hbm.xml"/>
-這樣在 Hibernate 啟動時，hibernate會先去讀取hibernate.cfg.xml，並透過<mapping/>
-去檢查 Java 物件與資料庫內表格對應關係。
+`<mapping resource="tw/jerryhibernate/model/CompanyBean.hbm.xml"/>`
+
+這樣在 Hibernate 啟動時，hibernate會先去讀取hibernate.cfg.xml，並透過`<mapping/>`
+去檢查 Java 物件與資料庫內表格對應關係。<br>
 若有問題，會拋出有關 SessionFactory 的錯誤訊息。
 
-與 Hibernate 框架運作有關的進階資訊
-自動新建或更新資料庫內的 Table (補充選用，不一定要使用)
-<property name="hbm2ddl.auto">update</property>
 
-- create: 每次啟動Hibernate，新建SessionFactory物件時，都會刪除現有的表格，然後根據
+#### 與 Hibernate 框架運作有關的進階資訊
+自動新建或更新資料庫內的 Table (補充選用，不一定要使用)
+`<property name="hbm2ddl.auto">update</property>`
+
++ **create:** 每次啟動Hibernate，新建SessionFactory物件時，都會刪除現有的表格，然後根據
   Java Entity 類別內或類別對應的 Mapping(xxx.hbm.xml)重新產生表格，原有的資料庫會消失。
   通常用在系統要初始化時。
 
-- create-drop: 新建 SessionFactory 物件時，根據類別的映射資訊重新產生表格，關閉
++ **create-drop:** 新建 SessionFactory 物件時，根據類別的映射資訊重新產生表格，關閉
   SessionFactory時，自對刪除表格。
 
-- update: 新建 SessionFactory 物件時，若表格不存在就新建表格；如果表格存在，根據類別的
++ **update:** 新建 SessionFactory 物件時，若表格不存在就新建表格；如果表格存在，根據類別的
   映射資訊自動更新表格結構，如果 Entity Class 內有新的屬性(or getter/setter)，
   Hibernate會自動插入新的欄位，即使表格結構改變，表格內原有的資料仍存在而不會刪除他們
   (不會刪除表格中已有的行與列)。測試常用，不適合正式上線產品(相容性問題)。
 
-- validate: 新建 SessionFactory物件時，根據Entity Class內的註釋或mapping設定檔
++ **validate:** 新建 SessionFactory物件時，根據Entity Class內的註釋或mapping設定檔
   (xxx.hbm.xml)驗證表格結構，只會和資料庫中的表格進行比較，不會創新表格，若表格結構不同，
   將會丟出例外，通常不做此設定，因為功能不能相容所有資料庫。
 
-- 若沒設定 hbm2ddl.auto 屬性，則不作上述任何動作。
++ 若沒設定 hbm2ddl.auto 屬性，則不作上述任何動作。
 
-Hibernate 讀取設定檔案的程式
+#### Hibernate 讀取設定檔案的程式
 讀取 hibernate 的設定檔案程式片段:
+```
 StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();
-
 SessionFactory factory = new MetadataSources(serviceRegistry).buildMetadata().buildSessionFactory();
-
-註: 若configure()內沒有寫，會直接尋找src資料夾內的hibernate.cfg.xml(預設)，
+```
+註: 若configure()內沒有寫，會直接尋找src資料夾內的hibernate.cfg.xml(預設)，<br>
 因此，若您的hibernate.cfg.xml檔名有特殊需求，則需要改成您要的名稱。
 
-5. 用 Hibernate 程式新建資料來測試
-   (1) Example 1
-   增加一筆公司 (DemoCompanyBeanActionEx1.java)
-   StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();
-   SessionFactory factory = new MetadataSources(serviceRegistry).buildMetadata().buildSessionFactory();
+**5.** 用 Hibernate 程式新建資料來測試 
 
-Session session = factory.openSession();
-session.beginTransaction();
+   1. Example 1 - 增加一筆公司 (DemoCompanyBeanActionEx1.java)
+         ```
+         StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();
+         SessionFactory factory = new MetadataSources(serviceRegistry).buildMetadata().buildSessionFactory();
+         Session session = factory.openSession();
+         session.beginTransaction();
 
-CompanyBean cpyBean = new CompanyBean(1001, "Google");
-session.save(cpyBean);
+         CompanyBean cpyBean = new CompanyBean(1001, "Google");
+         session.save(cpyBean);
 
-session.getTransaction().commit();
-session.close();
-factory.close();
+         session.getTransaction().commit();
+         session.close();
+         factory.close();
+         ```
+   2. Example 2 - 增加一筆公司 (DemoCompanyBeanActionEx2.java)
+       ```
+        StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();
+        SessionFactory factory = new MetadataSources(serviceRegistry).buildMetadata().buildSessionFactory();
 
-(2) Example 2
-增加一筆公司 (DemoCompanyBeanActionEx2.java)
-StandardServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();
-SessionFactory factory = new MetadataSources(serviceRegistry).buildMetadata().buildSessionFactory();
+        Session session = factory.openSession();
+        session.beginTransaction();
 
-Session session = factory.openSession();
-session.beginTransaction();
+        CompanyBean cpyBean = new CompanyBean(1002,"Facebook");
+        Serializable identifier = session.save(cpyBean); //拿到identifier(該物件對應資料的ID)
+        System.out.println("identifier:" + identifier);
 
-CompanyBean cpyBean = new CompanyBean(1002,"Facebook");
-Serializable identifier = session.save(cpyBean); //拿到identifier(該物件對應資料的ID)
-System.out.println("identifier:" + identifier);
-
-session.getTransaction().commit();
-session.close();
-factory.close();
+        session.getTransaction().commit();
+        session.close();
+        factory.close();
+        ```
 
 (3) 實作一個
 USE hibernateDB
