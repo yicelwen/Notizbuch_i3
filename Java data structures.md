@@ -1,6 +1,9 @@
 # Java Data Structures (part 1)
 ###### Array, List, Stack, Queue, Set, Map `included`
 ###### Binary tree, heaps, etc. `not included`
+關於 binary tree 以及 heaps 可以參考此網站: https://clu.gitbook.io/data-structure-note/heap-tree
+
+
 ### Array - a list of bucket where you define the size
 +  Fixed in size
 +  Fast for data retreivals
