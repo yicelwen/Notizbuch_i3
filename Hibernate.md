@@ -241,23 +241,26 @@ SessionFactory factory = new MetadataSources(serviceRegistry).buildMetadata().bu
         ```
 
 (3) 實作一個
+```SQL
 USE hibernateDB
 CREATE TABLE myHouse(
 houseId int primary key NOT NULL,
 houseName nvarchar(50)
 )
-新增一筆資料 houseName = TaipeiHouse
-提示: (1) 新建所需之表格(Table)
-(2) 新建Java物件對應之表格
-(3) 新建Table與Java物件之對應設定檔案(xxx.hbm.xml)
-(4) 在 hibernate.cfg.xml 內註冊剛剛產生的 hbm檔案
-(5) 用 Hibernate 程式新建物件，達到新增資料的效果
+```
+新增一筆資料 houseName = TaipeiHouse <br/>
+提示: <br/>
+1. 新建所需之表格(Table)
+2. 新建Java物件對應之表格 
+3. 新建Table與Java物件之對應設定檔案(xxx.hbm.xml)
+4. 在 hibernate.cfg.xml 內註冊剛剛產生的 hbm檔案 
+5. 用 Hibernate 程式新建物件，達到新增資料的效果
 
 
 ### Hibernate 提供的註釋 Annotation
 3-1 編寫註釋的位置與優缺點
 直接在 Persistant Class 內編寫。
-優點：不用 xml 檔案做設定，直接寫在 Persistant Class，一目瞭然。
+**優點**：不用 xml 檔案做設定，直接寫在 Persistant Class，一目瞭然。
 程式讀取 xml 比較消耗資源，且不會經由編譯器檢查錯誤，出錯時比較難發現錯誤的地方，
 因此除錯 (debug) 時間較長。
 
