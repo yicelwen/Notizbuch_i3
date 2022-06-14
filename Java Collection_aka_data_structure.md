@@ -1,3 +1,54 @@
+
+
+# Java Collection
+> Brought to sptfy by Trevor
++ Java 的 collection 其實就是 data structure, 只是名字比較 fancy.
++ 常見的 java 資料結構 List, Set, Map。這三個都是interface。
+### ArrayList
++ 最常用。implements List interface
++ 使用 Index System
++ zero based 陣列從零開始
++ List allows duplicates.
+
+### LinkedList
++ A linkedlist implements List interface.
++ It's essentially an array but doesn't not rely on index system.
++ It relys on the **pointer** - series of references (next, next, next).
++ Sometimes LinkedList is faster in operation especially when you want to add an element to middle of a list.
+	+ ArrayList: You need to shift every single element over in order to make room for the element you are adding.
+	+ LinkedList: It's easy as taking the pointer to the next element (similar to a V shape).
+
++ ArrayList 跟 LinkedList 都非同步
+	+ Not synchronzied by default: concurrent modification exception
+	
+### Set
++ A bunch of elements where there can be `NO` duplicates.
+
+### HashSet
++ It will check to see whether the element already exists in the set. It will tell you whether it's added successfully or not. 
++ 樂透 program 的時候可以用 Set。
++ Most of them do not have order (bucket associated to memory address). 
++ When you try to re-iterate over the elements, things kind of shuffle around. The order it spits out is not necessarily the order you put in.
+
+### TreeSet
++ Ordered implementation of set.  Automatically ordered.
+
+
+### HashMap
++ The most common implementation of __Map interface__.
++ It stores `key-value` pairs.
++ Collision: two completely different keys resolve in the same bucket.
++ Commonly used method:  
+	+ `put(K-V)`	to insert something into the hashmap
+	+ `get(K)`	to retreieve something from the hashmap
++ If you try to put the same key twice, the latter value will overwrite/replace the former one. (value 不會變成 list)
++ Whenever you are using a map, it's important to note that you should always implement both the .equals() and .hashcode() method for your object. (需要複寫此兩方法 @Overwrite)
+
+
+
+<br>
+<br>
+
 # Java Data Structures (part 1)
 ###### Array, List, Stack, Queue, Set, Map `included`
 ###### Binary tree, heaps, etc. `not included`
@@ -291,6 +342,3 @@ public class WorkingWithMaps {
 	record Diamond(String name) {}
 }
 ```
-
-
-
