@@ -819,21 +819,23 @@ Member member = session.load(Member.class,pk);
 
 ### 編寫Dao類別
 #### 12-1 設計 Dao 介面與實作 Dao 介面的類別
-DAO(Data Access Object)建立方式：
-↠ 使用Hibernate技術的DAO：使用Session API的save(), delete(), get()等方法來處理資料庫
-內的資料。
-↠ Hibernate技術的DAO內不應該編寫建立Session與關閉 Session 的動作，也不會有啟動與關閉
-Transaction物件，以確保不同 Session 與 Transaction 設計時可以使用相同DAO。
++ DAO(Data Access Object)建立方式：
+  + 使用Hibernate技術的DAO：使用Session API的save(), delete(), get()等方法來處理資料庫內的資料。
+  + Hibernate技術的 DAO 內不應該編寫建立 Session 與關閉 Session 的動作，也不會有啟動與關閉 Transaction 物件，以確保不同 Session 與 Transaction 設計時可以使用相同DAO。
 
-設計DAO介面：
-public interface CompanyDAOInterface{
-CompanyBean insert(CompanyBean comBean);
-CompanyBean select(int comId);
-List<CompanyBean> selectAll();
-CompanyBean updateOne(int comId, String comName);
-boolean deleteOne(int comId);    
++ 設計DAO介面：
+```Java
+public interface CompanyDAOInterface {
+    CompanyBean insert(CompanyBean comBean);
+    CompanyBean select(int comId);
+    List<CompanyBean> selectAll();
+    CompanyBean updateOne(int comId, String comName);
+    boolean deleteOne(int comId);    
 }
+```
 (CompanyDAO.java) 設定與取得 Session ，但不負責開啟與關閉 Session:
+
+```Java
 private Session session;
 
     //建構子，方便其他物件呼叫它
@@ -843,185 +845,190 @@ private Session session;
     public Session getSessiont(){
         return session;
     }
+```
 
 #### 12-2 Dao 類別的新增、刪除、修改、查詢
-↠ 透過 Session 執行新增（已有該筆就不新增）
+1. 透過 Session 執行`新增`（已有該筆就不新增）
+```Java
 public CompanyBean insert(CompanyBean cBean){
-CompanyBean companyBean=session.get(CompanyBean.class, cBean.getCompanyId());
-if(companyBean == null){
-session.save(cBean);
-return cBean;
+  CompanyBean companyBean=session.get(CompanyBean.class, cBean.getCompanyId());
+  if(companyBean == null){
+    session.save(cBean);
+    return cBean;
+  }
 }
-}
+```
 
-↠ 透過 Session 執行查詢（Select）
-(1) 查詢Company table內是否有該筆companyId的資料，如果沒有則回傳 null
-public CompanyBean select(int comId){
-return session.get(CompanyBean.class, comId);
-}
+2. 透過 Session 執行`查詢`（Select）
+    1. 查詢Company table內是否有該筆companyId的資料，如果沒有則回傳 null
+        ```Java
+        public CompanyBean select(int comId){
+          return session.get(CompanyBean.class, comId);
+        }
+        ```
 
-(2) 查詢多筆資料
-public List<CompanyBean> selectAll(){
-Query<CompanyBean> query=session.createQuery("from CompanyBean", CompanyBean.class);
-return query.list();
-}
+    2. 查詢多筆資料
+        ```Java
+        public List<CompanyBean> selectAll(){
+            Query<CompanyBean> query=session.createQuery("from CompanyBean", CompanyBean.class);
+            return query.list();
+        }
+        ```
 
-↠ 透過 Session 執行修改（updateOne）
-有該筆資料就進行修改，沒有就回傳null。
-註：更新資料不需要session.save()或session.update()，因為它是從資料庫取出，
-本身就已經是永續物件（Persistent Objects）
+3. 透過 Session 執行`修改`（updateOne）
+  + 有該筆資料就進行修改，沒有就回傳null。
+  + 註：更新資料不需要 session.save() 或 session.update()，因為它是從資料庫取出，本身就已經是永續物件（Persistent Objects）
+
+```Java
 public CompanyBean updateOne(int comId, String comName){
-CompanyBean comBean = session.get(CompanyBean.class, comId);
-if(comBean != null){
-comBean.setCompanyName(comName);
+    CompanyBean comBean = session.get(CompanyBean.class, comId);
+    if(comBean != null){
+    comBean.setCompanyName(comName);
+    }
+    return comBean;
 }
-return comBean;
-}
+```
 
-↠ 透過 Session 執行刪除（deleteOne）
+4. 透過 Session 執行`刪除`（deleteOne）
+```Java
 public boolean deleteOne(int comId){
-CompanyBean comBean = session.get(CompanyBean.class, comId);
-if(comBean != null){
-session.delete(comBean);
-return true;
+    CompanyBean comBean = session.get(CompanyBean.class, comId);
+    if(comBean != null){
+        session.delete(comBean);
+        return true;
+    }
+    return false;
 }
-return false;
-}
+```
 
 #### 12-3 Dao 類別的使用 openSession() 與 getCurrentSession() 的差別
-↠ openSession()：透過編寫程式產生Session物件，1 個Session可以跨越多個Transaction。
-↠ getCurrentSession()：Session物件產生與thread結合，1個Session只能有1個Transaction。
++ **openSession()**：透過編寫程式產生Session物件，1 個Session可以跨越多個Transaction
++ **getCurrentSession()**：Session物件產生與thread結合，1個Session只能有1個Transaction
 
 
-### Service類別
+### Service 類別
 #### 13-1 設計 Service 介面與實作 Service 介面的類別
-透過設計Service，可以將 DAO 變為更獨立的物件。若要存取資料，
-須透過Service間接取得 DAO，可以提供較彈性的應用程式架構。
-Service 類別建立的方式：
-(1) 建立全域DAO的屬性變數
-(2) 透過Service的建構子初始化DAO物件，當Service物件實體建立時，DAO物件實體也會跟著建立
++ 透過設計 Service，可以將 DAO 變為更獨立的物件
++ 若要存取資料，須透過 Service 間接取得 DAO，可以提供較彈性的應用程式架構
++ Service 類別建立的方式：
+  1. 建立全域DAO的屬性變數
+  2. 透過Service的建構子初始化DAO物件，當Service物件實體建立時，DAO物件實體也會跟著建立
 
-public interface CompanyServiceInterface{
-public CompanyBean select(int comId);
-public List<CompanyBean> selectAll();
-public CompanyBean insert(CompanyBean comBean);
-public CompanyBean updateOne(int comId, String comName);
-public boolean delete(int comId);
+```Java
+public interface CompanyServiceInterface {
+    public CompanyBean select(int comId);
+    public List<CompanyBean> selectAll();
+    public CompanyBean insert(CompanyBean comBean);
+    public CompanyBean updateOne(int comId, String comName);
+    public boolean delete(int comId);
 }
 
-private CompanyDAO comDAO;
-public CompanyService(Session session){
-comDAO = new CompanyDAO(session);
-}
+    private CompanyDAO comDAO;
+    public CompanyService(Session session){
+        comDAO = new CompanyDAO(session);
+    }   
+```
 
 #### 13-2 Service 類別採用委任設計模式將新增、刪除、修改、查詢的工作委託給 Dao 類別來完成
-Select
-public CompanyBean select(int comId){
-CompanyBean theCom = comDAO.select(comId);
-return theCom;
+**Select**
+```Java
+public CompanyBean select(int comId) {
+    CompanyBean theCom = comDAO.select(comId);
+    return theCom;
 }
-public List<CompanyBean> selectAll(){
-List<CompanyBean> theComs = comDAO.selectAll();
-return theComs;
+public List<CompanyBean> selectAll() {
+    List<CompanyBean> theComs = comDAO.selectAll();
+    return theComs;
 }
+```
 
-Insert 和 updateOne
-public CompanyBean insert(CompanyBean comBean){
-CompanyBean oneCom = comDAO.insert(comBean);
-return oneCom;
+**Insert** 和 **updateOne**
+```Java
+public CompanyBean insert(CompanyBean comBean) {
+    CompanyBean oneCom = comDAO.insert(comBean);
+    return oneCom;
 }
-public CompanyBean updateOne(int comId, String comName){
-CompanyBean oneCom = comDAO.updateOne(comId, comBean);
-return oneCom;
+public CompanyBean updateOne(int comId, String comName) {
+    CompanyBean oneCom = comDAO.updateOne(comId, comBean);
+    return oneCom;
 }
+```
 
-Delete
+**Delete**
+```Java
 public boolean delete(int comId){
-boolean boo = comDAO.deleteOne(comId);
-return boo;
+    boolean boo = comDAO.deleteOne(comId);
+    return boo;
 }
-
-#### 13-3 在 Service 類別內的方法定義交易
-# ((這裡應該也有一張圖?))
+```
 
 ### 延遲載入
 #### 14-1 延遲載入的定義與成因
-當程式使用 session.load() 方法載入某個物件或讀取之物件含有 One-Many / Many-Many的
-集合成員時，Hibernate不會立即發出SELECT敘述讀取物件或集合成員，而會回傳一個或多個代理
-物件(Proxy)，Proxy裡面的屬性值都是null。之後程式需要代理物件的屬性值時(ex: getName())
-，Hibernate才會發出SQL SELECT敘述讀取資料庫內對應的資料，這時才組合為一個物件或集合物件。
+當程式使用 `session.load()` 方法載入某個物件或讀取之物件含有 One-Many / Many-Many 的集合成員時，Hibernate 不會立即發出 SELECT 敘述讀取物件或集合成員，而會回傳一個或多個代理物件 (Proxy)，Proxy 裡面的屬性值都是 null。之後程式需要代理物件的屬性值時 (ex: getName())，Hibernate 才會發出 SQL SELECT 敘述讀取資料庫內對應的資料，這時才組合為一個物件或集合物件。
 
-在JSP程式透過EL來取出代理物件的屬性時，如果Session已經關閉，無法與資料庫保持連線，因此
-程式發出的SELECT也無法到達資料庫，就會發生例外：
+在 JSP 程式透過 EL 來取出代理物件的屬性時，如果 Session 已經關閉，無法與資料庫保持連線，因此程式發出的 SELECT 也無法到達資料庫，就會發生例外：
 org.hibernate.LazyInitalizationException: could not initialize proxy no Session
 
 #### 14-2 各種解決延遲載入的作法
 避免 org.hibernate.LazyInitalizationException 發生的方式：
-(1)若是用註釋設定物件表格應對關係：
-透過註釋說明該類別的集合成員不採用延遲加載的方式，亦即要立即載入
-@OneToMany(fetch=FetchType.EAGER)
-private Set<StockTransaction> stockTrans;
+1. 若是用註釋設定物件表格應對關係：
+    透過註釋說明該類別的集合成員不採用延遲加載的方式，亦即要立即載入
+    ```Java
+    @OneToMany(fetch=FetchType.EAGER)
+    private Set<StockTransaction> stockTrans;
+    ```
 
-註1: @OneToMany和@ManyToMany預設為(fetch=FetchType.LAZY)
-註2: 若是用 xxx.hbm.xml 設定物件表格應對關係，則要設定lazy="false":
-<class...lazy="false">
-//主鍵與其他欄位設定
-</class>
+    註1: `@OneToMany` 和 `@ManyToMany` 預設為 **(fetch=FetchType.LAZY)**
 
-(2)在Session關閉之前呼叫 org.hibernate.Hibernate 的initialize()方法
-強制將資料載入Proxy物件。
-eg. Hibernate.initialize(friends);
+    註2: 若是用 xxx.hbm.xml 設定物件表格應對關係，則要設定 lazy="false":
+    ```XML
+    <class...lazy="false">
+    //主鍵與其他欄位設定
+    </class>
+    ```
 
-(3)呼叫Persistence Class物件的getter方法，將資料全部抓取完畢之後再關閉Session
-(比較推薦的方法)。
+2. 在Session關閉之前呼叫 org.hibernate.Hibernate 的 `initialize()` 方法，強制將資料載入Proxy物件。
+    eg. `Hibernate.initialize(friends);`
+
+3. 呼叫 Persistence Class 物件的 getter 方法，將資料全部抓取完畢之後再關閉 Session (比較推薦的方法)。
 
 
 #### 14-3 經由自行定義的 Filter 來解決延遲載入
-對於Web應用程式，可以用Filter處理Session產生及Transaction的開始與結束。
-(1) 符合 MVC 設計模式常見的流程
-ⅰ. View顯示畫面供使用者填入資料，並送到 Controller
-ⅱ. Controller負責接收資料、驗證資訊、轉換資料、呼叫Model、根據Model執行結果導向View。
-ⅲ. View負責顯示Controller準備好的資料。
++ 對於Web應用程式，可以用 Filter 處理 Session 產生及 Transaction 的開始與結束
+  1. 符合 MVC 設計模式常見的流程
+      1. View 顯示畫面供使用者填入資料，並送到 Controller
+      2. Controller 負責接收資料、驗證資訊、轉換資料、呼叫 Model、根據 Model 執行結果導向 View
+      3. View 負責顯示 Controller 準備好的資料
 
-(2) 根據上述流程，Hibernate程式(屬於Model)與讀取Model資料顯示畫面的程式(屬於View)
-不在相同位置。
+  2. 根據上述流程，Hibernate 程式 (屬於 Model) 與讀取 Model 資料顯示畫面的程式 (屬於 View) 不在相同位置
 
-(3) 由於View在讀取資料時已經脫離Model範圍(因為Session已關閉)，此時抓取Persistent
-Class 資料就可能碰到 Lazy Initialization 問題。
+  3. 由於 View 在讀取資料時已經脫離 Model 範圍(因為 Session 已關閉)，此時抓取 Persistent Class 資料就可能碰到 Lazy Initialization 問題
 
-(4) 解決 Web 應用程式過早關閉 Session 物件，造成 Lazy Initialization 問題的方式
-讓 Session 保持開啟直到 View 執行結束
+  4. 解決 Web 應用程式過早關閉 Session 物件，造成 Lazy Initialization 問題的方式，讓 Session 保持開啟直到 View 執行結束
 
-(5) 新建一個Filter，在它的doFilter()方法內呼叫SessionFactory的getCurrentSession()
-取出Session物件、接著啟動交易(beginTransaction())，呼叫chain.doFilter(req,resp)
-由被監控的資源開始執行其應有的工作 (例如多個表格資料新增、刪除、修改、查詢)，
-等到該資源執行完所有的資料庫存取後再度回到Filter，如果一切正常，執行交易的Commit()，
-若執行被監控的資源時拋出任何例外，執行交易的 rollback() 。
+  5. 新建一個 Filter，在它的 doFilter() 方法內呼叫SessionFactory 的 getCurrentSession() 取出 Session 物件、接著啟動交易 (beginTransaction())，呼叫 chain.doFilter(req,resp) 由被監控的資源開始執行其應有的工作 (例如多個表格資料新增、刪除、修改、查詢)，等到該資源執行完所有的資料庫存取後再度回到 Filter，如果一切正常，執行交易的 Commit()，若執行被監控的資源時拋出任何例外，執行交易的 rollback() 
 
-(6) 修改Service類別：將所有Service類別內呼叫Transaction之commit()，rollback()
-敘述都移除，不要在Service類別內關閉Session。
+  6. 修改 Service 類別：將所有 Service 類別內呼叫 Transaction 之 commit()，rollback() 敘述都移除，不要在 Service 類別內關閉 Session
 
-(7) 提醒：以getCurrentSession()方法得到的Session物件會在交易commit()或rollback()
-時自動關閉，因此不用執行 Session.close() 方法。
+  7. 提醒：以 getCurrentSession() 方法得到的Session物件會在交易 commit() 或 rollback() 時自動關閉，因此不用執行 Session.close() 方法
 
 ### Hibernate關聯 (Association)
-之前的課程內容著重於一個資料表，而在現實的情況資料表(Table)間是有關聯關係的，以下課程就說明
-Table 關聯關係在 Hibernate 如何實作。
-常見3種：one-to-one、one-to-many/many-to-one、many-to-many
++ 之前的課程內容著重於一個資料表，而在現實的情況資料表(Table)間是有關聯關係的，以下課程就說明 Table 關聯關係在 Hibernate 如何實作
++ 常見3種：one-to-one、one-to-many/many-to-one、many-to-many
 
 #### 15-1 關連的類型 , @OneToOne, @OneToMany,@ManyToOne,@ManyToMany
-一對一關係： 「教師」「教師詳情」(instructor<=>instructorDetail)
-一對多關係： 「客戶」「客戶訂單」一個客戶有許多訂單
-(一對多，多對一 差別只在觀點不同)
-多對多關係： 「朋友」「群組」一個朋友屬於多個群組，一個群組內也有多個朋友
++ 一對一關係： 「教師」「教師詳情」(instructor <=> instructorDetail)
++ 一對多關係： 「客戶」「客戶訂單」一個客戶有許多訂單
+  + (一對多，多對一 差別只在觀點不同)
++ 多對多關係： 「朋友」「群組」一個朋友屬於多個群組，一個群組內也有多個朋友
 
 #### 15-2 單向關連與雙向關連的差別
-↠ 單向關聯 (Uni Directional Association)：
-在具有關聯的一對 Entity 中，只有一個 Entity 儲存另一個 Entity 的物件參考，
++ 單向關聯 (Uni Directional Association)：
+  + 在具有關聯的一對 Entity 中，只有一個 Entity 儲存另一個 Entity 的物件參考，
 稱為單向關聯，意即只能有一方找到另一方。
 
-↠ 雙向關聯 (Bi Directional Association)：
-如果雙方都存有對方的物件參考，稱為雙向關聯，意即彼此都能找到對方。
++ 雙向關聯 (Bi Directional Association)：
+  + 如果雙方都存有對方的物件參考，稱為雙向關聯，意即彼此都能找到對方。
 
 #### 15-3 一對一關連
 ```SQL
@@ -1074,30 +1081,27 @@ private int id;
     //getter and setter ...
 ```
 說明：
-(1) @OneToOne(cascade=CascadeType.ALL) 一對一且另一方一起動作
-(2) CascadeType有DETACH, MERGE, PERSIST, REMOVE
-全部都需要的話就使用 CascadeType.ALL
-(3) @JoinColumn 表示在本表格的外鍵欄位
+1. `@OneToOne(cascade=CascadeType.ALL)` 一對一且另一方一起動作
+2. CascadeType 有 DETACH, MERGE, PERSIST, REMOVE，全部都需要的話就使用 CascadeType.ALL
+3. `@JoinColumn` 表示在本表格的外鍵欄位
 
-一對一關聯(單向)
+#### 一對一關聯 (單向)
+
 如何執行單向一對一關聯？
-(1) 兩邊都實體化(new)其物件並設定其值
-(2) 由設定 @OneToOne 的那一邊 set 另一邊物件
-(3) session.save()主要方，就會儲存兩邊的物件，達到關聯效果
+1. 兩邊都實體化(new)其物件並設定其值
+2. 由設定 @OneToOne 的那一邊 set 另一邊物件
+3. session.save() 主要方，就會儲存兩邊的物件，達到關聯效果
 
 
-一對一關聯(雙向)
-(1) 兩邊都可以互相找到對方
-(2) 可由 Instructor Detail 找到 Instructor
-(3) 不用變更資料庫表格設計，只需要在Java程式改變即可
+#### 一對一關聯 (雙向)
+1. 兩邊都可以互相找到對方
+2. 可由 Instructor Detail 找到 Instructor
+3. 不用變更資料庫表格設計，只需要在Java程式改變即可
 
-在InstructorDetail做以下修改:
-(1) 在全域變數的地方加入 Instructor 去找到它
-(2) 加上 getter/setter
-(3) 加上 @OneToOne 標註
-
-
-
+#### 在 InstructorDetail 做以下修改:
+1. 在全域變數的地方加入 Instructor 去找到它
+2. 加上 getter/setter
+3. 加上 @OneToOne 標註
 
 
 ```Java
@@ -1109,28 +1113,24 @@ public class InstructorDetail{
 private Instructor instructor;
 //...
 ```
-重點說明 mappedBy = "instructorDetail":
-↠ 去 Instructor 類別內找到 instructorDetail 屬性
-↠ 使用 Instructor 類別裡面的 @JoinColumn 的資訊幫助建立關聯
-↠ mappedBy 不可以與 @JoinColumn 同時出現，必須在對面類別
+重點說明 `mappedBy = "instructorDetail"`:
++ 去 Instructor 類別內找到 instructorDetail 屬性
++ 使用 Instructor 類別裡面的 `@JoinColumn` 的資訊幫助建立關聯
++ mappedBy 不可以與 `@JoinColumn` 同時出現，必須在對面類別
 
 
 ### Hibernate關聯的其他類型
 
 #### 16-1 一對多關連
 
-
 使用@OneToMany 來設定一對多關係 (One To Many Relationship)
-↠ cascade: 設定自己的資料改變時對方的動作，例如：本類別(Entity)內資料刪除，
-關聯的對方 Entity 也透過 Hibernate 執行進行資料的刪除，則須設定
-cascade = {CascadeType.REMOVE}
-↠ mappedBy: 對方類別內設定關聯的Java屬性名稱，
-不可與@JoinColumn，@JoinTable同時出現及使用
-↠ 使用 @OneToMany(mappedBy="...") 則不可使用 @JoinColumn或是 @JoinTable
++ cascade: 設定自己的資料改變時對方的動作，例如：本類別(Entity)內資料刪除，關聯的對方 Entity 也透過 Hibernate 執行進行資料的刪除，則須設定 `cascade = {CascadeType.REMOVE}`
++ mappedBy: 對方類別內設定關聯的Java屬性名稱，不可與`@JoinColumn`，`@JoinTable`同時出現及使用
++ 使用 @OneToMany(mappedBy="...") 則不可使用 `@JoinColumn` 或是 `@JoinTable`
 
 #### 16-2 多對一關連
-使用 @ManyToOne 來設定多對一關係 (Many To One Relationship)
-通常與 @JoinColumn(name=...) 使用，設定其外來鍵 (foreign key(
+使用 `@ManyToOne` 來設定多對一關係 (Many To One Relationship)
+通常與 `@JoinColumn(name=...)` 使用，設定其外來鍵 (foreign key(
 
 Example
 ```SQL
@@ -1187,32 +1187,23 @@ private int id;
 ```
 
 說明：
-↠ @Transient表示請Hibernate該欄位不由本類別給予，因為是外來鍵
-↠ @JoinColumn(name="fk_user_id")表示本類別透過哪個欄位(外來鍵)拿到對方物件
-↠ @ManyToOne的FetchType預設本來就是EAGER，所以可省略該設定
-↠ 記得回到 hibernate.cfg.xml 註冊
-<hibernate-configuration>
-<session-factory>
-...
-<mapping class="tw.hibernatedemo.model.BookUsers">
-<mapping class="tw.hibernatedemo.model.Books">
-...
-</session-factory>
-</hibernate-configuration>
+1. @Transient 表示請 Hibernate 該欄位不由本類別給予，因為是外來鍵
+2. @JoinColumn(name="fk_user_id") 表示本類別透過哪個欄位(外來鍵)拿到對方物件
+3. @ManyToOne 的 FetchType 預設本來就是 EAGER，所以可省略該設定
+4. 記得回到 hibernate.cfg.xml 註冊
+  ```XML
+  <hibernate-configuration>
+  <session-factory>
+  ...
+  <mapping class="tw.hibernatedemo.model.BookUsers">
+  <mapping class="tw.hibernatedemo.model.Books">
+  ...
+  </session-factory>
+  </hibernate-configuration>
+  ```
 
 #### 16-3 多對多關連
 Example: 朋友與群組的多對多關係，一個群組可以存多個朋友，朋友也可以屬於多個群組。
-# (((好多空白，應該是少了張圖)))
-
-
-
-
-
-
-
-
-
-
 
 ```SQL
 create table friends(
@@ -1247,19 +1238,19 @@ insert into friend_group(fk_friend_id, fk_group_id) values
 GO
 ```
 
-##### 使用 @ManyToMany 來設定多對多關係(Many To Many Relationship)
-↠ cascade: 設定自己的資料改變時對方的動作，例如本類別(Entity)內資料刪除，
+##### 使用 @ManyToMany 來設定多對多關係 (Many To Many Relationship)
+1. cascade: 設定自己的資料改變時對方的動作，例如本類別(Entity)內資料刪除，
 關聯的對方Entity也透過Hibernate執行進行資料的刪除，
-則須設定 cascade={CascadeType.REMOVE}
-↠ mappedBy: 對方類別內設定關聯的Java 屬性名稱，不可與 @JoinColumn,
-@JoinTable 同時
-使用 @ManyToMany(mappedBy="...") 則不可使用 @JoinColumn 或是 @JoinTable
+則須設定 `cascade={CascadeType.REMOVE}`
+2. mappedBy: **對方**類別內設定關聯的**Java 屬性名稱**，不可與 @JoinColumn,
+@JoinTable 同時出現及使用
+    + 使用 @ManyToMany(mappedBy="...") 則不可使用 @JoinColumn 或是 @JoinTable
 
-@JoinTable: 用來設定Many-to-Many關係的中介Table，有以下屬性設定
-↠ name: 資料庫中介 Table 之名稱
-↠ joinColumns: 設定目前Table與中介Table相關聯的欄位名稱，也就是目前Table的
-Primary Key欄位、中介Table的Foreign Key欄位，使用JoinColumn(name=..)語法設定
-↠ inversionJoinColumns: 設定中介Table與對方Table的Primary Key欄位，使用
+@JoinTable: 用來設定 Many-to-Many 關係的中介 Table，有以下屬性設定
+  + **name**: 資料庫中介 Table 之名稱
+  + **joinColumns**: 設定目前 Table 與中介 Table 相關聯的欄位名稱，也就是目前 Table 的
+Primary Key 欄位、中介 Table 的 Foreign Key 欄位，使用 JoinColumn(name=..) 語法設定
+  + **inversionJoinColumns**: 設定中介 Table 與對方 Table 的 Primary Key 欄位，使用
 JoinColumn(name=...) 語法設定
 
 MyGroup 物件：
@@ -1316,62 +1307,69 @@ private Integer friendId;
 
 ### Hibernate Query Language (HQL)
 #### 17-1 HQL 與 SQL 的異同
-↠ Hibernate Query Language是一種功能強大，語法類似SQL的查詢語言。
-↠ 查詢語言操作的對象是類別與類別的性質(屬性、方法)，而非表格語表格的欄位。
-↠ Hibernate會將HQL轉為表格語欄位的操作，進行資料庫內資料表的CRUD等功能。
-↠ HQL語言不分大小寫，但是Java類別名稱與屬性名稱有區分大小寫，而其他關鍵字不區分大小寫。
-↠ HQL是Hibernate官方推薦的查詢語言。
-↠ HQL不支援Insert語法。
++ Hibernate Query Language是一種功能強大，語法類似SQL的查詢語言。
++ 查詢語言操作的對象是類別與類別的性質(屬性、方法)，而非表格語表格的欄位。
++ Hibernate會將HQL轉為表格語欄位的操作，進行資料庫內資料表的CRUD等功能。
++ HQL語言不分大小寫，但是Java類別名稱與屬性名稱有區分大小寫，而其他關鍵字不區分大小寫。
++ HQL是Hibernate官方推薦的查詢語言。
++ HQL不支援Insert語法。
 
 #### 17-2 Query 介面
-↠ Hibernate的HQL都必須經由Query介面提供的方法來執行。
-↠ Session介面的createQuery(String HQL)可產生Query物件。
-↠ Query介面版本差異
-Hibernate 5.1 -> org.hibernate.Query(舊...淘汰中)
-Hibernate 5.2 -> org.hibernate.query.Query
-↠ 舊的Query介面於5.2起作廢，計畫於Hibernate 6.0移除舊的Query介面。
++ Hibernate的HQL都必須經由Query介面提供的方法來執行。
++ Session介面的createQuery(String HQL)可產生Query物件。
++ Query介面版本差異
+  + Hibernate 5.1 -> org.hibernate.Query(舊...淘汰中)
+  + Hibernate 5.2 -> org.hibernate.query.Query
++ 舊的Query介面於5.2起作廢，計畫於Hibernate 6.0移除舊的Query介面。
 
 #### 17-3 使用 HQL 的步驟
-(1)產生Query物件：
-由Session物件的 createQuery() 來產生 Query 物件
-Query query = session.createQuery(hql);
-(2)前置作業：替HQL參數賦值，設定讀取物件的範圍：
-query.setParameter("參數名稱1",參數值1)
-.setParameter("參數名稱2",參數值2)
-...
-.setFirstResult(5) //由第六筆開始讀
-.setMaxResult(3)   //最多讀三筆
-(3)執行 HQL
-query.getResultList() 或
-query.getSingleResult() 或
-query.executeUpdate()
+1. 產生Query物件：
+    + 由Session物件的 createQuery() 來產生 Query 物件
+      `Query query = session.createQuery(hql);`
 
-↠ getResultList():
-傳回 java.util.List<R> 的物件，用來查詢 0 或多筆物件。
-↠ getSingleResult():
-傳回單一物件，通常用來查詢正好為 1 筆資料的物件，傳回 0 筆或多筆會丟出例外 :
-0 筆丟出 java.persistence.NoResultException
-多筆丟出 org.hibernate.NonUniqueResultException
-↠ setParameter("參數名稱1",參數值1): 設定 HQL 內的參數
-在 HQL 內可定義多個以冒號 (:) 開頭的變數，這些變數都要用不同的
-setParameter(" 參數名稱 ", 參數值 ) 來設定該值
-↠ executeUpdate(): 執行 UPDATE/DELETE 的HQL敘述
-↠ setFirstResult(): 說明由第幾筆物件開始讀取(從0開始)
-↠ setMaxResults(): 要讀多少筆物件
+2. 前置作業：替HQL參數賦值，設定讀取物件的範圍：
+    ```Java
+    query.setParameter("參數名稱1",參數值1)
+         .setParameter("參數名稱2",參數值2)
+         ...
+         .setFirstResult(5) //由第六筆開始讀
+         .setMaxResult(3)   //最多讀三筆
+    ```
+
+3. 執行 HQL
+    ```Java
+    query.getResultList()   //或
+    query.getSingleResult() //或
+    query.executeUpdate()
+    ```
+
++ **getResultList()**:
+  + 傳回 java.util.List<R> 的物件，用來查詢 0 或多筆物件。
++ **getSingleResult()**:
+  + 傳回單一物件，通常用來查詢正好為 1 筆資料的物件，傳回 0 筆或多筆會丟出例外：<br/>
+    0 筆丟出 `java.persistence.NoResultException` <br/>
+    多筆丟出 `org.hibernate.NonUniqueResultException`
++ **setParameter ("參數名稱1",參數值1)**: 設定 HQL 內的參數
+
+  + 在 HQL 內可定義多個以冒號 (:) 開頭的變數，這些變數都要用不同的 `setParameter(" 參數名稱 ", 參數值 )` 來設定該值
++ **executeUpdate()**: 執行 UPDATE/DELETE 的HQL敘述
++ **setFirstResult()**: 說明由第幾筆物件開始讀取(從0開始)
++ **setMaxResults()**: 要讀多少筆物件
 
 
-### Query介面常用的方法
+### Query 介面常用的方法
 #### 18-1 HQL 查詢傳回值的型態
-↠ 查詢類別：
-ex: "from Department as dept" 小寫 dept 為別名 (as 可省略)
-傳回值的型態為 List<Employee>
++ 查詢類別： 
+    + ex: "from Department as dept" 小寫 dept 為別名 (as 可省略) 
+    + 傳回值的型態為 `List<Employee>`
 
-↠ 查詢單一性質：
-ex1: "select dept.deptname from Department as dept" -> 傳回值的型態為 List<String>
-ex2: "select dept.depid from Department as dept" -> 傳回值的型態為 List<Integer>
++ 查詢單一性質： 
+    + ex1: "select dept.deptname from Department as dept" -> 傳回值的型態為 `List<String>` 
+    + ex2: "select dept.depid from Department as dept" -> 傳回值的型態為 `List<Integer>`  
 
 #### 18-2 Named Paramters Query
-命名參數:
++ 命名參數:
+```Java
 String hql = "from Department where deptid=:myid and deptname=:myname";
 
 query.setParameter("myid", 3);
@@ -1393,23 +1391,23 @@ Query<Department> query=session.createQuery(hql, Department.class);
     if(myDept!=null){
       System.out.println(myDept.getDeptid() +":"+ myDept.getDeptname());
     }
-
+```
 
 #### 18-3 HQL 查詢子句
-FROM子句   
-查詢類別
-String hql = "from Department as dept";
++ FROM 子句   
+  + 查詢類別
+    + `String hql = "from Department as dept";`
 
-SELECT子句  
-查詢單一性值，傳回值為 List<?>
-"SELECT e.name FROM Employee e"
++ SELECT 子句  
+  + 查詢單一性值，傳回值為 List<?>
+    + `"SELECT e.name FROM Employee e"`
 
-WHERE子句 - 自訂條件
-↠ hql = "FROM Employee e WHERE e.name = 'Jerry' and e.depId = 1 ";
-說明：從 Employee 物件中找 name 為 Jerry 且 depId=1 的資料
++ WHERE 子句 - 自訂條件
+  + `hql = "FROM Employee e WHERE e.name = 'Jerry' and e.depId = 1 ";`
+    + 說明：從 Employee 物件中找 name 為 Jerry 且 depId=1 的資料
 
-↠ hql = "FROM Employee e WHERE e.salary >= 30000 ";
-說明：從 Employee 物件中找 salary 大於 30000 的資料。
+  + `hql = "FROM Employee e WHERE e.salary >= 30000 ";`
+    + 說明：從 Employee 物件中找 salary 大於 30000 的資料
 
-↠ hql = "FROM Employee e WHERE e.salary >= 30000 and e.name like '黃%'";
-說明：從 Employee 物件中找 salary 大於 30000 且 name 開頭為'黃'的資料
+  + `hql = "FROM Employee e WHERE e.salary >= 30000 and e.name like '黃%'";`
+    + 說明：從 Employee 物件中找 salary 大於 30000 且 name 開頭為'黃'的資料
