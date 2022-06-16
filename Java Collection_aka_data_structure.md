@@ -1,5 +1,3 @@
-
-
 # Java Collection
 > Brought to sptfy by Trevor
 + Java 的 collection 其實就是 data structure, 只是名字比較 fancy.
