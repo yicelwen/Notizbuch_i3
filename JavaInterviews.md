@@ -25,6 +25,12 @@
 + 持久性 Durability：
     + commit 完成之後，資料就會存在硬碟上面
 
++ Index System:
+    + 索引是指允許更快地從表中檢索記錄的效能調整方法。索引為每個值建立一個條目，因此檢索資料會更快。
+
++ Trigger 觸發程序:
+    + 
+
 **JavaScript 面試問答題**
 + var, const, let 差別
 + js 拿到日期有哪些方法 (非常多)
@@ -59,6 +65,8 @@
 
 **Spring Boot 面試問題**
 + 何謂「約定大於配置」
+    + Convention over configuration:
+        + 減少軟體開發人員需做決定的數量。開發人員僅需規定應用中不符約定的部分。
 + 簡化了什麼東西？
 + (解決很多環境問題。例：本來要寫 @Configuration，現在只要寫在 application.properties，內建 tomcat)
 
