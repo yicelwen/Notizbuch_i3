@@ -197,3 +197,28 @@ CREATE TABLE my_products(
 時間戳記
 
 https://youtu.be/cBily-vKcjU?t=7714
+
+
+
+
+# SQL JOIN
+1. Inner join 內部連接 -- 必須指定等值連接的條件，而查詢結果只會返回符合連接條件的資料。
+    1. 寫法一
+    ```SQL
+    SELECT table_column1, table_column2 ...
+    FROM table_name1
+    INNER JOIN table_name2
+    ON table_name1.column_name=table_name2.column_name;
+    ```
+    2. 寫法二
+    ```SQL
+    SELECT table_column1, table_column2 ...
+    FROM table_name1
+    INNER JOIN table_name2
+    USING (column_name);
+    ```
+2. Left (outer) join
+3. Right (outer) join
+4. Full (outer) join 
+5. Cross join 交叉連接
+6. Natural join 自然連接
