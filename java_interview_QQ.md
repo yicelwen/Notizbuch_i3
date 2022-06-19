@@ -1,35 +1,27 @@
 # Java 技術面試問答題:
 `Spring Boot EEIT140 Video Day 3 面試準備`
 + 物件導向是什麼 & 定義：封裝、繼承、多型、泛型、抽象類別 vs 介面類別
-```
-類別：
-　　　類別比較算是一個範本，裡面定義好該有的屬性和方法，其中方法又大概可以分為一般的方法、
-      類別方法和建構子。物件則是實體的東西，由定義好的類別來建立一個物件。
+    + 類別：
+        + 類別比較算是一個範本，裡面定義好該有的屬性和方法，其中方法又大概可以分為一般的方法、類別方法和建構子。物件則是實體的東西，由定義好的類別來建立一個物件。
+    + 定義：物件導向的三大特型：封裝、繼承、多型
+        + **封裝**：
+            + 將物件內部的資料隱藏起來，只能透過物件本身所提供的介面(interface)取得物件內部屬性或者方法。
+        + **繼承**：
+            + 一個類別會有「子類別」。子類別比原本的類別(稱為父類別)要更加具體化，也就是說子類別繼承了父類別
+        + **多型**：
+            + 多個相同名稱的方法，傳入不同的參數，會執行不同的敘述。包含多載(Overloading)和複寫(Overriding)
+                + **多載(Overloading)** :
+                    + 在相同類別中，定義名稱相同，但是參數個數不同，或是參數型態不同的函式，這樣就可以利用參數個數或者參數型態，呼叫到對應的方法
+                + **複寫(Overriding)**：覆寫掉父類別中的函式
+    + **泛型**：指在定義方法、介面或類的時候，不預先指定具體的型別，而使用的時候再指定一個型別的一個特性。
+    EX: ArrayList<型別>
 
-定義：
-　　物件導向的三大特型：封裝、繼承、多型
-　　
-封裝：
-　　將物件內部的資料隱藏起來，只能透過物件本身所提供的介面(interface)取得物件內部屬性或者
-    方法。
-繼承：
-　　一個類別會有「子類別」。子類別比原本的類別(稱為父類別)要更加具體化，
-    也就是說子類別繼承了父類別。
-多型：
-　　多個相同名稱的方法，傳入不同的參數，會執行不同的敘述。包含多載(Overloading)和複寫(Overriding)。
-	多載(Overloading) :
-		在相同類別中，定義名稱相同，但是參數個數不同，或是參數型態不同的函式，
-                這樣就可以利用參數個數或者參數型態，呼叫到對應的方法。
-	複寫(Overriding)：
-		覆寫掉父類別中的函式
-泛型：
-    指在定義方法、介面或類的時候，不預先指定具體的型別，而使用的時候再指定一個型別的一個特性。
-    EX:
-	ArrayList<型別>
-```
+
 + Collection 有哪些
+    + 關於 Collection 的筆記 https://github.com/yicelwen/Notizbuch_i3/blob/master/Java%20Collection_aka_data_structure.md
+    <br/>
 ```
-用來存儲單列數據的集合接口，常用子接口有List和Set　Queue
+Collection - 用來存儲單列數據的集合接口，常用子接口有List和Set　Queue
 
 Set：
 	LinkedHashSet
@@ -186,7 +178,7 @@ LinkedList、ArrayBlockingQueue、PriorityQueue
 
 <br/>
 
-## Spring MVC面試問題
+## Spring MVC 面試問題
 + 物件 DispatcherServlet 是什麼
 + 控制的機制 Handler Mapping 
 + 何謂 Controller？ 由什麼物件控制？
@@ -208,6 +200,33 @@ LinkedList、ArrayBlockingQueue、PriorityQueue
         + 減少軟體開發人員需做決定的數量。開發人員僅需規定應用中不符約定的部分。
 + 簡化了什麼東西？
 + (解決很多環境問題。例：本來要寫 @Configuration，現在只要寫在 application.properties，內建 tomcat)
++ Spring Boot、Spring MVC 和 Spring 有什麼區別
+    1. Spring Framework： 
+        + Spring 最重要的特徵是依賴注入。所有 SpringModules 不是依賴注入就是 IOC 控制反轉。
+         當我們恰當的使用 DI 或者是 IOC 的時候，我們可以開發鬆耦合應用。鬆耦合應用的單元測試可以很容易的進行。
+    2. Spring MVC：
+        + Spring MVC 提供了一種分離式的方法來開發 Web 應用。透過運用像 DispatcherServelet，MoudlAndView 和 ViewResolver 等一些簡單的概念，開發 Web 應用將會變的非常簡單。
+    3. SpringBoot：
+        + Spring 和 SpringMVC 的問題在於需要配置大量的引數。Spring Boot 透過一個自動配置和啟動的項來目解決這個問題。為了更快的構建產品就緒應用程式，Spring Boot 提供了一些非功能性特徵。
++ 什麼是 Spring Boot Starter：
+    + 目前提供的Spring Boot Starter 包有：
+        + spring-boot-starter-web：快速構建基於Spring MVC的Web 項目，使用Tomcat 做默認嵌入式容器
+        + spring-boot-starter-data-redis：操作Redis
+        + spring-boot-starter-data-mongodb：操作Mongodb
+        + spring-boot-starter-activemq：操作Activemq
+
++ Spring Boot中的監視器 (Actuator) 是什麼？
+    + `Spring boot actuator` 是 spring 啟動框架中的重要功能之一。Spring boot 監視器可幫助您訪問生產環境中正在執行的應用程式的當前狀態。有幾個指標必須在生產環境中進行檢查和監控。即使一些外部應用程式可能正在使用這些服務來向相關人員觸發警報訊息。監視器模組公開了一組可直接作為HTTP URL 訪問的 REST 端點來檢查狀態。 
+    ```xml
+    <dependency> 
+        <groupId>org.springframework.boot</groupId> 
+        <artifactId>spring-boot-starter-actuator</artifactId> 
+    </dependency>
+    ```
++ springboot自動配置的原理：
+    + 在 spring 程式 main 方法中 新增 `@SpringBootApplication`或者 `@EnableAutoConfiguration`，會自動去 maven 中讀取每個 starter 中的 spring.factories 檔案，該檔案裡配置了所有需要被建立 spring 容器中的 bean
++ springboot讀取配置檔案的方式：
+    + springboot預設讀取配置檔案為`application.properties`或者是`application.yml`
 
 <br/>
 
@@ -570,33 +589,189 @@ LinkedList、ArrayBlockingQueue、PriorityQueue
         ```
 
 27. 說說對線程安全的理解
-    + 線程安全指的是，我們寫的某段代碼，在多個線程同時執行這段代碼時，不會產生混亂，依然能夠得到正常的結果。比如 `i++`，i 初始化值為 0，那麼兩個線程來同時執行這行代碼，如果代碼是線程安全的，那麼最終的結果應該就是一個線程的結果為 1，一個線程的結果為 2，如果出現了
-    + 所以線程安全，主要指的是一段代碼在多個線程同時執行的情況下，能否得到正確的結果
+    + 線程安全指的是，我們寫的某段代碼，在**多個線程同時執行這段代碼時，不會產生混亂**，依然能夠得到正常的結果。比如 `i++`，i 初始化值為 0，那麼兩個線程來同時執行這行代碼，`如果代碼是線程安全的，那麼最終的結果應該就是一個線程的結果為 1，一個線程的結果為 2`，如果出現了兩個線程的結果都為 1，則表示這段代碼是線程不安全的。
+    + 所以線程安全，主要指的是一段代碼在多個線程同時執行的情況下，能否得到正確的結果。
 
 28. 對守護線程的理解
+    + 線程分為用戶線程和守護線程，用戶線程就是普通線程，守護線程就是 JVM 的後台線程，比如垃圾回收線程就是一個守護線程，守護線程會在其他普通線程都停止運行之後自動關閉。我們可以通過設置 thread.setDaemon(true) 來把一個線程設置為守護線程。
+    + 垃圾回收線程就是默認的一個守護線程。
 
 29. ThreadLocal 的底層原理
+    1. ThreadLocal 是 Java 中所提供的線程本地存儲機制，可以利用該機制將數據**緩存在某個線程內部**，該線程可以在任意時刻，任意方法中獲取緩存的數據
+    2. ThreadLocal 底層是通過 ThreadLocalMap 來實現的，每個 Thread 對象 (注意不是 ThreadLocal 對象) 中都存在一個 ThreadLocalMap，Map 的 key 為 ThreadLocal 對象，Map 的 value 為需要緩存的值
+    3. 如果在線程池中使用 ThreadLocal 會造成內存泄露，因為當 ThreadLocal 對象使用完之後，應該要把設置的 key、value，也就是 Entry 對象進行回收，但是線程池中的線程不會回收，而線程對象是通過強引用指向 ThreadLocalMap，ThreadLocalMap 也是通過強引用指向 Entry 對象‧線程不被回收，Entry 對象也就不會被回收，從而出現內存洩漏，解決辦法是，在使用了 ThreadLocal 對象之後，手動調用 ThreadLocal 的 remove 方法，手動清除 Entry 對象
+    4. ThreadLocal 經典的應用場景就是連接管理 (一個線程持有一個連接，該連接對象可以在不同的方法之間進行傳遞，線程之間不共享一個連接)
+
+    ![image info](./images/thread-local-map.png)
+    ```Java
+    public class User {
+
+        private ThreadLocal<String> name;  // 定義 thread local 的成員變量
+
+        public void setName() {
+            net.set("yicelwen");  // 將數據緩存到 map 裡面的 value
+        }
+        public void getName() {
+            String s = this.name.get();
+            name.remove();
+            // 使用threadLocals 存入且獲取用完之後，記得要主動調用 remove 方法，以免內存洩漏
+        }
+    }
+    ```
+    查看 底層的 set 方法
+    ```Java
+    public class ThreadLocal {
+        ...
+        /**
+        * Sets the current thread's copy of this thread-local variable to the specified value. 
+        * Most subclasses will have no need to override this method, relying solely on the 
+        * initialValue method to set the values of thread-locals.
+        * Params: value - the value to be stored in the current thread's copy of this thread-local.
+        */
+        public void set(T value) {
+            Thread t = Thread.currentThread(); // 拿出當前正在執行的 thread 對象
+            ThreadLocalMap map = getMap(t); // 調用 thread 類裡面的 getMap() 方法
+            if (ma != null)
+                map.set(this, value);
+            else
+                createMap(t, value);
+        }
+        /* ThreadLocal values pertaining to this thread. This map is maintained
+        * by the ThreadLocal class. */
+        ThreadLocal.ThreadLocalMap threadLocals = null;
+    }
+    ```
+    查看 getMap 方法
+    ```Java
+    public class Thread {
+        ...
+    /**
+    * Get the map associated with a ThreadLocal. Overridden in inheritableThreadLocal
+    * Params: t - the current thread
+    * Returns: the map
+    **/
+        ThreadLocalMap getMap(Thread t) {
+            return t.threadLocals;
+        }
+    }
+    ```
 
 30. 並發、並行、串行之間的區別
+    1. 串行（ㄒㄧㄥˊ）：一個任務執行完，才能執行下一個任務
+    2. 並行（Parallelism）：兩個任務同時執行  
+        + 一邊聽歌一邊跑步
+    3. 並發（Concurrency）：兩個任務整體看上去是同時進行，在底層，兩個任務被拆成了很多份，然後一個一個執行，站在更高的角度看來兩個任務是同時在進行的
+        + spotify 跟 line 可以同時在電腦中執行，但是底層任務還是在排隊一個一個執行的，CPU 也會有一定的調度
 
 31. Java 死鎖如何避免
+    + 造成死鎖的幾個原因/條件：
+        1. 一個資源每次只能被一個線程使用
+        2. 一個線程在阻塞等待某個資源時，不釋放已佔有資源
+        3. 一個線程已經獲得的資源，在未使用完之前，不能被強行剝奪
+        4. **若干線程形成頭尾相接的循環等待資源關係**
+    + 這是造成死鎖必須要達到的四個條件，如果要避免死鎖，只需要不滿足其中一個條件即可。而其中前三個條件是作為鎖要符合的條件，所以要避免死鎖，就需要打破第四個條件，不出現循環等待鎖的關係。
+    + 在開發過程中：
+        1. 要注意**加鎖順序**，保證每個線程按同樣的順序進行加鎖
+        2. 要注意**加鎖時限**，可以針對鎖設置一個超時時間
+        3. 要注意死鎖檢查，這是一種**預防機制**，確保在第一時間發現死鎖並進行解決
+
 
 32. 線程池的底層工作原理
+    + 線程池內部是通過`隊列 + 線程`實現的，當我們利用線程池執行任務時，工作流程如下：
+        1. 如果此時線程池中的線程數量**小於** `corePoolSize (核心線程數)`，即使線程池內的線程都處於空閒狀態，也要創建新的線程來處理被添加的任務。
+        2. 如果此時線程池中心的線程數量**等於** corePoolSize，但是緩衝對列 workQueue 未滿，那麼任務會被放入緩衝隊列，而不會新開線程。
+        3. 如果此時線程池中的線程數量**大於等於** corePoolSize，緩衝對列 workQueue 也已經滿了，並且線程池中的數量小於 maximumPoolSize (最大線程數)，那麼就開新的線程來處理被添加的任務。
+        4. 如果此時線程池中的線程數量**大於** corePoolSize，緩衝對列 workQueue 已滿，並且線程池中的數量等於 maximumPoolSize，那麼通過 handler 所指定的策略來處理此任務。(例如拒絕策略)
+        5. 當線程池中的線程數量大於 corePoolSize 時，如果單線程空閒時間超過 keepAliveTime，線程將被終止，這樣，線程池也可以動態的調整線程池中的線程數。
 
-33. 線程池為什麼是先添加列隊而不是先創建最大線程
+33. 線程池為什麼是先添加隊列而不是先創建最大線程
+    + 線程池中的核心線程都在忙時，如果繼續往線程池中添加任務，那麼任務會先放入隊列，隊列滿了之後，才會新開線程。這就相當於，一個公司本來有十個程序員，本來這十個程序員能正常的處理各種需求，但是隨著公司的發展，需求越來越多，一開始這些需求只會增加在待開發列表中，然後這時個程序員加班加點的從待開發列表中獲取需求並進行處理，但是某一天待開發列表滿了，公司發現擁有的十個程序員是真的處理不過來了，所以就開始新招員工了。
 
 34. ReentrantLock 中的公平鎖和非公平鎖的底層實現
+    + 首先不管是公平鎖和非公平鎖，它們的底層實現會使用`AQS`來進行排隊，它們的區別如下：線程在使用 lock() 方法捕獲時，
+        + 如果是公平鎖，會先檢查AQS隊列中是否存在線程在排隊，如果有線程在排隊，則當前線程也會進行排隊，
+        + 如果是非公平鎖，則不會去檢查是否有線程在排隊，而是直接加道鎖。
+    + 不管是公平鎖還是非公平鎖，一旦沒有競爭到鎖，都會進行排隊，當鎖釋放時，都是喚醒排在最前面的線程，所以非公平鎖只是體現在了線程加鎖階段，並沒有體現在線程喚醒階段。
+    + 
 
 35. ReentrantLock 中 tryLock() 和 lock() 方法的區別
+    1. `tryLock()`表示嘗試加鎖 (非阻塞加鎖)，可能加到也可能加不到，該方法不會阻塞先程，如果加到鎖則返回 true，沒加到則返回 false
+    2. `lock()`表示阻塞加鎖，線程會阻塞直到加到鎖，方法也沒有返回值
 
 36. CountDownLatch 和 Semaphore 的區別和底層原理
+    + CountDownLatch 表示計數器，可以給 CountDownLatch 設置一個數字，一個線程調用 CountDownLatch 的 await() 將會阻塞，其它線程可以調用 CountDownLatch 的 countDown() 方法來對 CountDownLatch 中的數字減一，當數字被減成 0 後，所有 await 的線程都將被喚醒。
+    + 對應的底層原理就是，調用 await() 方法的線程會利用 AQS 排隊，一旦數字被減為 0，則會將 AQS 中排隊的線程依次喚醒。
+    + `Semaphore` 表示信號量，可以設置許可的個數，表示同時允許最多多少個線程使用該信號量，通過 acquire() 來獲取許可，如果沒有許可可以使用，則線程阻塞，並通過 AQS 來排隊，可以通過 release() 方法來釋放許可，當某個線程釋放了某個許可後，會從 AQS 中正在排隊的第一個線程開始依次喚醒，直到沒有空閒許可。
+
+    ```Java
+    public class CountDownLatchDemo {
+        
+        static CountDownLatch countDownLatch = new CountDownLatch(3);
+
+        public static void main(String[] args) throws InterruptedException {
+            
+            // 第一個線程
+            countDownLatch.await();
+
+            // 第二個線程
+            countDownLatch.countDown();
+
+            // 第三個線程
+            countDownLatch.countDown();
+
+            // 第四個線程
+            countDownLatch.countDown();
+        }
+    }
+    ```
+    ```Java
+    public class SemaphoreDemo {
+        
+        static Semaphore semaphore = new Semaphore(3);
+
+        public static void main(String[] args) throws InterruptedException {
+            
+            // 第一個線程
+            semaphore.acquire();  // 申請許可
+
+            // 第二個線程
+            semaphore.acquire();
+
+            // 第三個線程
+            semaphore.acquire();
+
+            // 第四個線程
+            semaphore.acquire();  // 第四個已經申請不到，一直到線程一釋放
+
+            // 第一個線程
+            semaphore.release();
+        }
+    }
+    ```
 
 37. Synchronized 的偏向鎖、輕量級鎖、重量級鎖
+    1. **偏向鎖**：在鎖對象的對象頭中紀錄一下當前獲取到該鎖的線程ID，該線程下次如果又來獲取該鎖就可以直接獲取到了
+    2. **輕量級鎖**：由偏向鎖升級而來，當一個線程獲取到鎖後，此時這把鎖是偏向鎖，此時如果有第二個線程來競爭鎖，偏向鎖就會升級為輕量級鎖，之所以叫輕量級鎖，是為了和重量級鎖區分開來，輕量級鎖底層是通過自旋來實現的，並不會阻塞線程
+    3. 如果自旋次數過多仍然沒有獲取到鎖，則會升級為重量級鎖，重量級鎖會導致線程阻塞
+    4. **自旋鎖**：自旋鎖就是線程在獲取鎖的過程中，不會去阻塞線程，也就無所謂喚醒線程，阻塞和喚醒這兩個步驟都是需要操作系統去進行的，比較消耗時間，自旋鎖是線程通過 CAS 獲取預期的一個標記，如果沒有獲取到，則繼續循環獲取，如果獲取到了則表示獲取到了鎖，這個過程線程一直在運行中，相對而言沒有使用太多的操作系統資源，比較輕量。 
 
 38. Synchronized 和 ReentrantLock 的區別
 
-39. 對於 AQS 的理解，AQS 如何實現可重入鎖？
+| Synchronized       | ReentrantLock |
+|--------------------|---------------|
+|是一個**關鍵字**     | 是一個**類別**    |
+|會**自動**的加鎖與釋放鎖|需要程序員**手動**加鎖與釋放鎖|
+|底層是**JVM 層面**的鎖|是**API 層面**的鎖|
+|是**非公平鎖**|可以選擇公平鎖或非公平鎖|
+|鎖的是對象，鎖信息保存在對象頭中|通過代碼中 int 類型的 state 標識來標示鎖的狀態|
+|底層有一個鎖升級的過程|   N/A|
 
+
+39. 對於 AQS 的理解，AQS 如何實現可重入鎖？
+    1. 
+    2. 
+    3. 
+    
 40. 對於 IOC 的理解
 
 41. 單例 Bean 和單例模式
