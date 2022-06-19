@@ -699,9 +699,9 @@ LinkedList、ArrayBlockingQueue、PriorityQueue
     2. `lock()`表示阻塞加鎖，線程會阻塞直到加到鎖，方法也沒有返回值
 
 36. CountDownLatch 和 Semaphore 的區別和底層原理
-    + CountDownLatch 表示計數器，可以給 CountDownLatch 設置一個數字，一個線程調用 CountDownLatch 的 await() 將會阻塞，其它線程可以調用 CountDownLatch 的 countDown() 方法來對 CountDownLatch 中的數字減一，當數字被減成 0 後，所有 await 的線程都將被喚醒。
+    + `CountDownLatch` 表示**計數器**，可以給 CountDownLatch 設置一個數字，一個線程調用 CountDownLatch 的 await() 將會阻塞，其它線程可以調用 CountDownLatch 的 countDown() 方法來對 CountDownLatch 中的數字減一，當數字被減成 0 後，所有 await 的線程都將被喚醒。
     + 對應的底層原理就是，調用 await() 方法的線程會利用 AQS 排隊，一旦數字被減為 0，則會將 AQS 中排隊的線程依次喚醒。
-    + `Semaphore` 表示信號量，可以設置許可的個數，表示同時允許最多多少個線程使用該信號量，通過 acquire() 來獲取許可，如果沒有許可可以使用，則線程阻塞，並通過 AQS 來排隊，可以通過 release() 方法來釋放許可，當某個線程釋放了某個許可後，會從 AQS 中正在排隊的第一個線程開始依次喚醒，直到沒有空閒許可。
+    + `Semaphore` 表示**信號量**，可以設置許可的個數，表示同時允許最多多少個線程使用該信號量，通過 acquire() 來獲取許可，如果沒有許可可以使用，則線程阻塞，並通過 AQS 來排隊，可以通過 release() 方法來釋放許可，當某個線程釋放了某個許可後，會從 AQS 中正在排隊的第一個線程開始依次喚醒，直到沒有空閒許可。
 
     ```Java
     public class CountDownLatchDemo {
@@ -756,6 +756,7 @@ LinkedList、ArrayBlockingQueue、PriorityQueue
     4. **自旋鎖**：自旋鎖就是線程在獲取鎖的過程中，不會去阻塞線程，也就無所謂喚醒線程，阻塞和喚醒這兩個步驟都是需要操作系統去進行的，比較消耗時間，自旋鎖是線程通過 CAS 獲取預期的一個標記，如果沒有獲取到，則繼續循環獲取，如果獲取到了則表示獲取到了鎖，這個過程線程一直在運行中，相對而言沒有使用太多的操作系統資源，比較輕量。 
 
 38. Synchronized 和 ReentrantLock 的區別
+    + 這兩個是 Java 最常用的加鎖方式
 
 | Synchronized       | ReentrantLock |
 |--------------------|---------------|
@@ -768,41 +769,218 @@ LinkedList、ArrayBlockingQueue、PriorityQueue
 
 
 39. 對於 AQS 的理解，AQS 如何實現可重入鎖？
-    1. 
-    2. 
-    3. 
-    
-40. 對於 IOC 的理解
+    1. AQS 是一個 Java 線程同步的框架，是 JDK 中很多鎖工具的核心實現框架
+    2. 在 AQS 中，維護了一個信號量 state 和一個線程組成的雙向鏈表隊列。其中，這個線程隊列，就是用來給線程排隊的，而 state 就像是一個紅綠燈，用來控制線程排隊或者放行的，在不同的場景下有不同的意義。
+    3. 在`可重入鎖`這個場景下，state 就用來表示加鎖的次數。0 標示無鎖，每加一次鎖，state 就加1，釋放鎖 state 就減 1。
+
+40. 對於 Spring IOC 的理解
+    + Spring 有兩大特性 IoC 和 AOP，要如何理解 IoC 呢？
+    + IoC 表示控制反轉
+        1. 什麼是控制？控制了什麼？
+        2. 什麼是反轉？反轉之前是誰控制的？反轉之後是誰控制的？如何控制的？
+        3. 為什麼要反轉？反轉之前有什麼問題？反轉之後有什麼好處？
+
+#### 1. 什麼是控制？控制了什麼？
++ 開發者用 Spring 的時候需要做什麼
+    + 建立一些類別，例如：UserService、OrderService
+    + 用一些像是 `@Autowired` 的註解
+    + 但是，我們也知道當程序運行時，用的是具體的 UserService 對象、OrderService 對象，那這些對象什麼時候創建的？誰創建的？對象裡的屬性是什麼時候賦與的值？誰賦予的？這些都是幕後黑手 Spring 完成的，程序員只需要定義類。
+    + **控制**：
+        1. 控制對象的創建
+        2. 控制對象內屬性的賦值
+
+    + 如果不用 Spring，就得自己做這兩件事。反之，我們用 Spring 就不用再做這兩件事情了，只需要定義類別，以及定義那些屬性需要 Spring 來賦值 (比如某個屬性上加 @Autowired)，而這其實就是第二個問題的答案——**反轉**，表示一種**對象控制權**的轉移。
+
+    <br/>
+
+#### 2. 什麼是反轉? 反轉之前是誰控制的? 反轉之後是誰控制的? 如何控制的?
+#### 3. 為什麼要反轉? 反轉之前有什麼問題? 反轉之後有什麼好處?
++ 如果我們自己來負責創建對象，自己給對象中的屬性賦值，會出現什麼情況？
+    + 現在有三個類：
+        1. A 類， A 類裡面有一個屬性 C c
+        2. B 類， B 類裡面也有一個屬性 C c
+        3. C 類
+    + 現在程序要運行，這三個類的對象都需要創建出來，並且相應的屬性都需要有值，那麼除了定義這三個類別之外，我們還得寫：
+
+        ```
+        A a = new A();
+        B b = new B();
+        C c = new C();
+        a.c = c;
+        b.c = c;
+        ```
+    + 這五行代碼是不用 Spring 的情況下多出來的代碼，而且如果類別再多一些，類別中屬性再多一些，那相應的代碼會更多更複雜，所以我們可以發現，比起交給 Spring 來控制，我們自己控制情況的代碼複雜度是高很多，反言之，交給 Spring 控制的話可以幅減輕開發人員負擔。
+    + 結論：
+        >IoC 控制反轉，表示如果用 Spring，那麼 Spring 會負責來創建對象，以及給對象內的屬性賦值，也就是如果使用 Spring，那麼對象的控制權會轉交給 Spring。
+
+<br/>
 
 41. 單例 Bean 和單例模式
+    + **單例模式**是設計模式的其中一種，表示 JVM 中某個類型的對象只會存在唯一一個
+    + 而**單例 Bean** 並不表示 JVM 中只能存在唯一的某個類的 Bean 對象
+
+# 這裡還沒看 Video 只是先 type up
 
 42. Spring 事務傳播機制
+    + 多個事務方法相互調用時，事務如何再這些方法間傳播，方法A是一個事務的方法，方法A執行過程中調用了方法B，那麼方法B有無事務以及方法B對事務的要求不同，都會對方法A的事務具體執行造成影響，同時方法A的事物對方法B的事物執行也有影響，這種影響具體是什麼就由兩個方法所定義的事物傳播類型所決定。
+        1. REQUIRED(Spring默認的事務傳播類型)：如果當前沒有事務，則自己新建一個事務，如果當前存在事務，則加入這個事務
+        2. SUPPORTS：當前存在事務，則加入當前事務，如果當前沒有事務，就以非事務方法執行
+        3. MANDATORY：當前存在事務，則加入當前事務，如果當前事務不存在，則拋出異常
+        4. REQUIRES_NEW：創建一個新事務，如果存在當前事務，則掛起該事務
+        5. NOT_SUPPORTED：以非事務方式執行，如果當前存在事務，則掛起當前事務
+        6. NEVER：不使用事務，如果當前事務存在，則拋出異常
+        7. NESTED：如果當前事務存在，則在嵌套事務中執行，否則 REQUIRED 的操作一樣(開啟一個事務)
 
 43. Spring 事務什麼時候會失效
+    + Spring 事務的原理是 AOP，進行了切面增強，那麼失效的根本原因是這個 AOP 不起作用了！常見情況有如下幾種
+        1. 發生自調用，類裡面使用 this 調用本類的方法（this 通常省略），此時這個 this 對象不是代理類，而是 UserService 對象本身。<br/>
+        解決方法很簡單，讓那個 this 變成 UserService 的代理類即可。
+        2. 方法不是 public 的：`@Transactional` 只能用於 public 的方法上，否則事務不會失效，如果要用在非 public 方法上，可以開啟 AspectJ 代理模式。
+        3. 數據庫不支持事務
+        4. 沒有被 spring 管理
+        5. 異常被吃掉，事務不會回滾(或者拋出的異常沒有被定義，莫認為 RuntimeException)
 
 44. Spring 中的 Bean 創建的生命週期有哪些步驟
+    + Spring 中一個 Bean 的創建大概分為以下幾個步驟：
+        1. 推斷構造方法
+        2. 實例化
+        3. 填充屬性，也就是依賴注入
+        4. 處理 Aware 回調
+        5. 初始化前，處理 `@PostConstruct` 註解
+        6. 初始化，處理 InitializingBean 接口
+        7. 初始化後，進行 AOP
 
 45. Spring 中 Bean 是線程安全的嗎
+    + Spring 本身並沒有針對 `Bean` 做線程安全的處理，所以
+        1. 如果 Bean 是無狀態的，那麼 Bean 則是線程安全的
+        2. 如果 Bean 是有狀態的，那麼 Bean 則不是線程安全的
+    + 另外，Bean 是不是線程安全，跟 Bean 的作用並沒有關係，Bean 的作用域只是表示 Bean 的生命週期範圍，對於任何生命週期的 Bean 都是一個對象，這個對象是不是線程安全的，還是得看這個 Bean 對象本身。
 
 46. ApplicationContext 和 BeanFactory 有什麼區別
+    + BeanFactory 是 Spring 中非常核心的組件，表示Bean工廠，可以生成 Bean，維護 Bean，而 ApplicationContext 繼承了 BeanFactory，所以 ApplicationContext 擁有 BeanFactory 所有的特點，也是一個 Bean 工廠
+    + 但是 ApplicationContext 除了繼承 BeanFactory 之外，還繼承了諸如 EnvironmentCapable、MessageSource、ApplicationEventPublisher 等接口，從而 ApplicationContext 還有獲取系統環境變量、國際化、事件發布等功能，這是 BeanFactory 所不具備的
 
 47. Spring 中的事務是如何實現的
+    1. Spring 事務底層是基於數據庫事務和 AOP 機制的
+    2. 首先對於使用了 `@Transactional` 註解的Bean，Spring 會創建一個代理對象作為 Bean
+    3. 當調用代理對象的方法時，會先判斷該方法上是否加了 `@Transactional` 註解
+    4. 如果加了，那麼則利用事務管理器創建一個數據庫連接
+    5. 並且修改數據庫連接的 autocommit 屬性為 false，禁止此連接的自動提交，這是實現 Spring 事務非常重要的一步
+    6. 然後執行當前方法，方法中會執行 sql
+    7. 執行完當前方法後，如果沒有出現異常就直接提交事務
+    8. 如果出現了異常，並且這個異常是需要回滾的就會回滾事務，否則仍然提交事務
+    9. Spring 事務的隔離級別對應的就是數據庫的隔離級別 
+    10. Spring 事務的傳播機制是 Spring 事務自己實現的，也是 Spring 事務中最複雜的
+    11. Spring 事務的傳播機制是基於數據庫連接來做的，一個數據庫連接一個事務，如果傳播機制配置為需要新開一個事務，那麼實際上就是先建立一個數據庫連接，在此新數據庫連接上執行 sql
 
-48. Spring 中什麼時候 `@Transactional` 會失效
+48. Spring 中什麼時候 `@Transactional`  會失效
+    + 因為 Spring 事務是基於代理來實現的，所以某個加了 @Transactional 的方法只有是被代理對象調用時，那麼這個註解才會生效，所以如果是被代理對象來調用這個方法，那麼`@Transactional`是不會生效的。
+    + 同時如果某個方法是 private 的，那麼 `@Transactional` 也會失效，因為底層 cglib 是基於父子類來實現的，子類是不能重載父類的 private 方法的，所以無法很好的利用代理，也會導致`@Transactional`失效
 
-49. Spring 容器啟動流程是蝦咪款
+49. Spring 容器啟動流程是怎樣的
+    1. 在創建 Spring 容器，也就是啟動 Spring 時
+    2. 首先會進行掃描，掃描得到所有的 BeanDefinition 對象，並儲存在一個 Map 中
+    3. 然後篩選出非懶加載的單例 BeanDefinition 進行創建 Bean，對於多例 Bean 不需要在啟動過程中去進行創建，對於多例 Bean 會在每次獲取 Bean 時利用 BeanDefinition 去創建
+    4. 利用 BeanDefinition 創建 Bean 就是 Bean 的創建生命週期，這期間包括了合併 BeanDefinition，推斷構造方法，實例化，屬性填充，初始化前，初始化，初始化後等步驟，其中 AOP 就是發生在初始化後這一個步驟中
+    5. 單例 Bean 創建完了之後，Spring 會發布一個容器啟動事件
+    6. Sprng 啟動結束
+    7. 在源碼中會更加複雜，比如源碼中會提供一些模板方法，讓子類來實現，比如源碼中還涉及到一些 BeanFactoryPostProcessor 和 BeanPostProcessor 的註冊，Spring 的掃描就是通過 BeanFactoryPostProcessor 來實現的，依賴注入就是通過 BeanPostProcessor 來實現的
+    8. 在 Spring 啟動過程中還會去處理 `@Import` 等註解
 
-50. Spring 用到了那些設計模式
+50. Spring 用到了哪些設計模式
+    + 工廠模式
+        + BeanFactory
+        + FactoryBean
+        + ProxyFactory
+    + 原型模式
+        + 原型 Bean
+        + PrototypeTargetSource
+        + PrototypeAspectInstanceFactory
+    + 單例模式
+        + 單例 Bean
+        + SingletonTargetSource
+        + DefaultBeanNameGenerator
+        + SimpleAutowireCandidateResolver
+        + AnnotationAwareOrderComparator
+    + 構建器模式
+        + BeanDefinitionBuilder -- BeanDefinition 構造器
+        + BeanFactoryAspectAdvisionBuilder -- 解析並構造 @Aspect 註解的Bean 中所定義的 Advisor
+        + StringBuilder
+    + 適配器模式
+        + ApplicationListenerMethodAdapter -- 將 @EventListener 註解的方法適配成 ApplicationListener
+        + AdvisorAdaptor -- 把 Advisor 選配成 MethodInterceptor
+    + 訪問者模式
+        + PropertyAccessor -- 屬性訪問器，用來訪問和設置某個對象的某個屬性
+        + MessageSourceAccessor -- 國際化資源訪問器
+    + 裝飾器模式
+        + BeanWrapper -- 比單純的 Bean 對象功能更加強大
+        + HttpRequestWrapper
+    + 代理模式
+        + 方式生成了代理對象的地方就用到了代理模式
+        + AOP
+        + @Configuration
+        + @Lazy
+    + 觀察者模式
+        + ApplicationListener -- 事件監聽機制
+        + AdvisedSupportListener -- ProxyFactory 可以提交子監聽器，用來監聽 ProxyFactory 創建代理對象完成事件，添加 Advisor 事件等
+    + 策略模式
+        + InstantiationStrategy -- Spring 需要根據 BeanDefinition 來
+        實例化 Bean，但是具體可以選擇不同的策略來進行實例化
+        + BeanNameGenerator -- BeanName 生成器
+    + 模板方法模式
+        + AbstractApplicationContext
+            + postProcessBeanFactory() -- 子類別可以繼續處理 BeanFactory
+            + onRefresh() -- 子類別可以做一____外的初始化
+    + 責任鏈模式
+        + DefaultAdvisorChainFactory -- 負責構造一條 AdvisorChain，代理對象執行某個方法時會依次經過 AdvisorChain 中的每個 Advisor
+        + QualifierAnnotationAutowireCandidateResolver -- 判斷某個 Bean 能不能用來進行依賴注入
 
 51. Spring Boot 中常用註解以及其底層實現
+    1. @SpringBootApplication 註解：這個註解標識了一個 Spring Boot 工程，它實際上是另外三個註解的組合，這三個註解是：
+        1. `@SpringBootConfiguration`：這個註解實際就是一個 `@Configuration`，表示啟動 ____ 一個配置類
+        2. `@EnableAutoConfiguration`：向 Spring 容器中導入了一個 Selector，用來卸載 ClassPath 下 SpringFactories 中所定義的自動配置類，將這些自動卸載為配置Bean
+        3. `@ComponentScan`：標識掃描路徑，因為默認是沒有配置實際掃描路徑，所以 SpringBoot 掃描的路徑是啟動類所在的當前目錄
+    2. `@Bean`註解：用來定義 Bean，類似於 XML 中的 <bean> 標籤，Spring 在啟動時，會對加了 `@Bean` 註解的方法進行解釋，將方法的名字做為 beanName，並通過執行方法得到 Bean 對象
+    3. @Controller、@Service、@ResponseBody、@Autowired 都可以說
 
 52. Spring Boot 是如何啟動 Tomcat 的
+    1. 首先，Spring Boot 在啟動時會先創建一個 Spring 容器
+    2. 在創建 Spring 容器過程中，會利用 `@ConditionalOnClass` 技術來判斷當前 classpath 中是否存在 Tomcat 依賴，如果存在則會生成一個啟動 Tomcat 的 Bean
+    3. Spring 容器創建完之後，就會獲取啟動 Tomcat 的 Bean，並創建 Tomcat 對象，綁定端口等，然後啟動 Tomcat 
 
-53. Mybatis 的優缺點
+##### 52-2. Spring Boot 中配置文件的加載順序是怎樣的？
++ 優先級從高到低，高優先級的配置賦值低優先級的配置，所有配置會形成互補配置
+    1. 命令行參數，所有的配置都可以在命令行上進行指定
+    2. 來自 `java:comp/env` 的 JNDI 屬性 
+    3. Java 系統屬性 (System.getProperties());
+    4. 操作系統環境變量;
+    5. jar 包外部的 application-[profile].properties 或 application.yml (帶 spring.profile) 配置文件
+    6. jar 包內部的 application-[profile].properties 或 application.yml (帶 spring.profile) 配置文件，再來加載不帶 profile
+    7. jar 包外部的 application.properties 或 application.yml (不帶 spring.profile) 配置文件
+    8. jar 包內部的 application.properties 或 application.yml (不帶 spring.profile) 配置文件
+    9. `@Configuration` 註解類上的`@PropertySource`
+
+53. Mybatis 的優缺點  
+    + 優點
+        1. 基於 SQL 語句編程，相當靈活，不會對應用程序或數據庫的現有設計造成任何影響，SQL 寫在 XML 中，解除 SQL 與程序代碼的___，便於統一管理；提供 XML 標籤，支持編寫動態 SQL 語句，並可__用。
+        2. 與 JDBC 相比，減少了 50% 以上的代碼量，消除了 JDBC 大量冗餘的代碼，不需要手動開關連接
+        3. 很好的與各種數據庫相容（因為MyBatis使用 JDBC 來連接數據庫，所以只要 JDBC 支持的數據庫 MyBatis 都支持）。
+        4. 能夠與 Spring 很好的__
+        5. 提供程對標籤，支持對象與數據庫的 ORM 字__關係映射；提供對象關係映射標籤，支持對象關係組件維護。
+    + 缺點
+        1. SQL 語句的編寫工作量較大，尤其當字段多、關聯表多時，對開發人源編寫 SQL 語句的功底有一定要求
+        2. SQL 語句依賴於數據庫，導致數據庫移植性差，不能隨意更換數據庫
+
+        <br/>
 
 54. Mybatis 中 #{} 和 ${} 的區別是什麼
+    + #{} 是預編譯處理、是佔位符，${} 是字符串替換，是拼接符
+    + Mybatis 在處理 #{} 時，會將 sql 中的 #{} 替換為 ?號，調用 PreparedStatement 來賦值
+    + Mybatis 在處理 ${} 時，會將 sql 中的 ${} 替換為變量的值，調用 Statement 來賦值
+    + 使用 #{} 可以有效的防止 SQL 注入，提高系統安全性
 
 55. 索引的基本原理
+
 
 56. 索引的設計原則
 
