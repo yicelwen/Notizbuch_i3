@@ -21,8 +21,7 @@
     + 關於 Collection 的筆記 https://github.com/yicelwen/Notizbuch_i3/blob/master/Java%20Collection_aka_data_structure.md
     <br/>
 ```
-Collection - 用來存儲單列數據的集合接口，常用子接口有List和Set　Queue
-
+Collection 
 Set：
 	LinkedHashSet
 	　保證裡面元素存放的順序與新增時相同。最適合拿來存放由資料庫中存取的資料集。
