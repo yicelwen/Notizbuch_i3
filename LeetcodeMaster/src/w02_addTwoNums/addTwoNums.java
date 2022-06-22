@@ -70,6 +70,34 @@ class Solution2 {
 	}
 }
 
+// 此人 /hi-malik/ 解題極為詳細 *thumbs-up*
+class Solution3 {
+	public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+		ListNode dummy = new ListNode(0); // new 一個 dummy list
+		ListNode curr = dummy;  // 初始化一個 pointer
+		int carry = 0; // 初始化 carry 的值為 0
+		// 除非 l1 或者 l2 變成 null 值或者兩者都變成 null值，while loop 會一值執行下去。但carry有值為==1
+		// 會把它加到 list 中
+		while(l1 != null || l2 != null || carry == 1) {
+			int sum = 0;  // 初始化 sum
+			if (l1 != null) {  // 將 l1 加到 sum 中, l1 移動到下一個
+				sum += l1.val;
+				l1 = l1.next;
+			}
+			if (l2 != null) {  // 將 l2 加到 sum, l2 移動到 list 下個值
+				sum += l2.val;
+				l2 = l2.next;
+			}
+			sum += carry; // 如果 carry 有值的話，把它加到 sum
+			carry = sum/10; // 將 sum 除以 10 取得 carry 
+			ListNode node = new ListNode(sum % 10); // 將 sum 除以10 求餘數，餘數也會變成新節點，加入 list 中
+			curr.next = node; // 如果有 node 值的話，curr 會改指向到該節點
+			curr = curr.next; // 每次都更新 curr
+		}
+		return dummy.next; // 回傳 dummy.next
+	}
+}
+
 	
 	
 	
