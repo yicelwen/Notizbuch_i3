@@ -1,3 +1,8 @@
+# Spring Boot 搭配 Angular 框架的實作
+
+https://youtu.be/Gx4iBLKLVHk?t=4861
+>> 還沒看完，找一個開始工作之後的周末再來補看完
+
 #### @Id  /  @GeneratedValue(......)
 + strategy = GenerationType.IDENTITY
 + strategy = GenerationType.AUTO
@@ -240,4 +245,3 @@ export class AppComponent {
 
 
 ```
-https://youtu.be/Gx4iBLKLVHk?t=4861
