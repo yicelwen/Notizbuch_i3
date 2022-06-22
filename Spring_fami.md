@@ -1,5 +1,5 @@
 # Spring notes
-spring.io 
+https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-introduction
 ## 1. Spring 框架介紹
 ### 1-1 Spring 框架的起源 
 Spring Framework 是由 Rod Johnson 於 2012 年所提出
@@ -913,17 +913,7 @@ yellow=3
   ```
 <br/>
 
-# Spring MVC notes
-
-
-
-<br/>
-
-# Spring Boot notes
-
-
-
-<br/>
+> Spring MVC / Spring Boot 上課筆記另外開新檔案
 
 # Spring Boot
 ###### Notes taken from amigo's code yt-channel
@@ -1180,7 +1170,7 @@ class StudentController{
       + 在 terminal 執行 ctrl + C to shut down application
       + target java -jar demo-0.0.1-SNAPSHOT.jar **--server.port=8081**
 
-      ![image info](./images/pack api_jar_run_instance.png)
+      ![image info](./images/pack%20api_jar_run_instance.png)
 
 <br/>
 
@@ -1205,7 +1195,7 @@ SELECT * FROM student
 JOIN student_id_card sic on student.id = sic.student_id
 JOIN book b ON student.id = b.student_id
 ```
-#####Examples of an Entity
+##### Examples of an Entity
 ```Java
 javax.persistence.Entity  //avoid anything from org.hibernate.annotations
 
