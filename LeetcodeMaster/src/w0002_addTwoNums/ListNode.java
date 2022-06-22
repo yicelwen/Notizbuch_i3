@@ -1,4 +1,4 @@
-package w02_addTwoNums;
+package w0002_addTwoNums;
 
 /**
  * Definition for singly-linked list.
