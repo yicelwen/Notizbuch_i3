@@ -366,6 +366,8 @@ public class Demo03 {
     byte, short, char → int → long → float → double
     ```
 + 運算中，不同類型的數據先轉化為同一類型，然後進行運算
+    + 強制類型轉換
+    + 自動類型轉換
     ```java
     public class SwitchDTType {
         public static void main(String[] args) {
@@ -384,19 +386,119 @@ public class Demo03 {
             2. 不能把對象類型轉換為不相干的類型
                 不能把人轉成豬、但是可以把男人轉成女人
             3. 在把高容量轉換到低容量的時候，強制轉換
+            4. 轉換的時候可能存在內存溢出，或者精度問題
             */
+            System.out.println("===================");
+            System.out.println((int)23.7);     // 23 存在精度問題
+            System.out.println((int)-45.89f);  // -45
+
+            System.out.println("===================");
+            char c = 'a';
+            int d = c+1;   // 自動低轉高，char 變成 int 類型
+            System.out.println(d);       // 印出 98，相當於 b 的 unicode
+            System.out.println((char)d); // 在把它高轉低/強制轉成 char 類型
+        }
     }
     ```
-+ 強制類型轉換
+    ```java
+    public class Chocolate {
+        public static void main(String[] args) {
+            // 操作比較大的數的時候，注意溢出 overflow 問題
+            // JDK7 開始，數字之間可以用底線/下劃線 (_) 分割
+            int money = 10_0000_0000;
+            int years = 20;
+            int total = money*years;    // -1474836480  計算的時候溢出了
+            long total2 = money*years;  // 默認是 int，轉換之前已經存在問題了
 
-+ 自動類型轉換
+            long total3 = money*((long)years);  // 正確方法: 用 long 類型進行運算
+            System.out.println(total3);
+            // 大寫的 L 小寫的 l : long 盡量都用大寫來表示
+        }
+    }
+    ```
 
-## b6. 變數、常數、作用域
+## b6. 變數(變量)、常數、作用域 
++ 變量定義：可以變化的量
++ Java 強類型語言，每個變量都必須聲明其類型
++ Java 變量是程序中最基本的存儲單元，其要素包括變量名，變量類型和**作用域 SCOPE**
+    + 變量作用域
+        + 類變量
+        + 實例變量
+        + 局部變量
+
+        ```Java
+        public class WhatsCalledScope {
+            static int allClicks = 0;     // 類變量
+            String str = "hellow world";  // 實例變量
+
+            public void method() {
+                int i = 0;  // 局部變量
+            }
+        }
+        ```
+
+    ```java
+    type varName [=value][{,varName[=value]}];
+    // 數據類型  變量名=值;  可以使用逗號隔開來聲明多個同類型變量
+    ```
++ 注意事項：
+    + 每個變量都有類型，類型可以是基本類型，也可以是參考類型
+    + 變量名稱必須是合法的標識符
+    + 變量聲明是一條完整的語句，因此每一個聲明都必須以分號結束
+
+        ```java
+        public class Variable {
+            public static void main(String[] args) {
+                // int a, b, c;
+                // int a=1, b=2, c=3; (雖然不會報錯，但是可讀性差，盡量寫成三行)
+                int a=1;
+                int b=2;
+                int c=3;
+                String name = "yicelwen";
+                char x = 'X';
+                double pi = 3.14;
+
+            }
+        }
+        ```
+        ```Java
+        public class DemoAnother {
+            // 屬性: 變量
+
+            /* 全域變數(實例變量)：從屬於對象
+                                  如果不自行初始化這個
+            */
+            String name;
+            int age;
+
+            // main 方法
+            public static void main(String[] args) {
+                
+                /* 區域變數 (局部變量): 1. 必須聲明和初始化值 
+                                       2. 生命週期只在 main 方法下的大括號內
+                */
+                int i = 10;
+                System.out.println(i);
+
+                // 變量類型   變量名字 = new DemoAnother();
+                DemoAnother demoanother = new DemoAnother();
+                System.out.print(demoanother.age);
+                System.out.print(demoanother.name);
+            }
+
+            // 其它方法
+            public void add() {
+
+            }
+        }
+        ```
+
+
 ## b7. 基本運算符
 ## b8. 自增自減運算符號、認識 Math 類
 ## b9. 邏輯運算子、位元運算子
 ## b10. 三元運算子
-## b11. 包機制
+## b11. 套件 package (包機制)
 ## b12. JavaDoc 生成文檔案
 ## process-ctrl-01. 用戶交互 Scanner
 ## process-ctrl-02. Scanner 進階使用
@@ -446,3 +548,5 @@ public class Demo03 {
 ## Exception-02. 捕獲和拋出異常 (catch throw)
 ## Exception-03. 自定義異常 經驗小結
 ## JavaSE Conclusion
+
+> IO 流 | Synchronized vs Asynchronized
