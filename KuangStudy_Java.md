@@ -462,11 +462,19 @@ public class Demo03 {
         }
         ```
         ```Java
-        public class DemoAnother {
+        public class DemoAnother { 
+
+            // 類變量(靜態)
+            static double salary = 2500;
+
             // 屬性: 變量
 
             /* 全域變數(實例變量)：從屬於對象
-                                  如果不自行初始化這個
+                    如果不自行初始化，會有 int 默認值 0
+                                      浮點數默認值 0.0
+                                       char 默認值 000 (u0000)
+                                    String 默認值 null (參考資料型別的默認值都是 null)
+                                boolean 默認值是 false
             */
             String name;
             int age;
@@ -474,16 +482,20 @@ public class Demo03 {
             // main 方法
             public static void main(String[] args) {
                 
-                /* 區域變數 (局部變量): 1. 必須聲明和初始化值 
-                                       2. 生命週期只在 main 方法下的大括號內
+                /* 
+                區域變數 (局部變量): 1. 必須聲明和初始化值 
+                                    2. 生命週期只在 main 方法下的大括號內
                 */
                 int i = 10;
                 System.out.println(i);
 
-                // 變量類型   變量名字 = new DemoAnother();
+                // 變量類型 變量名字 = new DemoAnother();
                 DemoAnother demoanother = new DemoAnother();
                 System.out.print(demoanother.age);
                 System.out.print(demoanother.name);
+
+                // 類變量 static
+                System.out.println(salary);
             }
 
             // 其它方法
@@ -492,11 +504,167 @@ public class Demo03 {
             }
         }
         ```
++ 常量 (Constant)：
+    + 初始化 (initialize) 後不能再改變的值，是不會變動的值
+    + 所謂常量是可以理解成一種特殊的變量，它的值被設定後，在程序運行過程中不允許被改變
 
+        ```Java
+        final constantName = content;
+        final double PI = 3.14;
+        ```
+    + 常量名一般使用**大寫**字符
+        ```Java
+        public class ConstantDemo {
 
-## b7. 基本運算符
+            // 修飾符，不存在先後順序
+            static final double PI = 3.14;
+            
+            public static void main(String[] args) {
+                System.out.println(PI);
+            }
+        }
+        ```
+    + 變量命名規範：
+        + 所有變量、方法、類名：**見名知意**
+
+            |名稱|命名原則|範例|
+            |-|-|-|
+            |類別下的變數|首字母小寫、駝峰原則| monthSalary |
+            |區域變數|首字母小寫、駝峰原則| lastName |
+            |全域變數|全大寫、底線| MAX_VALUE |
+            |類別名稱|首字母大寫、駝峰原則| Man, GoodMan |
+            |方法名稱|首字母小寫| run(), runRun() |
+
+## b7. 基本運算子
+
++ Java 語言支持如下運算子/運算符：
+    + **算數運算子**：`+` `-` `*` `/` `%` `++` `--` 
+    + **賦值運算子**：`=` 
+    + **關係運算子**：`>` `<` `>=` `<=` `==` `!=` `instanceof`
+    + **邏輯運算子**：`&&` `||` `!`
+    + 位元運算子：`&` `|` `^` `~` `>>` `<<` `>>>`
+    + 條件運算子：`__ ? __ : __`
+    + 擴展賦值運算子： `+=` `-=` `*=` `/=`
+      ```Java
+      public class CalOperator {
+          public static void maind(String[] args) {
+              public static void maind(String... args) {
+                  // Intellij IDEA 複製當前行到下一行 Ctrl + D
+                  int a = 10;
+                  int b = 20;
+                  int c = 25;
+                  int d = 30;
+
+                  System.out.println(a+b);
+                  System.out.println(a-b);
+                  System.out.println(a*b);  
+                  System.out.println(a/(double)b);  // 除法記得強制轉型
+               }
+            }
+        }
+      ```
+      ```Java
+      public class CalOperator2 {
+        public static void main(String[] args) {
+            long a = 123123123123123L;
+            int b = 123;
+            short c = 10;
+            byte d = 8;
+
+            System.out.println(a+b+c+d);  // 只要有一個類型是 long 就為 long
+            System.out.println(b+c+d);   // Int 
+            System.out.println(c+d);    // 預設是 Int，即便 是 short + byte
+            System.out.println((String)(c+d)); // cannot cast "int" to "java.lang.String"
+        }
+      }
+      ```
+      ```Java
+      public class RelOperator3 {
+        public static void main(String[] args) {
+            // 關係運算子返回的結果：正確、錯誤  布林值 true | false (boolean)
+            // 廣泛應用於 if 判斷
+            int a = 10;
+            int b = 20;
+            int c = 21;
+
+            System.out.println(c%a);  // 21/10 = 2 ... **1** 模除 求餘數
+
+            System.out.println(a>b);  // false
+            System.out.println(a<b);  // true
+            System.out.println(a==b); // false
+            System.out.println(a!=b); // true
+      }
+      ```
+---
 ## b8. 自增自減運算符號、認識 Math 類
++ 
++ 
++ 
+
+```Java
+public class HotPot {
+    public static void main(String[] args) {
+        // ++ --      自增、自減    又稱為一元運算子
+        int a = 3;
+
+        int b = a++;  // 🎇執行完這行代碼之後，先賦值給 b 再自增
+        int c = ++a;  // 🎇執行完這行代碼前，先自增，再賦值給 b
+        
+        System.out.println(a);
+        System.out.println(b);
+        System.out.println(c);
+
+        // 冪運算 2^3  2*2*2 = 8  很多運算，我們會使用一些工具類來操作
+        double pow = Math.pow(3, 2);
+        System.out.println(pow);
+    }
+}
+```
+
 ## b9. 邏輯運算子、位元運算子
+
+```Java
+public class LogOperator {
+    // 邏輯運算子
+    public static void main(String[] args) {
+        // 與(and) 或(or) 非(取反)
+        boolean a = true;
+        boolean b = false;
+
+        System.out.println("a && b"+(a&&b));  // 邏輯與運算: 兩個變量都為真，結果才為真
+        System.out.println("a || b"+(a||b));  // 邏輯或運算：兩個變量有其中一個為真，結果就為真
+        System.out.println("!(a && b):" + !(a&&b));  // 如果為真，則變為假；如果是假則變為真
+        }
+
+        // 短路運算
+        int c = 5;
+        boolean d = (c<4)&&(c++<4);
+        System.out.println(d);
+        System.out.println(c);
+}
+```
++ 位元運算子
+
+```Java
+public class BinaryOperator {
+    public static void main(String[] args) {
+        /*
+        A = 0011 1100
+        B = 0000 1101
+        ---------------------- 
+        A&B = 0000 1100  // 兩值相同時才為一，不然都是零
+        A|B = 0011 1101  // 只要其中一值為一就是一
+        A^B = 0011 0001  
+        ~B = 1111 0010
+
+        2*8 = 16   2*2*2*2 
+        <<        相當於乘以2
+        >>        相當於除以二
+        */
+        }
+}
+```
+
 ## b10. 三元運算子
 ## b11. 套件 package (包機制)
 ## b12. JavaDoc 生成文檔案
