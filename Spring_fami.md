@@ -1,5 +1,6 @@
 # Spring notes
-https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-introduction
+[Spring 官網文件](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-introduction)
+
 ## 1. Spring 框架介紹
 ### 1-1 Spring 框架的起源 
 Spring Framework 是由 Rod Johnson 於 2012 年所提出
@@ -22,7 +23,7 @@ Spring Framework 是由 Rod Johnson 於 2012 年所提出
    不需透過Java EE Application Server 就可以執行的 Framework
 + 以Inversion of Control、Aspect Oriented programming為主要設計理念，可與Structs、Structs2、Hibernate、JSP、Mybatis等架構整合運作   
 + Spring 負責將所有的元件進行佈署，管理、維護並執行，因此也被稱為輕量級容器
-+ https://spring.io
++ [Spring 官網](https://spring.io)
 + POJO => The Spring Container
   + Configuration Metadata ==> The Spring Container
   + The Spring Container ==> Fully configured system (ready for use)
@@ -185,7 +186,7 @@ Spring Framework 是由 Rod Johnson 於 2012 年所提出
   2. FileSystemXmlApplicationContext : 由指定的路徑取得組態檔
   3. XmlWebApplicationContext ：由相對路徑取得組態檔 適用於 Web 應用程式）
 
-https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-introduction
+[Spring Reference document](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-introduction)
  
 
 + ApplicationContext 介面建立方式
@@ -448,7 +449,7 @@ public class DemoBean {
   + spring 從 2.5 版本開始支援P名稱空間，可以透過\<Bean>元素屬性的方式配置Bean的屬性
 
 + 修改 Spring 組態設定檔，加入 P 命名空間的宣告
-  + `Namespaces` > `Configure Namespaces` > `P` - http://www.springframework.org/schema/p 
+  + `Namespaces` > `Configure Namespaces` > `P` 
 
     ```xml
     <!-- 一般配置 -->
@@ -918,7 +919,8 @@ yellow=3
 # Spring Boot
 ###### Notes taken from amigo's code yt-channel
 _Client_ ↦ API 層(GPPD) ↦ Service 層(商業邏輯) ↦ Data Access 層 ↦ _Server_ <br>
-Amigoscode : https://youtu.be/9SGDpanrc8U <br>
+
+[Amigoscode Video](https://youtu.be/9SGDpanrc8U)
 
 #### API Layer - 即 StudentController
 #### Service Layer - 即 StudentService
@@ -1021,8 +1023,8 @@ public class StudentConfig {
     }
 }
 ```
-#### @Transient - 不儲存在資料庫內, 透過dob計算
-```
+#### @Transient - 不儲存在資料庫內, 透過 `dob` 計算
+```Java
 @Transient 
 private Integer age; 
 // 在 student.java 內 age 的 getter 方法內加入此行 
@@ -1033,7 +1035,7 @@ public Integer getAge() {
 ```
 #### 如果client傳來的資料中, e-mail已經被使用, 要拋出例外
 + 在 Service 加入 addNewStudent 方法
-```
+```Java
 public void addNewStudent(Student student) {
     System.out.println(student);
 }
@@ -1097,7 +1099,7 @@ class StudentController {
 }
 ```
 #### Put Method - 更新/修改
-+ 使用到 **@Transactional** Annotation，請參考 JPA tutorial
++ 使用到 `@Transactional` Annotation，請參考 JPA tutorial
 + 在 StudentService 加上 updateStudent 方法
 ```Java
 class StudentService{
@@ -1132,8 +1134,8 @@ class StudentService{
 }
 ```
 + 在 StudentController 加上 updateStudent 方法
-  + @PathVariable -
-  + @RequestParam - 這裡的參數不是一定要提供(required=false)
+  + `@PathVariable` -
+  + `@RequestParam` - 這裡的參數不是一定要提供(required=false)
 ```Java
 class StudentController{
     ...
@@ -1146,6 +1148,7 @@ class StudentController{
 }
 ```
 #### Packaging and running application
+
 打包 API, 打開 jar, 執行 multiple instances
 1. 刪除 target folder 作法：
    1. 打開 Maven tab (右邊sidebar)，demo > lifecycle > **clean**

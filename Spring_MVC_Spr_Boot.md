@@ -26,7 +26,7 @@
 
 + Spring MVC 框架是圍繞在 DispatcherServlet 分派器設計的，分派器設計的，它是請求送到伺服器後第一個接觸的元件。分派器處理所有請求和回應。分派器處理請求的流程如下圖所示：
 
-![image info](./images/spr-mvc-DispatcherServlet.png)
+    ![image info](./images/spr-mvc-DispatcherServlet.png)
 
 ### 1-3 什麼是Spring Web MVC框架
 + Spring Web MVC 是一種基於 Web MVC 設計模式的一種輕量級網路應用系統框架，是目前 Java 語言中最主流的 MVC 框架。此框架提供許多類别與介面，將處理『HTTP 請求』的程式碼依功能來拆解為許多小元件。框架提供基礎功能，程式設計師只需要專注在企業邏輯的編寫，大幅簡化網路應用系統的開發
