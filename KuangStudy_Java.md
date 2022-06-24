@@ -273,16 +273,124 @@ test2-1
 + 字節是什麼：
     + 位 (bit)：是計算機內部數據儲存的最小單位，11001100 是一個八位二進制數
     + 字節 (byte)：是計算機中數據處理的基本單位，習慣上用大寫B來表示
-    + 字符：
+    + 字符：是指計算機中使用的字母、數字、字和符號
     + 1B (byte, 字節)
         + `1 bit` 表示一位
-        + `1 Byte` 表示一個字節 1B = 8b
+        + `1 Byte` 表示**一個字節** 1B = 8b
         + `1024B` = `1KB`
         + `1024KB` = `1M`
         + `1024M` = `1G`
 
 ## b4. 數據類型擴展以及面試題講解
+
+```java
+public class Demo03 {
+    public static void main(String[] args) {
+        // 整數拓展：  進制     二進制0b    十進制   八進制0    十六進制0x
+
+        int i = 10;
+        int i2 = 010;   // 八進制 0
+        int i3 = 0x10;  // 十六進制 0x  0~9  A~F 16
+
+        System.out.println(i);
+        System.out.println(i2);
+        System.out.println(i3); 
+
+        // 浮點數拓展？  銀行業務怎麼表示？ 錢
+        // BigDecimal  大數類型  數學工具類
+        //=============================================================
+        // float  是有限且離散的，存在「捨入誤差」，大約/只是接近但不等於
+        // double
+        // 最好完全!避免!使用浮點數進行比較
+        // 最好完全!避免!使用浮點數進行比較
+        // 最好完全!避免!使用浮點數進行比較
+
+        float f = 0.1f;  // 0.1
+        double d = 1.0/10;  // 0.1
+        System.out.println(f==d); 
+        // 判斷兩者是否相同, 回傳 false  (#1 bizarre)
+
+        float d1 = 231231231231231231f;
+        float d2 = d1 + 1;  
+        System.out.println(d1 == d2);  // 回傳 true (#2 bizarre)
+
+        //=============================================================
+        // 字符拓展?
+        //=============================================================
+        System.out.println("================================");
+        char c1 = 'a';
+        char c3 = '中';
+
+        System.out.println(c1);
+        System.out.println((int)c1);  // 強制把字符串轉換為 int 類型
+
+        System.out.println(c2);
+        System.out.println((int)c2);  // 強制把字符串轉換為 int 類型
+
+        // 所有的字符本質還是數字
+        // 編碼 Unicode 占兩個字節  0 ~ 65536 (U0000 ~ UFFFF) 
+
+        char c3 = '\u0061';
+        System.out.println(c3);  // 輸出 a
+
+        // 轉義字符
+        // \t     相當於制表符 (table)
+        // \n     換行
+        // .....  
+        System.out.println("Hello\tWorld"); 
+
+        System.out.println("================================");
+        String sa = new String("hello world");  
+        String sb = new String("hello world");
+        System.out.println(sa==sb);
+
+        String sc = "hello world";
+        String sd = "hello world";
+        System.out.println(sc==sd);
+        // 對象  從內存分析
+
+        // 布林值擴展
+        boolean flag = true;
+        if (flag == true) {}  // 新手
+        if (flag){}   // 這個意思相當於 if(flag=true) {}
+                      // 老手使用 `Less is More` 代碼要精簡易讀
+    }
+}
+```
+![image info](./images/stack_heap_int_reference.png)
+
 ## b5. 類型轉換
++ 由於 Java 是強類型語言，所以要進行有些運算的時候，需要用到類型轉換
+    ```java
+    低 -----------------------------------------→ 高
+    byte, short, char → int → long → float → double
+    ```
++ 運算中，不同類型的數據先轉化為同一類型，然後進行運算
+    ```java
+    public class SwitchDTType {
+        public static void main(String[] args) {
+            int i = 128;
+            byte b = (byte)i;  // 內存溢出
+
+            // 強制轉換 (類型)變量名   高到低需要強制轉換
+            // 自動轉換               低到高不用轉換
+
+            System.out.println(i);
+            System.out.println(b);
+
+            /*
+            注意點：
+            1. 不能對布林/布爾值進行轉換
+            2. 不能把對象類型轉換為不相干的類型
+                不能把人轉成豬、但是可以把男人轉成女人
+            3. 在把高容量轉換到低容量的時候，強制轉換
+            */
+    }
+    ```
++ 強制類型轉換
+
++ 自動類型轉換
+
 ## b6. 變數、常數、作用域
 ## b7. 基本運算符
 ## b8. 自增自減運算符號、認識 Math 類
