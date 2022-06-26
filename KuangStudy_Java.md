@@ -1126,7 +1126,6 @@ public class ScannerAdvancedDemo2 {
     }
     ```
 ## process-ctrl-08. For 迴圈✨循環詳解
-+ Java5 開始引入 主要用於數組
 + 雖然所有迴圈都可以用`while`或者`do...while`，但是`for`迴圈可以使一些迴圈結構變更簡單
 + for 迴圈支援迭代，**最靈活有效的迴圈結構**
 + Syntax：執行的次數在執之前就已經確定
@@ -1151,33 +1150,422 @@ public class ScannerAdvancedDemo2 {
                 System.out.println(i);
             }
             System.out.println("End of the for loop above");
+
+            /* for loop 說明：
+               最先執行初始化步驟，可聲明一種類型，但可初始化一個/多個循環控制變數，也可以是空語句
+               然後，檢測布林表達式的值，如果為 true，則執行此迴圈，
+               如果為 false 則終止迴圈，開始執行迴圈後面的語句，
+               執行一次迴圈之後，更新迴圈控制變數 (迭代因子控制迴圈便量的增加或減少)
+               再次檢查布林表達，並重複執行上述過程
+            */
+            // 無限迴圈/死循環
+            for (; ; ) { 
+            }
         }
     }
     ```
 + Practice:
     1. 計算 0 ~ 100 之間的奇數以及偶數的和
+        ```Java
+        public class OddEvenSum {
+            public static void main(String[] args) {
+                
+                int oddSum = 0;
+                int evenSum = 0;
+
+                // 100.for  IDEA 快捷鍵
+                for (int i = 0; i <= 100; i++) {
+                    if (i%2!=0) {    // 奇數
+                        oddSum +=i;  // oddSum = oddSum + i
+                    }else {          // 偶數
+                        evenSum +=i;
+                    }
+                }
+                System.out.println("奇數的和: "+oddSum);
+                System.out.println("偶數的和: "+evenSum);
+            }
+        }
+        ```
     2. 用 while 或 for 輸出 1 ~ 1000 之間能被 5 整除的數，每行輸出三個
-    3. 印出九九乘法表
+        ```java
+        public class DivideByFiveOutputThreeIntsPerRow {
+            public static void main(String[] args) {
+                // 1000.for
+                for (int i = 0; i <= 1000; i++) {
+                    if (i%5==0) {
+                        System.out.print(i+"\t");
+                    }
+                    if (i%(5*3)==0) {  // 相當於印到第三個數字時換行
+                        // System.out.println();
+                        System.out.print("\n");
+                    }
+                }
+                // println   輸出完會換行
+                // print   輸出完不會換行
+            }
+        }
+        ```
 
 ## process-ctrl-09. 印出九九乘法表
+3. 印出九九乘法表 
+    ```Java
+    public class NineByNine {
+        public static void main(String[] args) {
+            /* 9.for 快捷鍵
+               初始化值改成 j = 1
+               判斷式 < 改成 <=
+            */
+            for (int j = 1; j <= 9; j++) {
+                for (int i = 1; i <= j; i++) { // i<= 9 改成 i <= j 去掉重複項
+                    System.out.print(j+"*"+i+"="+(j*i)+"\t");
+                }
+                System.out.println();
+            }
+
+            /*  1. 先印第一列 (1*1 ~ 1*9)
+                2. 再把固定的1 用一個循環包起來
+                3. 去掉重複算式 i<=j>
+                4. 調整樣式 (print ... \t, 加換行)
+            */
+        }
+    }
+    ```
 ## process-ctrl-10. 增強 for 循環
++ Java5 開始引入增強 for 循環，主要用於數組或集合
++ Syntax:
+    ```Java
+    for ( 聲明語句 : 表達式) {
+        // 語句
+    }
+    ```
++ 聲明語句：聲明新的局部變數
+    + 變數類型必須與數組元素類型相同/相匹配
+    + 其作用域限定在迴圈內，其值與此時數組元素的值相等
++ 表達式：要訪問的數組名稱，或者是返回值為數組的方法
++ Example:
+    ```Java
+    public class EnhancedForLoop {
+        public static void main(String[] args) {
+            int[] numbers = {10, 20, 30, 40, 50};  // 定義了一個數組
+
+            for (int i = 0; i<5; i++) {
+                System.out.println(number[i]);
+            }
+            System.out.println("===== Das ist ein break line. =====");
+
+            // 遍歷數組的元素，將每一項的值賦給 int x
+            for (int x : numbers) {
+                System.out.println(x);
+            }
+        }
+    }
+    ```
 ## process-ctrl-11. break, continue, goto
++ `break` 在任何迴圈語句的主體部分，均可使用`break`控制迴圈的流程，`break`用於**強行退出迴圈**，不執行迴圈中剩餘的語句。(`break`語句也在 switch語句中使用)
++ `continue`語句用在迴圈語句中，用於**終止某次迴圈過程**
+    + i.e. 跳過迴圈中還沒執行的語句，直接進行下一個迴圈是否執行的判斷
+```JAVA
+public class BreakDemo {
+    public static void main(String[] args) {
+        int in = 0;
+        while (i<100) {
+            i++;
+            System.out.println(i);
+            if (i==30) {
+                break;   // 印到 30 就停止了
+            }
+        }
+    }
+}
+```
+```Java
+public class ContinueDemo {
+    public static void main(String[] args) {
+        int i = 0;
+        while (i<100) {
+            i++;
+            if (i%10==0){
+                System.out.println();
+                continue;   // 執行到10的倍數時，沒有印出 i 值，直接到下個迴圈
+            }
+            System.out.print(i);
+        }
+    }    
+}
+```
+|break;|continue;|
+|-|-|
+|在任何迴圈語句的主體部分，均可用`break`控制迴圈流程。<br/> `break`用於強行退出迴圈，不執行迴圈中剩餘的語句。<br/>(也用於 switch 判斷)|用在迴圈語句中，終止某次迴圈過程。<br/>即跳過迴圈中還沒執行的語句，做下個迴圈是否還要執行的判斷。|
+
++ 關於`goto`關鍵字
+    + 儘管`goto`關鍵字仍是 Java 的保留字，但沒有正式使用 -- Java 沒有`goto`用法
+        + 然而`goto`就像是帶有標籤的`break`和`continue`
+    + 「標籤」是指後面跟著一個冒號的標識符，e.g. `label:` *(跳轉標記)*
+    + Java中，唯一用到標籤的地方是在迴圈語句之前，在迴圈之前設置標籤的唯一理由是：
+        + 開發者希望在其中嵌入另外一個迴圈
+        + 如果`break`和`continue`隨同標籤使用，就會中斷到標籤存在的地方
+
+    ```Java
+    public class LabelDemo { 
+        public static void main(String[] args) {
+            // 印出101 ~ 150之間所有的質數
+            // 質數指大於一的自然數中，除了一和它本身以外不再有其他因數的自然數
+            int count = 0;
+            
+            // 不建議使用
+            outer:for (int i=101; i<150;i++) {
+                for (int j = 2; j<i/2;j++){
+                    if (i % j == 0) {
+                        continue outer;
+                    }
+                }
+                System.out.print(i+" ");
+            }
+    }
+    ```
+
 ## process-ctrl-12. 印出三角形, debug
+```Java
+public class Triangle {
+    public static void main(String[] args) {
+        for (int i = 1; i <= 5; i++) {
+            for (int j = 5; j >= i; j--) {  // 印出左半三角形旁邊的空格
+                System.out.print(" ");
+            }
+            for (int j = 1; j <= i; j++) {  // 印出三角形左半邊
+                System.out.print("*");
+            } 
+            for (int j = 1; j < i ; j++) {  // 印出右半邊
+                System.out.print("*");       
+            }
+            System.out.println();
+        }
+    }    
+    /*
+         *
+        ** *
+       *** **
+      **** ***
+     ***** ****
+      (中間的空格只是區分第三個inner for迴圈用)
+     voila! a triangle is born!
+    */
+}
+```
 ## method-01. 何謂方法
++ `System.out.println()` 
+    + 調用 `System` 類別中 `out` 物件 中的 `println` 方法
++ Java 方法：語句的集合
+    + 方法是解決一類問題的步驟的有序組合
+    + 方法包含於類別或物件中
+    + 在程式中建立方法，在其他地方調用方法
++ 設計方法原則：方法即是實現某功能的程式語句的即合
+    + 設計方法時最好保持方法的**原子性**
+    + 原子性：**一個方法只完成一個功能，以利後期的擴展**
+
 ## method-02. 方法的定義和調用
++ Java 方法是一段用來完成特定功能的程式碼片段
++ 一個方法的所有部分：
+    + 方法頭：
+        + **修飾符**：告訴編譯器如何調用該方法，定義了該方法的訪問類型 (可省略的)
+        + **返回值類型**：
+            + 方法可能會回傳/返回值，returnValueType 是方法回傳的資料型別
+            + 有些方法執行所需操作但沒有返回值，此情況下 returnValueType 是 `void` 
+        + **方法名**：方法實際名稱，方法名和參數表共同構成方法簽名
+        + **參數類型**：像是個占位符號。方法被調用時，傳遞值給參數。這個值被稱為實參或變量。參數列表是指方法的參數類型、順序和參數個數。參數是可省略的，方法可以不包含任何參數
+            + 形式參數（形參）：方法被調用時用於接收外界輸入的數據
+            + 實際參數（實參）：調用方法時實際傳給方法的數據
+
+            ```Java
+            public class MethodDemo {
+                public static void main(String[] args){
+                    
+                    int sum = add(1, 2); // 實際參數
+                    System.out.println(sum);
+
+                    test();
+                }
+
+                // 加法           // 形式參數，用來定義作用的
+                public static int add(int a, int b){
+                    return a+b;
+                }
+            }
+            ```
+    + **方法體**：包含具體的語句，定義該方法的功能
+        ```Java
+        修飾符 返回值類型 方法名(參數類型 參數名稱) {
+           ...
+           方法體
+           ... 
+           return 返回值;
+        }
+        ```
++ 方法調用：
+    + 調用方法：`物件名稱.方法名稱(實際參數的列表)`
+    + Java 支援兩種調用方法的方式，根據方法是否返回值來選擇
+    + 當方法回傳一個值的時候，方法調用常被當作一個值
+        ```Java
+        int larger = max(30, 40);
+        ```
+    + 如果方法回傳值是`void`，方法調用一定是一條語句
+        ```Java
+        System.out.println("Hello yicelwen.");
+        ```
+    + **值傳遞 (Java)**和引用傳遞 (pass-by-value v.s. pass-by-reference)
+
 ## method-03. 方法的重載
++ 在一個類別中，有相同方法名稱，但是形式參數不同的方法
++ 方法重載規則：
+    + 方法名稱必須相同
+    + 參數類型列表必須不同（個數不同、類型不同、參數排列順序不同）
+    + 方法回傳類型可以相同也可以不相同
+    + 如果只是回傳類型不同，不足以構成方法重載
++ 實現理論：
+    + 方法名稱相同時，編譯器會根據調用方法的參數個數/參數類型去一個個搭配，以選擇對應的方法，如果匹配失敗，則編譯器會報錯
+
 ## method-04. 命令行傳遞參數
+```Java
+public ArgsCommand {
+    public static void main(String[] args) {
+        // args.length  數組長度
+        for (int i = 0; i < args.length; i++) {
+            System.out.println("args[" + i+ "]: " + args[i]);
+        }
+    }
+}
+```
 ## method-05. 可變參數
++ JDK 1.5 開始，Java 支援傳遞同類型的可變參數給一個方法
++ 在方法聲明中，在指定參數類型後加上一個省略號(...)
++ 一個方法中只能指定一個可變參數，它必須是方法的最後一個參數。任何普通參數必須在它之前聲明
+    ```Java
+    public static void printMax( double... numbers) {
+        if (numbers.length == 0) {
+            System.out.println("No argument passed.");
+            return;
+        }
+        double result = numbers[0];
+
+        // 排序:
+        for (int i = 1; i < numbers.length; i++) {
+            if (numbers[i] > result) {
+                result = numbers[i];
+            }
+        }
+        System.out.println("The max value is " + result);
+    }
+    ```
+
 ## method-06. 遞歸（遞迴?）講解
-## array-01. 何謂數組
-## array-02. 數組聲明和創建
++ 遞歸：A 方法調用 A 方法，即自己調用自己
++ 利用遞歸可以用簡單的程式解決複雜的問題。他通常把一個大型複雜問題層層轉化為一個與與原本問題相似，但規模較小的問題來求解
++ 遞歸策略只需少量程式就可描述出解題過程所需要的多次重複計算，大大地減少了程式代碼量
++ 遞歸能力在於用有限的語句來定義對象的無限集合
++ **遞歸結構**包括兩個部分
+    1. **遞歸頭：什麼時候不調用自身方法，如果沒有頭，將陷入死循環**
+    2. **遞歸體：什麼時候需要調用自身方法**
+    ```Java
+    public class RecursionDemo {
+ 
+        public static void main(String[] args) {
+            System.out.println(f(5));
+            // 遞歸深度越大(e.g. f(100) f(1000))，會占越多內存
+            // 每調用一個方法，就會壓一個棧內存
+            // 能不用遞歸就別用(不適合大計算)
+        }
+        // 5!   5*4*3*2*1
+        public static int f(int n){
+            if (n == 1){
+                return 1;
+            }else {
+                return n*f(n-1);  // 在f方法調用自己
+            }
+        }
+    }
+    ```
+    + 寫個計算機
+        
+## array-01. 何謂陣列/數組
++ 陣列是相同類型數據的有序集合
++ 陣列描述的是相同類型的若干個數據，按照一定的先後次序排列組合而成
++ 其中，每一個數據稱作一個陣列元素，每個陣列元素可以通過一個索引(下標) 來訪問他們 
+
+## array-02. 陣列聲明和創建
++ 首先必須聲明陣列變量，才能在程式中使用陣列，下面是聲明陣列變量的語法
+    ```Java
+    dataType[] arrayRefVar;  // 宣告陣列最好的方法
+
+    dataType arrayRefVar[];  // 效果同上，較不建議 (C,C++ 風格)
+    ```
++ Java 使用 new 關鍵字來建立陣列
+    ```Java
+    dataType[] arrayRefVar = new dataType[arraySize];
+    ```
++ 陣列的元素是通過索引訪問的，陣列從零開始
++ 獲取陣列長度 `arrays.length`
+
 ## array-03. 三種初始化及內存分析
++ Java 內存
+    + 堆 Heap：
+        + 存放 new 的物件和陣列
+        + 可以被所有的執行緒共享，不會存放別的物件引用
+    + 棧 Stack：
+        + 存放基本變量類型（會包含這個基本類型的具體數值）
+        + 引用對象的變量（會存放這個引用在堆疊區裡面的具體地址）
+    + 方法區：
+        + 可以被所有的執行緒共享
+        + 包含了所有的 class 和 static 變量
+
+        ![image info](./images/array-stack-heap.png)
+
++ 陣列的三種初始化
+    + **靜態初始化**
+        ```Java
+        int[] a = {1, 2, 3};
+        Man[] mans = {new Man(1,1), new Man(2,2)};
+        ```
+    + **動態初始化**
+        ```Java
+        int[] a = new int[2];
+        a[0] = 1;
+        a[1] = 2;
+        ```
+    + 數組的**默認初始化**
+        + 陣列是引用類型(參考資料型別??)，他的元素相當於類別的實例變量，因此陣列一經分配空間，其中的每個元素也被按照實例變量相同的方式被隱式初始化
+        
+        ```Java
+        public class ArrayDemo {
+            // 在 Intellij 輸入 PSVM 快捷鍵
+            public static void main(String[] args) {
+                // 靜態初始化：同時創建 + 賦值
+                int[] a = {1, 2, 3, 4, 5, 6, 7, 8}; //一旦定義了，空間數就這麼多
+                Man[] men = {new Man(), new Man()}; // 參考資料型別的陣列
+                System.out.println(a[0]);  // 1
+
+                // 動態初始化：
+                int[] b = new int[10];  // 宣告   創建空間
+                b[0] = 10;
+
+                System.out.println(b[0]);  // 10
+                System.out.println(b[1]);  // 預設值是零 (參考資料預設值是null)
+                // 動態初始化範疇下的默認初始化
+            }
+        }
+        ```
 ## array-04. 下標越界及小結
-## array-05. 數組的使用
-## array-06. 二維數組 (陣列?)
+
+## array-05. 陣列/數組的使用✨
+
+## array-06. 二維陣列
+
 ## array-07. Arrays類 詳解
+
 ## array-08. 冒泡排序
-## array-09. 稀疏數組
+
+## array-09. 稀疏陣列
+
+
 ## OOP-01. 何謂面相對象
 ## OOP-02. 回顧方法的定義
 ## OOP-03. 回顧方法的調用
@@ -1195,6 +1583,7 @@ public class ScannerAdvancedDemo2 {
 ## OOP-15. 抽象 (Abstract) 類
 ## OOP-16. 接口 (Interface) 的定義與實現
 ## OOP-17. N 種內部類別
+
 ## Exception-01. Error 和 Exception
 ## Exception-02. 捕獲和拋出異常 (catch throw)
 ## Exception-03. 自定義異常 經驗小結
