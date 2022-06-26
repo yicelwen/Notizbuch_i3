@@ -597,9 +597,6 @@ public class Demo03 {
       ```
 ---
 ## b8. 自增自減運算符號、認識 Math 類
-+ 
-+ 
-+ 
 
 ```Java
 public class HotPot {
@@ -666,16 +663,502 @@ public class BinaryOperator {
 ```
 
 ## b10. 三元運算子
+```Java
+public class TrioOperator {
+    public static void main(String[] args) {
+    int a = 10;
+    int b = 20;
+
+    a+=b; // a = a+b
+    a-=b; // a = a-b
+
+    System.out.println(a);
+
+    // 字符串聯接符  +  ,  String
+    System.out.println(""+a+b);  // 在後面的話，進行拼接   1020
+    System.out.println(a+b+"");  // 在前面的話，進行相加   30
+    }
+}
+```
+```Java
+public class TripleOpe {
+    public static void main(String[] args) {
+        // x  ?  y  :  z
+        // 如果 x==true，則結果為 y ，否則結果為 z
+
+        int score = 80;
+        String type = score < 60 ? "不及格" : "及格"; // 必須掌握
+        // 相當於 if 判斷
+        System.out.println(type);
+    }
+}
+```
+
 ## b11. 套件 package (包機制)
++ 為了更好的組織類，Java 提供了套件/包機制，用於區別類別名稱的命名空間
++ 套件/包語句的語法格式為：
+    ```Java
+    package pkg1[. pkg2[. pkg3...]];
+    ```
++ **一般利用公司域名倒置作為套件名稱/包名**
+
+    ```
+    tw.com.yicelwen.www
+    ```
++ 為了能夠使用某一個套件/包的成員，我們需要在 Java 程序中明確導入該套件，使用 `import` 語句可以完成此功能
+    ```Java
+    import package1[.package2...].(classname|*);
+    ```
+
 ## b12. JavaDoc 生成文檔案
++ javadoc 命令是用來生成自己 API 文檔的
++ 參數信息
+    + `@author`   作者名
+    + `@version`  版本號
+    + `@since`    指名需要最早使用的 jdk 版本
+    + `@param`    參數名稱
+    + `@return`   返回值情況
+    + `@throws`   異常拋出情況
+
+    ```Java
+    /** 
+     * @author Yicelwen
+     * @version 1.0
+     * @since 11
+     */
+    public class JavaDoc {
+        // 屬性
+        String name;
+
+        // 方法
+        /**
+         * @author Yicelwen
+         * @param name
+         * @return
+         * @throws Exception
+         */
+        public String test(String name) throws Exception {
+            return name;
+        }
+    }
+    ```
+
 ## process-ctrl-01. 用戶交互 Scanner
++ 實現程式和人的交互，透過 `java.util.Scanner` (Java5開始) 可以獲取用戶的輸入
++ Syntax:
+    ```Java
+    Scanner s = new Scanner(System.in);
+    ```
++ 通過 Scanner 類別的 `next()` 與 `nextLine()` 方法獲取輸入的字串，讀取前要用 `hasNext()` 與 `hasNextLine()` 判斷是否還有輸入的數據
+    ```Java
+    import java.util.Scanner;
+
+    public class ScannerDemo1 {
+        public static void main(String[] args) {
+            // 創建一個掃描器物件/對象，用於接收鍵盤數據
+            Scanner scanner = new Scanner(System.in);
+
+            System.out.println("使用 next 方式接收: ");
+
+            // 判斷使用者有沒有輸入字串
+            if (scanner.hasNext()) {          // ==true 省略
+                String str = scanner.next();  // 使用 next() 方法接收
+                System.out.println("您輸入的內容為：" +str);
+            }
+
+            scanner.close();
+            // 凡是 IO 流的東西，如果不關閉它，就會一直占用資源
+            // 水接完了，水龍頭務必要關
+            // IO: input / output 輸入輸出流
+        }
+    }
+    ```
+        ```Java
+    import java.util.Scanner;
+
+    public class ScannerDemo2 {
+        public static void main(String[] args) {
+
+            Scanner scanner = new Scanner(System.in);
+            
+            System.out.println("使用 nextLine 方式接收: ");
+
+            if (scanner.hasNextLine()) {    
+                String str = scanner.nextLine();
+                System.out.println("您輸入的內容為：" +str);
+            }
+
+            scanner.close();
+            // 凡是 IO 流的東西，如果不關閉它，就會一直占用資源
+            // 水接完了，水龍頭務必要關
+            // IO: input / output 輸入輸出流
+        }
+    }
+    ```
+|next()|nextLine()|
+|-|-|
+|1. 一定要讀取到有效字符之後才可以結束輸入 <br/> 2. 對輸入有效字符之前遇到的空白，`next()`方法會自動將其去掉 <br/> 3. 輸入有效字之後的空白會被當作分隔/結束符 (i.e. Hello` `World 只會讀到 Hello) <br/> 4. **`next()` 不能得到帶有空格的字符串**|1. 以`Enter`為結束符，即`nextLine()`方法返回的是打上`Enter 鍵/回車鍵`之前的所有字<br/> 2. 可以獲得空白|
+
 ## process-ctrl-02. Scanner 進階使用
++ 
+```Java
+public class ScannerAdvanced {
+    public static void main(String[] args) {
+
+        Scanner scanner = new Scanner(System.in);
+
+        // 從鍵盤接收數據
+        int i = 0;
+        float f = 0.0f;
+
+        System.out.println("請輸入整數：");
+
+        // 如果... 
+        if(scanner.hasNextInt()) {    // hasNextInt()
+            i = scanner.nextInt();    // nextInt()
+            System.out.println("整數數據" + i);
+        } else {
+            System.out.println("輸入的不是整數數據");
+        }
+
+        System.out.println("請輸入浮點數：");
+
+        if (scanner.hasNextFloat()) {   // hasNextFloat()
+            f = scanner.nextFloat();    // nextFloat()
+            System.out.println("浮點數數據：" + i);
+        } else {
+            System.out.println("輸入的不是浮點數數據");
+        }
+
+        scanner.close();
+    }    
+}
+```
+```Java
+public class ScannerAdvancedDemo2 {
+    public static void main(String[] args) {
+        // 輸入多個數字，求總和與平均數，每輸入一個數字用enter確認
+        // 通過輸入非數字來結束輸入並且輸出執行結果
+        Scanner scanner = new Scanner(System.in);
+
+        // 和
+        double sum = 0;
+        // 計算輸入了多少個數字
+        int m = 0;
+
+        // 通過循環語句判斷是否還有輸入，並且在裡面對每一次進行求和以及統計
+        while (scanner.hasNextDouble()) {   // 如果輸入的不是數字也會跳出loop
+            double x = scanner.nextDouble();
+            m = m + 1; // m++
+            sum = sum + x;
+            System.out.println("你輸入了第"+m+"個數據，然後當前結果sum="+sum);
+        }
+
+        System.out.println(m + "個數的和為" + sum);
+        System.out.println(m + "個數的平均值是" + (sum / m));
+
+        scanner.close();
+    }
+}
+```
+
 ## process-ctrl-03. 順序結構
-## process-ctrl-04. if 選擇結構
++ Java 的基本結構就是順序結構，除非特別指明，否則就依順序一句一句執行
++ 順序結構是最簡單的算法結構
++ 語句和語句之間，框與框之間是按從上到下的順序進行的
+    + 由若干個依次執行的處理步驟組成
+    + **任何一個算法都離不開的一種基本算法結構**
+
+## process-ctrl-04. if 選擇結構 ✨
++ if 單選擇結構
+    + 需要先判斷一個東西的可行與否，才去執行之，如果`false`就跳過不執行
+    + Syntax
+        ```java
+        if (boolean_exp){
+            // 如果布林表達式為true的話，將執行的語句
+        }
+        ```
+    + Example
+        ```java
+        public class IfDemo {
+            public static void main(String[] args) {
+                Scanner scanner = new Scanner(System.in);
+                System.out.println("請輸入內容: ");
+                String s = scanner.nextLine();
+
+                // esquals  判斷 String 字串內容是否相同
+        ]
+                if (s.equals("Hello")) {
+                    System.out.println(s);
+                }
+                System.out.println("End");
+                scanner.close();
+        }
+        ```
+
+        ```
++ if 雙選擇結構
+    + true: 語句一 | false: 語句二
+    + Example
+        ```java
+        public class IfDemo2 {
+            public static void main(String[] args) {
+                Scanner scanner = new Scanner(System.in);
+                System.out.println("請輸入成績: ");
+                int score = scanner.nextInt();
+
+                if (score>60) {
+                    System.out.println("及格");
+                } else {
+                    System.out.println("不及格");
+                }
+                scanner.close();
+        }
++ if 多選擇結構
+    + 有 A/B/C/D 多重選擇
+    + Syntax:
+        ```Java
+        if (boolean-exp1){
+            // 如果 boolean-exp1 的值為 true，則執行此段程式語句
+        } else if (boolean-exp2) {
+            // 如果 boolean-exp2 的值為 true，則執行此段
+        } else if (boolean-exp3) {
+            // 如果 boolean-exp3 的值為 true，則執行此段
+        } else {
+            // 如果以上 boolean-exps 都不為 true，則執行此段代碼
+        }
+        ```
+    + Example:
+        ```java
+        public class IfDemo3 {
+            public static void main(String[] args) {
+                Scanner scanner = new Scanner(System.in);
+                
+                /*
+                if 語句最多可以有一個 else，else 語句接在所有 else if 之後
+                if 語句可以有若干個 else if，else if 語句必須在 else 語句之前
+                一旦其中一個 else if 語句檢測為true，其他的 else if 以及 else 下的語句都會被跳過不執行
+                */
+                System.out.println("請輸入成績: ");
+                int score = scanner.nextInt();
+
+                if (score==100) {
+                    System.out.println("恭喜滿分");
+                } else if (score<100 && score>=90) {
+                    System.out.println("A級");
+                } else if (score<90 && score>=80) {
+                    System.out.println("B級");
+                } else if (score<80 && score>=70) {
+                    System.out.println("C級");
+                } else if (score<70 && score>=60) {
+                    System.out.println("D級");
+                } else if (score<60 && score>=0) {  // 要多思考. 邏輯要夠嚴謹以免後續面臨bug修復的問題
+                    System.out.println("不及格");
+                } else {
+                    System.out.println("成績不合法");  // 避免輸入 120 分的情況
+                }
+                scanner.close();
+        }
++ 嵌套的 if 結構
+    + 可以在一個 if 或者 else if 結構下，使用另一個 if 或者 else if 語句
+    + Syntax:
+        ```java
+        if(boolean-exp1) {
+            /// 如果 boolean-exp1 值為 true, 執行此段程式
+            if (boolean-exp2){
+                /// 如果 boolean-exp2 值為 true, 執行此段程式
+            }
+        }
+        ```
+    + 在 1~100 之間找一個數
+
 ## process-ctrl-05. Switch 選擇結構
-## process-ctrl-06. While 循環結構
++ switch 多選擇結構
+    + `switch case` 語句判斷一個變數與一系列值中某值是否相等，每個值稱為一個分支
+    + `switch` 語句中的value/變數類型可以是：
+        + `byte`, `short`, `int`, `char`
+        + **從 Java SE 7 開始，也支援 `String` 類型**
+            + 必須是字符串常量('A''B''C') 或字面量
+    + Syntax:
+        ```Java
+        switch (expression) {
+            case value :
+                // 語句
+                break; // 可選
+            case value :
+                // 語句
+                break; // 可選
+            // 可以有任意數量的 case block
+            default : // 可選
+                // 語句
+        }
+        ```
+    + Example:
+        ```Java
+        public class SwitchDemo1 {
+            public static void main(String[] args) {
+                char grade = 'C';
+                // case 穿透現象: 指的是某幾個 case 段落沒有寫 break; 都被印出來了
+                // switch 匹配一個具體的值，都找不到就執行 default
+                switch (grade) {
+                    case 'A' :
+                        System.out.println("Outstanding");
+                        break; 
+                    case 'B' :
+                        System.out.println("Exceeds Expectations");
+                        break;
+                    case 'C' :
+                        System.out.println("Acceptable");
+                        break;
+                    case 'D' :
+                        System.out.println("Poor");
+                        break;
+                    case 'E' :
+                        System.out.println("Dreadful");    
+                        break;
+                    default:   
+                        System.out.println("Troll");  // 未知等級：找不到
+                }   
+            }    
+        }
+        ```
+        ```Java
+        public class SwitchDemo2 {
+            public static void main(String[] args) {
+                String name = "世地";
+                // JDK 7 開始，表達式結果可以是 String
+                // 字符的本質還是數字
+                /* 每個String都有自己對應的哈希值  例: 以下 switch 反編譯之後的程式
+                    name => name.hashCode()
+                    case "世地" => case XXXXXX(一串數字):
+                */
+                /* 反編譯： java --- class(字節碼文件)
+                    反編譯 (透過IDEA Source code recreated from a .class file by Intellij IDEA 
+                            powered by Fernflower decompiler)
+                */
+                switch (name) {
+                    case "世地" :
+                        System.out.println("世地");
+                        break; 
+                    case "翠克" :
+                        System.out.println("翠克");
+                        break;
+                    default:   
+                        System.out.println("What do you mean?");  
+                }   
+            }    
+        }
+        ```
+## process-ctrl-06. While 迴圈/循環結構
++ 最基本的迴圈，結構如下
+    ```Java
+        while( boolean-exp1 ) {
+            // Loop content
+        }
+    ```
++ 只要 boolean == true，就會一直執行
++ **多數情況下，都需要一個讓表達式失效的方式來結束循環**
++ 少數情況下需要無限迴圈，例如服務器請求響應監聽等 
+    ```Java
+    while(true){
+        // 等待客戶端連接 
+        // 定時檢查
+    }
+    ```
++ 盡量避免死循環，會影響程式性能，造成崩潰或卡死
++ Example:
+    ```Java
+    public class WhileDemo1 {
+        public static void main(String[] args) {
+            int i = 0;
+            while (i < 100) {
+                i++;
+                System.out.println(i);
+            }
+        }
+    }
+    ```
++ 計算 1+2+3+...+100
+    ```Java
+    public class WhileDemo2 {
+        public static void main(String[] args) {
+            // 計算 1+2+3+...+100=?
+            // 高斯: 首尾相加除以二
+            int i = 0;
+            int sum = 0;
+
+            while (i <= 100) {
+                sum = sum + i;
+                i++;
+            }
+            System.out.println(sum);
+        }
+    }
+    ```
+
 ## process-ctrl-07. DoWhile 循環
-## process-ctrl-08. For 循環詳解
++ 即使不滿足條件，也至少執行一次
++ Syntax:
+    ```Java
+    do {
+        // 程式語句
+    }while(boolean-exp);
+    ```
+|While|do-While|
+|-|-|
+|先判斷後執行|先執行後判斷|
+|不滿足條件就不進入迴圈|保證迴圈至少執行一次|
++ Example:
+    ```Java
+    public class DoWhileDemo {
+        public static void main(String[] args) {
+            int a = 0;
+            while (a<0) {
+                System.out.println(a);
+                a++;
+            }
+            System.out.println("================");
+            do {
+                System.out.println(a);
+                a++;
+            }while (a<0>);
+        }    
+    }
+    ```
+## process-ctrl-08. For 迴圈✨循環詳解
++ Java5 開始引入 主要用於數組
++ 雖然所有迴圈都可以用`while`或者`do...while`，但是`for`迴圈可以使一些迴圈結構變更簡單
++ for 迴圈支援迭代，**最靈活有效的迴圈結構**
++ Syntax：執行的次數在執之前就已經確定
+    ```Java
+    for (初始化值; boolean表達式; 更新) {
+        // your code
+    }
+    ```
++ Example:
+    ```Java
+    public class ForDemo1 {
+        public static void main(String[] args) {
+            int a = 1;                 // 初始化條件
+            while (a<=100) {           // 條件判斷
+                System.out.println(a); // 迴圈體
+                a += 2;   // 迭代: 每次循環都會刷新a的數值，最終中止迴圈
+            }
+            System.out.println("End of the while loop above");
+
+                //初始化 //條件判斷 //迭代
+            for (int i=0; i<=100; i++) {
+                System.out.println(i);
+            }
+            System.out.println("End of the for loop above");
+        }
+    }
+    ```
++ Practice:
+    1. 計算 0 ~ 100 之間的奇數以及偶數的和
+    2. 用 while 或 for 輸出 1 ~ 1000 之間能被 5 整除的數，每行輸出三個
+    3. 印出九九乘法表
+
 ## process-ctrl-09. 印出九九乘法表
 ## process-ctrl-10. 增強 for 循環
 ## process-ctrl-11. break, continue, goto
