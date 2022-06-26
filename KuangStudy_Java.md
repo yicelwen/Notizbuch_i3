@@ -1554,19 +1554,279 @@ public ArgsCommand {
         }
         ```
 ## array-04. 下標越界及小結
++ 陣列四個基本特點：
+    + 陣列長度是確定的，一旦被創建，它的大小就是不可以被改變的
+    + 元素必須是相同類型，不允許出現混合類型
+    + 陣列中元素可以是任何資料型別，包括基本資料型別和參考資料型別
+    + 陣列變量屬於參考資料型別
+        + 陣列也可以看作物件，陣列中每個元素相當於該物件的成員變量
+        + 陣列本身就是物件，Java 中物件是在堆 (Heap) 中的，因此陣列無論保存原始類型或者其他對象類型，**陣列物件本身是在堆(Heap)中**
+            > 有 new 的物件都在 Heap 堆區
++ 陣列邊界：
+    + 索引的合法區間：[0, length-1]，如果越界則會報錯
+        ```Java
+        public static void main(String[] args) {
+            int[] a = new int[2];
+            System.out.println(a[2]);
+        }
+        ```
+    + `ArrayIndexOutofBoundsException`：陣列索引越界異常
+    + 小結：
+        + 陣列是相同數據類型（數據類型可以為任意類型）的有序集合
+        + 陣列也是物件，陣列元素相當於物件的成員變量
+        + 陣列長度確定，不可變，如果越界會報錯 `ArrayIndexOutofBounds`
 
 ## array-05. 陣列/數組的使用✨
++ For-Each 迴圈
+    ```java
+    public class ArrayAppAnother {
+        public static void main(String[] args) {
+            // for (int array : arrays) {
+            // System.out.println(array);
+            // }
+
+            // printArray(arrays);
+
+            int[] reverse = reverse(arrays);
+            printArray(reverse);
+        }
+        // 反轉陣列
+        public static int[] reverse(int[] arrays) {
+            int[] result = new int[arrays.length];
+
+            // 反轉的操作
+            for (int i = 0, j = result.length-1; i < arrays.length; i++, j--) {
+                // result[] = arrays[i];
+                result[j] = arrays[i];
+            }
+            return result;
+        }
+        // 印出陣列元素
+        public static void printArray(int[] arrays) {
+            for (int i = 0; i < arrays.length; i++) {
+                System.out.println(arrays[i]+" ");
+            }
+        }
+
+    }
+    ```
++ 普通的 For 迴圈
+    ```Java
+    public class ArrayApplica {
+        public static void main(String[] args) {
+            int[] arrays = {1, 2, 3, 4, 5};
+            // 印出全部陣列元素
+            for(int i = 0; i < array.length; i++) {
+                System.out.println(arrays[i]);
+            }
+            System.out.println("=================");
+            // 計算所有元素的和
+            int sum = 0;
+            for(int i = 0; i < array.length; i++) {
+                sum += arrays[i];
+            }
+            System.out.println("sum="+sum);
+            System.out.println("===========");
+            // 查找最大元素
+            int max = arrays[0];
+            for (int i = 1; i < arrays.length; i++) {
+                if (arrays[i] > max) {
+                    max = arrays[i];
+                }
+            }
+            System.out.println("max="+max);
+        }
+    }
+    ```
 
 ## array-06. 二維陣列
++ 多維陣列可以看成是陣列的陣列，比如二維陣列就是一個特殊的一維陣列，其每個元素都是一個一維陣列
++ 二維陣列 
+    ```Java
+    int a[][] = new int[2][5];
+    ```
++ 以上二維陣列 a 可以看成一個兩行五列的陣列
 
+    ```Java
+    public class TwoDArray {
+        public static void main() {
+            // [4][2] - 四行兩列
+            /*
+              1,2   array[0]
+              3,4   array[1]
+              5,6   array[2]
+              7,8   array[3]
+            */
+            int[][] array = {{1,2},{3,4},{5,6},{7,8}};
+            System.out.println(array[0][0]);  // 1
+            System.out.println(array[0][1]);  // 2
+            System.out.println(array[1][0]);  // 3
+            System.out.println(array[1][1]);  // 4
+
+            // 印出二維陣列
+            for (int i = 0; i < array.length; i++) {
+                for (int j = 0; j < array[i].length; j++) {
+                    System.out.println(array[i][j]);
+                }
+            }
+        }
+    }    
+    ```
 ## array-07. Arrays類 詳解
++ 陣列的工具類別 `java.util.Arrays`
++ 由於陣列物件本身命沒有什麼方法可供調用，但 API 中提供了個 Arrays 可供使用，從而可對數據物件進行一些基本操作
++ [點我查看 **JDK 幫助文檔**](https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html)
++ Arrays 類別中的方法都是 static 修飾的靜態方法，使用的時候可以直接用類別名稱進行調用，**不用**使用物件來調用（是不用，不是不能）
++ 具有以下常用功能：
+    + 給陣列賦值：透過 `fill` 方法
+    + 對陣列排序：透過 `sort` 方法，按升序
+    + 比較陣列：透過 `equals` 方法比較陣列中的元素值是否相等
+    + 查找陣列元素：透過 `binarySearch` 方法能對排序好的陣列進行二元搜尋法操作
 
 ## array-08. 冒泡排序
++ 八大排序中，冒泡排序法是最出名的算法之一
++ 兩層迴圈，外層冒泡輪數，裡層依次比較
++ 嵌套迴圈，此算法時間複雜度 **O(n<sup>2</sup>)**
 
-## array-09. 稀疏陣列
+```Java
+public class BubbleSort {
+    public static void main(String[] args) {
+        /* 冒泡排序
+        1. 比較陣列中兩個相鄰的元素，如果第一個數比第二個大，則交換他們的位置
+        2. 每一次比較，都會產生出一個最大或者最小的數字
+        3. 下一輪則可以少一次排序
+        4. 依次循環直到結束
+        */
+        int[] a = {2, 5, 6, 7, 1, 9, 4};
+        int[] sort = sort(a);  // 調用完我們自己寫的排序方法以後，回傳一個排序後的陣列
 
+        System.out.println(Arrays.toString(sort));
+    }
 
-## OOP-01. 何謂面相對象
+    public static int[] sort(String[] args) { ✨
+        // 臨時變量
+        int temp = 0;
+
+        // 外層循環，判斷這個陣列要走多少次
+        for (int i = 0; i < args.length-1; i++) {
+
+            boolean flag = false; // 透過 flag 標識位減少沒有意義的比較
+
+            // 內層循環：比價判斷兩個數，如果第一個數比第二個數大，則交換位置
+            for (int j = 0; j < array.length-1-i; j++) {
+                if (array[j+1]>array[j]){
+                    temp = array[j];   // 實現兩值交換
+                    array[j] = array[j+1];
+                    array[j+1] = temp;
+                    flag = true; // 只要排過序就變更為 true
+                }
+            }
+
+            if (flag==false) {  // i.e. 沒有走裡面的判斷，說明此輪沒有進行比較
+                break;  
+            }
+        }
+        return array;
+    }    
+}
+```
+
+## array-09. 稀疏陣列 (sparse array)
++ 發想背景
+    + 需求：編寫五子棋遊戲中，有存盤退出和接續上排的功能
+    + 分析問題：因為該二維陣列的很多值是默認值 0，因此記錄了很多沒意義的數據
+    + 解決：稀疏陣列
++ 當一個數組中**大部分元素為 0**，或者為同一值的陣列時，可以使用稀疏
++ 稀疏陣列處理方式是：
+    + 紀錄陣列一共有幾行幾列，有多少個不同的值
+    + 把具有不同值的`元素`和`行列`與`值`紀錄在一個小規模陣列中，從而縮小程式的規模
++ 如下範例  
+    > 6 行高、7 列寬、有效數字 8 個。<br/>值"**22**"位於第零行第三列、值"**15**"位於第零行第六列，依此類推。
+
+    |原始陣列|稀疏陣列|
+    |-|-|
+    |![image info](./images/sparse-arr-l.png)|![image info](./images/sparse-arr-r.png)|
+
+    ```Java
+    public class SparseArrayDemo {
+        public static void main(String[] args) {
+            // 1. 建一個二維陣列 11*11   0: 沒有棋  1: 黑棋   2: 白棋
+            int[][] array1 = new int[11][11];
+            array1[1][2] = 1;
+            array1[2][3] = 1;
+            // 輸出原始陣列
+            System.out.println("輸出原始陣列");
+            
+            for (int[] ints : array1) {
+                for (int anInt : ints) {
+                    System.out.print(anInt+"\t");
+                }
+                System.out.println();
+            }
+            System.out.println("===================");
+            // 轉換為稀疏陣列來保存
+            // 獲取有效值的個數
+            int sum = 0;
+            for (int i = 0; i < 11; i++) {
+                for (int j = 0; j < 11; j++) {
+                    if (array1[i][j]!=0){
+                        sum++;
+                    }
+                }
+            }
+            System.out.println("有效值的個數: "+sum);
+
+            // 2. 建立一個稀疏陣列的陣列
+            int[][] array2 = new int[sum+1][3];
+
+            array2[0][0] = 11;
+            array2[0][1] = 11;
+            array2[0][2] = sum;
+            
+            // 遍歷二維陣列，將非零的值，存放到稀疏陣列中
+            int count = 0;
+            for (int i = 0; i < array1.length; i++) {
+                for (int j = 0; j < array1[i].length; j++) { 
+                    if (array1[i][j]!=0){
+                        count++;
+                        array2[count][0] = i;  // 從第幾行的第一個位置存放橫座標
+                        array2[count][1] = j;  // 第二個位置存放縱座標
+                        array2[count][2] = array2[i][j];
+                    }
+                }
+            }
+
+            // 輸出稀疏陣列
+            System.out.println("稀疏陣列");
+
+            for (int i = 0; i < array2.length; i++) {
+                System.out.println(array2[i][0]+"\t"
+                                  +array2[i][1]+"\t"
+                                  +array2[i][2]+"\t");
+            }
+            System.out.println("===================");
+            System.out.println("還原");
+            // 1. 讀取稀疏陣列的值
+            int[][] array3 = new int[array2[0][0]][array2[0][1]];
+
+            // 2. 給其中的元素還原它的值 (注意 i=1, 非 i=0)
+            for (int i = 1; i < array2.length ; i++) {
+                array3[array2[i][0]][array2[i][1]] = array2[i][2];
+            }
+
+            // 3. 印出來
+            System.out.println("輸出還原的陣列");
+            for (int[] ints : array3) {
+                for (int anInt : ints) {
+                    System.out.print(anInt+"\t");
+                }
+                System.out.println();
+            }
+        }
+    }
+    ```
+
+## OOP-01. 何謂面向對象
 ## OOP-02. 回顧方法的定義
 ## OOP-03. 回顧方法的調用
 ## OOP-04. 類別與對象的創建
