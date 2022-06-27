@@ -1839,21 +1839,213 @@ public class BubbleSort {
     + 適合處理複雜問題，適合需要多人協作的問題
 + **對於描述複雜的事務，為了從宏觀上把握，從整體上合理分析，開發者需要使用物件導向的思路來分析整個系統。但是，具體到微觀操作，仍然需要程序導向的思路去處理。**
 
++ OOP Object Oriented Programming
+    + 本質：以**類別的方式組織程式，以物件的形式封裝數據**
+    + 抽象
+    + 三大特性：
+        + **封裝** (把數據給包裝起來，限制可以訪問的外部程式)
+        + **繼承** (父子類別，子類別擁有父類別的特性)
+        + **多態** (兩者都執行學習方法，但學出來成果不同)
+    + 從認識論角度考慮是先有物件後有類別。
+        + 物件 - 具體的事物 
+        + 類別 - 對物件的抽象
+    + 從程式運行角度考慮是先有類別後有物件，類別是物件的模板。
+
 ## OOP-02. 回顧方法的定義
+
+```Java
+public class MethodDefinition {
+    public static void main(String[] args) {
+
+    }
+
+    /*
+    *修飾子 回傳值類型 方法名 (...) {
+        // 方法體
+        retrun 回傳值;
+    }
+    */
+    public String sayHello(){
+        return "Hello, world";
+    }
+
+    public int max (int a, int b){
+        return a>b ? a : b;  // 如果 a>b 回傳 a，a<b 則回傳 b
+    }
+}
+```
+|方法定義|方法調用|
+|-|-|
+|修飾符、回傳型別/返回類型<br/> b**reak: 跳出switch，結束迴圈和return的區別**<br/>方法名：注意規範 見名知意<br/>參數列表 (參數類型 參數名) ...可變長參數 <br/>異常拋出 (*方法(型參) throws XXException{}*)|靜態方法、非靜態方法<br/>型參和實參<br/>值傳遞和參考引用傳遞<br/>**this**關鍵字|
+
 ## OOP-03. 回顧方法的調用
-## OOP-04. 類別與對象的創建
-## OOP-05. 構造器詳解
+```Java
+public class Method {
+    public static void main(String[] args) {
+        // 靜態方法 static
+        Student.speak();
+        // 非靜態方法: 需要實例化該方法的類別 new
+        // 物件類型 物件名 = 物件值;
+        Student stu = new Student();
+        stu.play();
+        // new Student().play();
+    }
+    // 靜態方法: 和類別創建時一同加載 (類別存在時就存在了)
+    public static void a(){
+        b();   // a/b 都不是靜態方法: a 可以調用 b
+               // a/b 都是靜態方法: a 仍然可調用 b
+               // a靜態/b不是靜態: a 方法無法調用 b 方法
+    }
+    // 非靜態方法: 類別實例化(new) 之後才存在
+    public void b(){
+    }
+}
+```
+```Java
+public class Student {
+    // 靜態方法
+    public static void speak() {
+        System.out.println("學生說話了");
+    }
+    // 
+    public void play() {
+        System.out.println("學生遊玩");
+    }
+}
+```
++ 形式參數、實際參數
++ 值傳遞 (pass-by-value) vs 引用傳遞/參考傳遞
+    ```Java
+    // 值傳遞
+    public class PassByValue {
+        public static void main (String[] args) {
+            int a = 1;
+            System.out.println(a);  // 1
+
+            PassByValue.change(a);
+            System.out.println(a);  // 1
+        }
+        // 返回值為空
+        public static void change(int a){
+            a = 10;
+        }
+    }
+    ```
+    ```Java
+    // 引用傳遞: 物件，本質還是值傳遞
+    public class PassByValue {
+        public static void main (String[] args) {
+            Person person = new Persion();
+
+            System.out.println(person.name); // null
+
+            PassByValue.change(person);
+
+            System.out.println(person.name); // Yicelwen
+        }
+        public static void change(Person person) {
+            // person 物件，指向實例化之後具體的人，可變屬性
+            person.name = "Yicelwen";
+        }
+    }
+
+    // 定義了個 Person 類別，有個屬性 name
+    class Person {
+        String name;  // null
+    }
+    ```
++ this 關鍵字 (繼承時詳解)
+
+## OOP-04. 類別與物件的創建
++ 類別是種抽象數據類型，它是**對某一類事物的整體描述**/定義，但並不能代表某一個**具體**的事物
+    + 動物、植物、手機、電腦 ...
+    + Person class, Pet class, Car class 這些都是用來描述/定義某類具體的事物應該具備的特點和行為
+
++ **物件是抽象概念的具體實例**
+    + Yicelwen 就是人的一個具體實例，Yicelwen 家裡的 LittleBlack 就是電腦的一個具體實例
+    + 能夠體現特點、展現功能的是具體實例，而不是個抽象概念
+
++ **使用 `new` 關鍵字建立物件**
++ 建立物件的時候，除了分配內存空間之外，還會給建立好的物件進行默認的初始化 以及對類別中構造器的調用
+
+    ```java
+    // 一個專案應該只存在一個 main 方法
+    public class Application {
+        public static void main(String[] args){
+            // 類別：抽象的，需要實例化
+            // 類別實例化之後，會回傳一個自己的物件
+            // ada 物件就是個 Student 類別的具體實例
+            Student ada = new Student();
+            Student ben = new Student();
+
+            ada.name = "艾妲";
+            ada.age = 25;
+            System.out.println(ada.name+"年齡"+ada.age+"歲");
+            ben.name = "本吉";
+            ben.age = 22;
+        }
+    }
+
+    // 學生類別
+    public class Student {
+        // 屬性：字段
+        String name;  // null
+        int age;   // 0
+
+        // 方法
+        public void study() {
+            System.out.println(this.name+"在學習");
+        }
+    }
+    ```
+
+## OOP-05. 建構子/構造器 詳解
++ 類別中的建構子也成為構造器/構造方法，在建立物件的時候必須要調用，且建構子有以下特點
+    1. 必須和類別名字相同
+    2. 必須沒有回傳類型，也不能寫 void
++ **建構子必須掌握**
+
+    ```Java
+    public class Person {
+        //  一個類別即使什麼都沒有寫， .class 檔反編譯也會有一個預設的無參數建構子
+        String name;
+
+        // 1. 使用 new 關鍵字，本質是在調用建構子
+        // 2. 用來初始化值
+        public Person() {
+            this.name = "yicelwen";
+        }
+
+        // 有參建構子: 一旦定義了有參數建構子，無參數建構子也需要顯示定義 
+        public Person(String name) {
+            this.name = name;
+        }
+    }
+    ```
++ 建構子特點：
+    1. 方法名和類別名相同
+    2. 沒有回傳值
++ 建構子作用：
+    1. new 本質在調用建構子方法
+    2. 初始化物件的值
++ 注意點：
+    + 定義了有參數建構子後，如果想使用無參數建構子，需要顯示/寫上無參數建構子方法
+    + `ALT + INSERT` 快捷鍵 Generate Constructor
+    + `this`.(當前類的屬性) = 參數傳入值;
+
 ## OOP-06. 創建對象與內存分析
+
+
 ## OOP-07. 簡單小結類別與對象
 ## OOP-08. 封裝詳解
 ## OOP-09. 何謂繼承
 ## OOP-10. Super 詳解
 ## OOP-11. 方法重寫
 ## OOP-12. 何謂多態
-## OOP-13. instanceof 和類型轉換
+## OOP-13. instanceof 和類型 轉換
 ## OOP-14. staic 關鍵字詳解
 ## OOP-15. 抽象 (Abstract) 類
-## OOP-16. 接口 (Interface) 的定義與實現
+## OOP-16. 介面/接口 (Interface) 的定義與實現
 ## OOP-17. N 種內部類別
 
 ## Exception-01. Error 和 Exception
