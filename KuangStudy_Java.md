@@ -2035,22 +2035,651 @@ public class Student {
 
 ## OOP-06. 創建對象與內存分析
 
+```Java
+public class Application {
+    public static void main(String[] args) {
+        Pet dog = new Pet();
+        dog.name = "小黑";
+        dog.age = 3;
+        dog.shout();
+        System.out.println(dog.name);
+        System.out.println(dog.age);
+
+        Pet cat = new Pet();
+        cat.name = "小花";
+        cat.age = 1;
+        cat.shout();
+    }    
+}
+```
+```Java
+public class Pet {
+    public String name;
+    public int age;
+    // 無參數建構子
+    public void shout() {
+        System.out.println("Woof / Meow...");
+    }
+}
+```
+![image info](./images/oop-stack-heap.png)
+
 
 ## OOP-07. 簡單小結類別與對象
+1. 類別是一個模板/藍圖；物件是具體的實例
+2. 方法定義與調用
+
+3. 對應的引用
+    + 基本類型(8種) 以外的都是參考資料型別 / 引用類型
+    + 物件是透過引用來操作的：棧 → 堆
+
+4. 屬性：字段 Field 成員變量
+    + 默認初始化
+        + 數字: 0  |  0.0
+        + char: u0000
+        + boolean: false
+        + 參考型別/引用: null
+    + 修飾符 屬性類型 屬性名 = 屬性值
+
+5. 物件建立和使用：
+    + 使用`new` 關鍵字建立、以及類別內的建構子
+    + 物件的屬性  person.name
+    + 物件的方法  person.study()
+
+6. 類別：
+    + 靜態屬性  (屬性)
+    + 動態行為  (方法)
+
 ## OOP-08. 封裝詳解
++ 該露的露，該藏的藏
+    + 程式設計追求**高內聚，低耦合**
+        + 高內聚：類別的內部數據操作細節自己完成，不允許外不干涉
+        + 低耦合：僅公開少量的方法給外部使用
+
++ 封裝 (數據的隱藏)
+    + 通常，應該禁止直接訪問一個物件中數據的實際表示，而應透過操作介面來訪問，稱為訊息隱藏
+
++ **屬性私有，getter / setter**
+```Java
+public class Student {
+    /* 
+    屬性私有、get/set
+        1. 提高程式安全性，保護數據 
+        2. 隱藏程式碼的實現細節
+        3. 統一介面
+        4. 系統可維護性增加了 
+    */
+    private String name;
+    private int id;
+    private char sex;
+    private int age;
+
+    // get 獲得
+    public String getName() { 
+        return this.name; 
+    }
+    // set 設置
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getAge(){
+        return this.age;
+    }
+    public void setAge(int age) {
+        if (age > 120 || age < 0) {  // 不合法年齡條件判斷
+            age = 3;
+        }else{
+            this.age = age;
+        }
+    }   
+} 
+```
+
 ## OOP-09. 何謂繼承
++ 對某一批類型的抽象，從而實現對現實世界更好的建模
++ **extends** 擴展，子類是父類的擴爭
+    ```Java
+    public class Student extends Person {}
+    public class Teacher extends Persoon{}
+    ```
++ Java 中類別只有單繼承，沒有多繼承
+    + *一個兒子只能有一個爸爸，但一爸爸可以有多個兒子*
+
++ 繼承是類別和類別之間的一種關係，此外，類別之間關係還有`依賴`、`組合`、`聚合`等
++ 繼承關係的兩個類別，一個為子類(派生類)，一個為父類(基類)，子類繼承父類，使用`extends`來表示
++ 子類別和父類別之間，意義上而言具有 "is a" 的關係
+
++ `Object` class: 所有類別都默認繼承此類別 /*extends Object*/
+
 ## OOP-10. Super 詳解
++ `super` 注意
+    1. `super` 調用父類別的建構子方法，必須在建構子方法的第一個
+    2. `super` 只能出現在子類別的方法或者建構子方法中
+    3. super 和 this 不能同時在建構子方法中被調用
+
+        ||this|super|
+        |-|-|-|
+        |代表對象|本身調用自己這個物件|代表父類對象的應用|
+        |前提|沒有繼承也可以使用|只能在繼承條件才能使用|
+        |建構子方法|this() 調用本類構造|super() 調用父類的構造|
+
+     ```Java
+    public class Student extends Person {
+        private String name = "yicelwen";
+
+        public Student(){
+            // 隱藏程式碼: 默認的調用了父類的無參建構子
+            // super();  必須放在子類建構子的第一行
+            // this(); 也必須要在第一行(和super()只能擇一)
+            System.out.println("Student無參建構子執行");
+        }
+
+        public void test (String name) {
+            System.out.println(name);  // main方法調用時,傳入參數的值
+            System.out.println(this.name); // 此類別參數的值
+            System.out.println(super.name); // 父類別參數的值
+        }
+        public void print(){
+            System.out.println("Student");
+        }
+        public void test1(String name){
+            print();        // 印出 Student 的方法
+            this.print();   // 印出 Student 的方法
+            super.print();  // 印出 Person 的方法
+        }
+    }
+    ```
+    ```Java
+    public class Person /*extends Object*/ {
+        protected String name = "ariaStark";
+
+        public Person() {
+            System.out.println("Person無參建構子執行");
+        }
+        public void print(){
+            System.out.println("Person");
+        }
+        
+        private void belongtoOnesOwn(){
+            // 私有的屬性/方法無法被繼承
+        }
+    }
+    ```
+
 ## OOP-11. 方法重寫
++ 方法重寫
+    1. 需要有繼承關係，子類別重寫父類別方法，沒有屬性重寫
+    2. `方法名稱` 與 `參數列表` 必須相同
+    3. 子類別的修飾符範圍可以擴大，但不能縮小
+        + 例如：父類別 public 的話，子類不能把它變成 private
+        + `public`>`protected` > `default` > `private`
+    4. 拋出的異常範圍可以被縮小，但不能擴大
+
+
+```java
+// 重寫都是方法的重寫，和屬性無關
+public class A extends B {
+    /*
+    public static void test() {
+        System.out.println("A=>test()");
+    }*/
+    @Override  // 有功能的註解 @重寫
+    public void test() {
+        // super.test(); 默認調用父類別的test()方法
+        System.out.println("A=>test");
+    }
+}
+```
+```java
+public class B {
+    /*
+    public static void test() {
+        System.out.println("B=>test()");
+    }*/
+    public void test() {
+        System.out.println("B=>test()");
+    }
+}
+```
+```java
+public class Application {
+    public static void main(String[] args) {
+
+        // 方法的調用只和等號左邊定義的數據類型有關係
+        A a = new A();
+        a.test();      // A=>test()
+
+        // 父類別的引用指向了子類別
+        B b = new A();
+        b.test();   // B=>test() ... 當父類/子類別的 test() 都是靜態方法
+                    // A=>test() ... 方法重寫(只限非靜態方法)
+    }
+}
+```
+
 ## OOP-12. 何謂多態
++ 動態編譯：透過多態讓可擴展性變更強
++ 同一方法可以根據發送物件不同，採用多種不同的行為方式
++ 一個物件的實際類型是確定的，但可以指向物件的引用類型有很多 
+
++ 多態存在的條件
+    + 有繼承關係
+    + 子類重寫父類方法
+    + 父類引用指向子類對象
++ 注意：多態是方法多態，屬性沒有多態性
+
++ `instanceof` 類型轉換
+```Java
+public class Application {
+    public static void main(String[] args) {
+
+        // 一個物件的實際類型是確定的
+        // new Student();
+        // new Person();
+        
+        // 可以指向的參考資料型別/引用類型就不確定了：父類的引用指向子類
+
+        // Student 能調用的方法都是自己的或者繼承父類別的
+        Student s1 = new Student();
+        // Person 父類型，可以指向子類型，但是不能調用子類獨有的方法
+        Person s2 = new Student();  
+        Object s3 = new Student();  // Person 跟 Object 都是 student 的父類型
+
+        s1.run();
+        s2.run();
+
+        // 對象能執行哪些方法，主要看對象左邊的類型，和右邊關係不大
+        ((Student) s2).eat();  // 子類重寫了父類別的方法，執行子類別的方法
+        s1.eat();
+    }
+}
+```
+```Java
+public class Person {
+    public void run(){
+        System.out.println("run");
+    }
+}
+/*
+多態注意事項：
+1. 多態是方法的多態，屬性沒有多態
+2. 父類和子類，有聯繫/類型轉換異常 ClassCastException
+3. 存在條件：繼承關係，方法需要重寫，父類引用指向子類對象  Father f1 = new Son();
+
+    1. static 方法，屬於類別、不屬於實例
+    2. final 常量：
+    3. private 方法：
+*/
+```
+
 ## OOP-13. instanceof 和類型 轉換
-## OOP-14. staic 關鍵字詳解
++ `instanceof` (類型轉換) 參考資料型別，判斷一個對象是什麼類型
+```Java
+    // Object > String
+    // Object > Person > Teacher
+    // Object > Person > Student
+    Object object = new Student();
+    /* 
+    測試 object 是否為某類別 (class) 或其子類別 (subclass) 實例 (instance),
+    或是 object 是不是某個介面 (interface) 的實作 
+    */
+    // System.out.println(X instanceof Y); // 能不能編譯通過
+
+    System.out.println(object instanceof Student); //true
+    System.out.println(object instanceof Person);  //true
+    System.out.println(object instanceof Object);  //true
+    System.out.println(object instanceof Teacher);  //False
+    System.out.println(object instanceof String);   //False
+    System.out.println("============================");
+    Person person = new Student();  
+    System.out.println(person instanceof Student); //true
+    System.out.println(person instanceof Person);  //true
+    System.out.println(person instanceof Object);  //true
+    System.out.println(person instanceof Teacher);  //False
+    // System.out.println(person instanceof String);   //編譯報錯(半點關係皆無)
+    System.out.println("============================");
+    Student student = new Student();  
+    System.out.println(student instanceof Student); //true
+    System.out.println(student instanceof Person);  //true
+    System.out.println(student instanceof Object);  //true
+    // System.out.println(student instanceof Teacher);   //編譯報錯(半點關係皆無)
+    // System.out.println(student instanceof String);   //編譯報錯(半點關係皆無)
+```
+```Java
+public class Person {
+    public void run() { 
+        System.out.println("run"); 
+    }
+}
+
+public class Student extends Person {
+    public void go(){
+        System.out.println("go");
+    }
+}
+
+public class Teacher extends Person {
+}
+```
+```Java
+public class Application {
+
+    public static void main(String[] args) {
+        // 類型之間的轉化： 基本類型轉換  高低(64 32 16 8) (父高子低)
+
+        // 高                   低
+        Person obj = new Student();
+        
+        // 將 person 類型轉換為 student 類型，就可以使用 student.go() 方法了
+        // Student student = (Student) obj;
+        // student.go();
+        ((Student) obj).go();
+        
+        // 如果要把一個子類轉換成父類，有可能會丟失一些方法 
+        // (person 無法調用 Student 的 go 方法)
+        Student student = new Student();
+        student.go();
+        Person person = student;
+    }    
+}
+/*
+1. 父類引用指向子類的對象
+2. 把子類轉換為父類，向上轉型
+3. 把父類轉換為子類，向下轉型： 強制轉換
+4. 利於方法調用，減少重複的程式碼
+
+封裝、繼承、多型
+抽象類、介面類
+*/
+```
+> 持續學習，茂塞頓開，多實踐測試大腦中的想法，實踐出真知 (針織?)
+
+## OOP-14. static 關鍵字詳解
+```Java
+// static
+public class Student {
+
+    private static int age;  //靜態變量
+    private double score;    //非靜態變量
+
+    public void run() {
+    }
+
+    public static void go() {
+
+    }
+
+    public static void main(String[] args) {
+        // 非靜態方法可以直接調用同類別中靜態方法內的所有東西
+        Student.go();
+        // 靜態方法可以直接調用靜態方法
+        go();
+
+        // 靜態方法**不能**調用非靜態方法
+        Student s1 = new Student();
+        s1.run();  // 或者 new Student().run();
+
+        
+        System.out.println(Student.age);
+        //System.out.println(Student.score); //報錯: no static field
+        System.out.println(s1.age);
+        System.out.println(s1.score);
+    }
+}
+```
++ 匿名代碼塊
+    + 程式執行時並不能主動調用這些模塊
++ 靜態代碼塊
+    + 可以加載一些初始化的數據 (類別一加載就執行，永久只執行一次)
+
+```Java
+public class Person {
+    // #2: 常用於賦與初始值
+    {
+        System.out.println("匿名代碼塊");
+    }
+
+    // 最早執行 #1: 但是只執行一次
+    static {
+        System.out.println("靜態代碼塊");
+    }
+
+    // #3
+    public Person() {
+        System.out.println("建構子方法");
+    }
+
+    public static void main(String[] args) {
+        Person person1 = new Person();
+        System.out.println("===============");
+        Person person2 = new Person();  // person2 就不會執行靜態代碼塊
+    }
+}
+```
+```Java
+// 靜態導入包
+import static java.lang.Math.random;
+import static java.lang.Math.PI;
+
+public class Random {
+    public static void main(String[] args) {
+        System.out.println(random());  // 使用靜態導入包導方法 就不用 Math.random() 了
+        System.out.println(PI);  // 靜態導入 Math 類別內的 PI 方法
+    }
+}
+```
++ 通過 `final` 修飾的類別就不能被其他類別繼承了
+
+    ```Java
+    public final class Person {
+        ...
+    }
+    public class Student extends Person {
+        ...           // cannot inherit from final "xxx.Person"
+    }
+    ```
+
 ## OOP-15. 抽象 (Abstract) 類
++ `abstract`修飾子可以用來修飾方法也可以修飾類
+    + 如果修飾方法，那麼該方法就是抽象方法
+    + 如果修飾類別，那麼該類別就是抽象類
++ 抽象類別中可以沒有抽象方法，但是有抽象方法的類別一定要宣告為抽象類
++ 抽象類不能使用 new 關鍵字來建立對象，它是用來讓子類別繼承的
++ 抽象方法，只有方法宣告，沒有方法的實現，是用來讓子類別實現的
++ 子類繼承抽象類，必須要實現抽象類沒有實現的抽象方法，否則該子類也要聲明為抽象類
+
+```Java
+// abstract 抽象類:   extends 也是單繼承   (c.f.介面可以多繼承)
+public abstract class AbstractDemo {
+
+    // 【約束】--有人幫我們實現
+    // abstract--抽象方法，只有方法名字，沒有方法實現
+    public abstract void doSomething();
+
+    // 1. 不能 new 這個抽象類，只能靠子類別去實現它 【約束】
+
+    // 2. 抽象類也可以寫一些正常/普通的方法
+    public void hello(){
+        ...
+    }; 
+    // 3. 抽象方法必須在抽象類別中
+    // 抽象的抽象：【約束】
+
+    // Abstract 不能 new，那有建構子嗎？
+    // Abstract 存在的意義為何？
+}
+
+// 抽象類的所有方法，繼承了它的子類，都必須要實現它的方法...除非
+public class A extends AbstractDemo {
+    @Override
+    public void doSomething() {
+    }
+}
+
+public class Application {
+    public static void main(String[] args) {
+        new AbstractDemo();  // '' is abstract; cannot be instantiated
+    }
+}
+```
+
 ## OOP-16. 介面/接口 (Interface) 的定義與實現
++ 普通類：只有具體實現
++ 抽象類：具體實現和規範（抽象方法）都有
++ 介面：只有規範，自己無法寫方法
+    + 專業的約束，約束和實現分離：面向切面 AOP
+    + 比抽象還要抽象
+
++ 介面就是規範，定義的是一組規則，體現了現實世界中「如果你是...則必須能...」的思想，如果你是天使，則必須能飛，如果你是汽車，則必須能跑，如果你好人，則必須幹掉壞人；如果你是壞人，則必須欺負好人
++ **介面的本質是契約**，就像人間法律一樣，制定好後大家都遵守
++ 物件導向的精隨，是對物件的抽象，最能體現這一點的就是介面。為什麼討論設計模式都只針對具備了抽象能力的語言(C++、Java、C#)，就是因為設計模式所研究的，實際上就是如何合理的去抽象
+> 聲明類別的關鍵字 - CLASS | 聲明介面的關鍵字 - INTERFACE
+
+```Java
+// 抽象的思維 (系統架構師)
+
+// interface 定義的關鍵字，介面都需要有實現類
+public interface UserService {
+
+    // 在介面中定義的屬性預設都是常量(constant)  public static final 
+    int AGE = 99;
+
+    // 介面中的所有定義其實都是抽象的  public abstract
+    void add(String name);
+    void delete(String name);
+    void update(String name);
+    void query(String name);
+
+}
+```
+```Java
+// 抽象類：extends ~
+// 類別可以實作介面  xxx implements 介面
+// 實作介面的類別必須要重寫介面中的所有方法
+
+// 可以透過介面實現 偽.多繼承
+public class UserServiceImpl implements UserService, TimeService {
+    @Override
+    public void add(String name) {
+    }
+
+    @Override
+    public void delete(String name) {
+    }
+
+    @Override
+    public void update(String name) {
+    }
+
+    @Override
+    public void query(String name) {
+    }
+
+    @Override
+    public void timer() {
+    }
+}
+```
+```Java
+public interface TimeService {
+    void timer();
+}
+```
++ 介面的作用:
+    1. 約束
+    2. 定義一些方法，讓不同的人實現 `10 ---> 1`
+    3. `public abstract` (介面中默認的方法)
+    4. `public static final` (介面中默認的屬性)
+    5. 介面不能被實例化，介面中沒有建構子方法
+    6. `implements` 關鍵字可以實現多個介面
+    7. 必須要重寫介面中的方法
+
+
 ## OOP-17. N 種內部類別
++ 內部類就是在一個類別的內部再定義一個類別
+    + 例. A 類中定義一個 B 類，那麼 B 類相對於 A 類而言就稱為內部類
+        + 而 A 類相對於 B 類來說就是外部類了
+
+1. 成員內部類
+2. 靜態內部類
+
+```Java
+public class Outer {
+
+    private int id=10;
+    public void out() {
+        System.out.println("這是外部類的方法");
+    }
+
+    /* 一旦在內部類加上 static, getID() 就拿不到 id 值了
+       原因：inner類先被實例化了，當時 id=10 還沒出生..
+       解決： id 也改成靜態屬性 */
+    public class Inner {
+        public void in() {
+            System.out.println("這是內部類的方法");
+        }
+        // 內部類可以直接訪問外部類的一些東西
+        // 獲得外部類的私有屬性
+        public void getID() {
+            System.out.println(id);
+        }
+        
+
+    }
+}
+```
+```Java
+public class Application {
+    public static void main(String[] args) {
+        // new
+        final Outer outer = new Outer();
+        
+        // 通過外部類來實例化內部類
+        Outer.Inner inner = outer.new Inner();
+        inner.in();
+
+    }
+}
+```
+
+3. 局部內部類
+
+```Java
+public class Outer {
+
+    // 局部內部類
+    public void method() {
+
+        class Inner {
+            public void in() {
+                
+            }
+        }
+    } 
+}
+// 一個 Java 類中可以有多個 class 類，但是只能有一個 public class
+
+```
+
+4. 匿名內部類
+5. lambda
+
 
 ## Exception-01. Error 和 Exception
++ 
++ 
+
 ## Exception-02. 捕獲和拋出異常 (catch throw)
++ 
++ 
+
 ## Exception-03. 自定義異常 經驗小結
++ 
++ 
+
 ## JavaSE Conclusion
++ 
++ 
 
 > IO 流 | Synchronized vs Asynchronized
