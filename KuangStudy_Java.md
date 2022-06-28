@@ -1,178 +1,4 @@
-# 4. Spring 5 latest tutorial
-
-## 01. Spring 簡介
-
-## 02. Spring 組成及拓展
-
-## 03. IOC 理論推導
-
-## 04. IOC 本質
-
-## 05. HelloSpring
-
-## 06. IOC 創建對象方式
-
-## 07. Spring 配置說明
-
-## 08. DI 依賴注入環境
-
-## 09. RequestMapping 說明
-
-## 10. RestFul 風格講解
-
-## 11. 重定向和轉發
-
-## 12. 接收請求參數以及數據回顯
-
-## 13. 亂碼問題解決
-
-## 14. 什麼 JSON
-
-## 15. Jackson 使用
-
-## 16. Fastjson 使用
-
-## 17. ssm 整合：Mybatis 層
-
-## 18. ssm 整合：Spring 層
-
-## 19. ssm 整合：SpringMVC 層
-
-## 20. AOP 實現方式一
-
-## 21. AOP 實現方式二
-
-## 22. 註解實現 AOP
-
-## 23. 回顧 Mybatis
-
-## 24. 整合 Mybatis 方式一
-
-## 25. 整合 Mybatis 方式二
-
-## 26. 事務回顧
-
-## 27. Spring 聲明式事務
-
-## 28. Conclusion
-
-
-
-# 3. Spring MVC latest tutorial 🧩
-## 01. 學習方法說明
-
-## 02. 回顧 MVC 架構
-
-## 03. 回顧 Servlet
-
-## 04. 初識 SpringMVC
-
-## 05. SpringMVC 執行原理
-
-## 06. 深入 SpringMVC 學習
-
-## 07. 使用註解開發 SpringMVC
-
-## 08. Controller 配置總結
-
-## 09. RequestMapping 說明
-
-## 10. RestFul 風格講解
-
-## 11. 重定向和轉發
-
-## 12. 接收請求參數以及數據回顯
-
-## 13. 亂碼問題解決
-
-## 14. 什麼 JSON
-
-## 15. Jackson 使用
-
-## 16. Fastjson 使用
-
-## 17. ssm 整合：Mybatis 層
-
-## 18. ssm 整合：Spring 層
-
-## 19. ssm 整合：SpringMVC 層
-
-## 20. ssm 整合：查詢書籍功能
-
-## 21. ssm 整合：添加書籍功能
-
-## 22. ssm 整合：修改刪除功能
-
-## 23. ssm 整合：新增搜索功能
-
-## 24. Ajax 1<sup>st</sup> 體驗
-
-## 25. Ajax 異步加載數據
-
-## 26. Ajax 驗證用戶名體驗
-
-## 27. 攔截器是什麼
-
-## 28. 登錄判斷驗證
-
-## 29. 文件上傳和下載回顧
-
-## 30. Conclusion
-
-
-<br/>
-
-# 2. JavaWeb 入門到實戰 🧩
-
-[Link to the playlist](https://www.bilibili.com/video/BV12J411M7Sj?p=1&vd_source=1b58d5219378ddc0baf3b01d3f4af2d2)
-```
-## javaweb-01. web 基本概念
-## javaweb-02. web Server 服務器講解
-## javaweb-03. Tomcat
-## javaweb-04. Http
-## javaweb-05. Maven 環境搭建
-## javaweb-06. IDEA 中 Maven 操作
-## javaweb-07. 疑難雜症解決
-## javaweb-08. HelloServlet
-## javaweb-09. Servlet 原理
-## javaweb-10. ServletContext 對象
-## javaweb-11. ServletContext 應用
-## javaweb-12. Response 下載文件
-## javaweb-13. Response 驗證碼實現
-## javaweb-14. Response 重定向
-## javaweb-15. Request 應用
-## javaweb-16. Cookie 講解
-## javaweb-17. Session 講解
-## javaweb-18. JSP 原理剖析
-## javaweb-19. JSP 基礎與法和指令
-## javaweb-20. JSP 內置對象及作用域
-## javaweb-21. JSP、JSTL 標籤
-## javaweb-22. JavaBean 與作業
-## javaweb-23. MVC 三層架構
-## javaweb-24. 過濾器 filter
-## javaweb-25. 監聽器
-## javaweb-26. 監聽器 GUI 中理解
-## javaweb-27. Filter 實現權限攔截
-## javaweb-28. JDBC 複習
-## javaweb-29. JDBC 事務
-## javaweb-30. smbms 項目搭建
-## javaweb-31. smbms 登錄流程實現
-## javaweb-32. smbms 註銷以及權限過濾
-## javaweb-33. smbms 密碼修改實現
-## javaweb-34. Ajax 驗證舊密碼實現
-## javaweb-35. smbms 用戶管理底層實現
-## javaweb-36. smbms 用戶管理分頁 OK
-## javaweb-37. smbms 架構分析及方法學習
-## javaweb-38. 文件傳輸原理及介紹
-## javaweb-39. 文件上傳級拓展雞湯 (?WTF)
-## javaweb-40. 郵件發送原理及實現
-## javaweb-41. 網站註冊發送郵件實現
-## javaweb-42. 之後要怎麼持續學習 (sea of knowledge)
-```
-
- <br/>
-
-# 1. Java 零基礎學習
+# 1. Java 
 + SSM : Git, Mybatis, Spring, Spring MVC
 
 + Linux: 大型物聯網服務 - Nginx, Docker, Redis
@@ -3154,3 +2980,54 @@ public class Outer {
 + ForkJoin: 效率對比
 
 > IO 流 | Synchronized vs Asynchronized
+
+
+# 2. JavaWeb 入門到實戰 🧩
+
+[Link to the playlist](https://www.bilibili.com/video/BV12J411M7Sj?p=1&vd_source=1b58d5219378ddc0baf3b01d3f4af2d2)
+```
+## javaweb-01. web 基本概念
+## javaweb-02. web Server 服務器講解
+## javaweb-03. Tomcat
+## javaweb-04. Http
+## javaweb-05. Maven 環境搭建
+## javaweb-06. IDEA 中 Maven 操作
+## javaweb-07. 疑難雜症解決
+## javaweb-08. HelloServlet
+## javaweb-09. Servlet 原理
+## javaweb-10. ServletContext 對象
+## javaweb-11. ServletContext 應用
+## javaweb-12. Response 下載文件
+## javaweb-13. Response 驗證碼實現
+## javaweb-14. Response 重定向
+## javaweb-15. Request 應用
+## javaweb-16. Cookie 講解
+## javaweb-17. Session 講解
+## javaweb-18. JSP 原理剖析
+## javaweb-19. JSP 基礎與法和指令
+## javaweb-20. JSP 內置對象及作用域
+## javaweb-21. JSP、JSTL 標籤
+## javaweb-22. JavaBean 與作業
+## javaweb-23. MVC 三層架構
+## javaweb-24. 過濾器 filter
+## javaweb-25. 監聽器
+## javaweb-26. 監聽器 GUI 中理解
+## javaweb-27. Filter 實現權限攔截
+## javaweb-28. JDBC 複習
+## javaweb-29. JDBC 事務
+## javaweb-30. smbms 項目搭建
+## javaweb-31. smbms 登錄流程實現
+## javaweb-32. smbms 註銷以及權限過濾
+## javaweb-33. smbms 密碼修改實現
+## javaweb-34. Ajax 驗證舊密碼實現
+## javaweb-35. smbms 用戶管理底層實現
+## javaweb-36. smbms 用戶管理分頁 OK
+## javaweb-37. smbms 架構分析及方法學習
+## javaweb-38. 文件傳輸原理及介紹
+## javaweb-39. 文件上傳級拓展雞湯 (?WTF)
+## javaweb-40. 郵件發送原理及實現
+## javaweb-41. 網站註冊發送郵件實現
+## javaweb-42. 之後要怎麼持續學習 (sea of knowledge)
+```
+
+ <br/>
