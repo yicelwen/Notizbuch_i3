@@ -2659,27 +2659,223 @@ public class Outer {
     } 
 }
 // 一個 Java 類中可以有多個 class 類，但是只能有一個 public class
-
 ```
 
 4. 匿名內部類
-5. lambda
+```Java
+ public class InnerDemoAnother {
+    public static void main(String[] args) {
+        // 匿名內部類：沒有名字初始化類別，不用將實例物件保存到變量中
+        new Apple().eat();
+        
+        UserService userService = new UserService(){
+            @Override
+            public void hello() {
 
+            }
+        };
+    }
+ }
 
+ class Apple {
+    public void eat() {
+        System.out.println("1");
+    }
+ }
+
+ interface UserService {
+    void hello();
+ }
+```
+ 
 ## Exception-01. Error 和 Exception
-+ 
-+ 
++ 程式碼運行過程中，非常可能遇到各種異常/例外`Exception`
+    + 用戶輸入不符合要求
+    + 程式要打開文件，但文件不存在/文件格式不對
+    + 資料庫讀取，數據是空的
+    + 程式內存或記憶體滿了 etc...
++ 異常 — 程式運行中出現的非預期狀況，影響了正常程式執行流程
+    + 例：文件找不到、網路連接失敗、非法參數
++ 三種類型異常：
+    + 檢查性異常：最具代表性的異常 — 用戶錯誤或問題引起的異常，程式設計師無法預見此，在編譯時無法忽略此類型異常
+        + 例如：打開一個不存在的文件，發生 FileNotFoundException 異常
 
-## Exception-02. 捕獲和拋出異常 (catch throw)
-+ 
-+ 
+    + 運行時異常：最可能被程式設計師避免的異常
+    + 錯誤**Error**：脫離程式設計師控制的問題，錯誤在程式碼中通常被忽略
+        + 例如：Stack 棧溢出發生一個錯誤，此錯誤無法在編譯時檢查到
++ 異常物件結構 — 所有異常的 superclass`java.lang.Throwable`
+    + Error
+        + VirtualMachineError
+            + StackOverFlowError
+            + OutOfMemoryError
+        + AWTError (GUI 圖形化介面相關的錯誤)
+    + Exception
+        + IOException
+            + EOFException
+            + FileNotFoundException
+        + RuntimeException
+            + ArrithmeticException
+            + MissingResourceException
+            + ClassNotFoundException
+            + NullPointerException
+            + IllegarArgumentException
+            + ArrayIndexOutofBoundsException
+            + UnknownTypeException
 
++ Error
+    + 由 JVM 生成拋出，大多與開發者的編寫操作無關
+    + `VirtualMachineError`，當 JVM 沒有繼續執行操作所需的內存時，將出現 `OutOfMemoryError`。通常發生時，JVM 會選擇終止執行緒
+    + 類定義錯誤 `NoClassDefFoundError`、鏈接錯誤`LinkageError`
+        + 發生在 JVM 試圖執行應用程式時
+        + 在應用程式的控制處理能力之外，大多數是程式運行是不允許出現的狀況
+
++ Exception
+    + `RuntimeException`(運行時異常) — Exception 分支下重要的子類別<br/>
+       這些異常是`不檢查異常，可以選擇捕獲處理，也可以不處理
+        + `ArrayIndexOutofBoundsException` (陣列索引超出)
+        + `NullPointerException` (空指針異常)
+        + `ArithmeticsException` (算數異常)
+        + `MissingResourceException` (丟失資源)
+        + `ClassNotFoundException` (找不到類別)
+    + 非運行時異常
+
+> Error vs Exception
+
+||Error|Exception|
+|-|-|-|
+|區別|災難性致命的錯誤<br/>程式無法控制和處理|程式邏輯錯誤<br/>應從邏輯角度盡量避免|
+|因應|JVM 終止執行緒|通常可以被程式處理|
+
+## Exception-02. 異常處理機制
++ 拋出異常  |   捕獲異常
++ Keywords: `try` `catch` `finally` `throw` `throws`
+
+    ```Java
+    public class HandleException {
+        public static void main(String[] args) {
+        
+        int a = 1;
+        int b = 0;
+
+        // 假設要補獲多個異常，從小到大
+
+        try {  // 代碼塊: try 監控區域
+            System.out.println(a/b);
+        } catch (ArithmeticException e) {  // catch 捕獲異常
+            System.out.println("程式出現異常，變數 b 不能為零")
+        } catch (Error e) {   
+ 
+        } catch (Exception e) {  
+
+        } catch (Throwable e) {  
+
+        } finally {  // 處理善後工作
+            // finally 可省略。通常放IO流等資源關閉的程式碼
+            System.out.println ("finally");
+        }
+
+        public void a(){
+            b();
+        }
+        public void b(){
+            a();
+        }
+    }
+    ```
+    ```java
+
+    public class SurroundDemo {
+        public static void main(String[] args) {
+
+            // CTRL + ALT + T : 跳出選單選擇 Surround with...
+            try {
+
+                new SurroundDemo().test2(1,0);
+ 
+            } catch (ArithmeticException e) {
+                e.printStackTrace();  
+            }
+        }
+
+        public void test (int a, int b) {
+            if (b==0) {
+                throw new ArithmeticException(); // 主動拋出異常，一般在方法中使用
+            }
+        }
+
+        // 假設方法中處理不了這個異常，則從方法上拋出異常
+        public void test2 (int a, int b) throws ArithmeticException {
+            if (b==0) {
+                throw new ArithmeticException();
+            }
+        }
+    }
+    ```
 ## Exception-03. 自定義異常 經驗小結
-+ 
-+ 
++ 除了 Java 內置的異常，用戶還可以自定義異常，只需繼承 Exception 類即可
++ 在程式中使用自定義異常
+    1. 建立自定義異常
+    2. 在方法中透過 `throw` 關鍵字拋出異常對象
+    3. 如果在當前拋出異常的方法中處理異常，可以使用 `try-catch` 捕獲處理
+        + 否則在方法宣告外通過 `throws` 關鍵字指名要拋出給方法調用者的異常，繼續下一步操作
+    4. 在出現異常方法的調用者中捕獲並處理異常
 
-## JavaSE Conclusion
-+ 
-+ 
+    ```Java
+    // 自定義異常類別
+    public class YicelException extends Exception {
+
+        // 傳遞數字>10 拋出異常
+        public int detail;
+
+        // 空參        
+        public YicelException(){}
+
+        public YicelException(int a){
+            this.detail = a;
+        }
+
+        //toString (異常  印出訊息)
+        @Override
+        public String toString() {
+            return "YicelException{" + 
+                    "detail=" + detail +
+                    '}';
+        }
+    }
+    ```
+    ```Java
+    public class YicelExceptionTest {
+
+        //可能會存在異常的方法
+
+        static void test (int a) throws YicelException {
+            
+            System.out.println("傳遞的參數為:" +a);
+
+            if (a>10) {
+                throw new YicelException(a); 
+                // 方法1: 在方法內 try-catch  // 方法2: 在方法頭 throws 
+            }
+            System.out.println("OK");
+        }
+        public static void main(String[] args) {
+            try {
+                test(11);
+            } catch (YicelException e) {
+                /*  增加一些處理異常的程式碼，盡量去處理異常
+                    if(){}   */
+                System.out.println("YicelException →"+e);
+            }
+        }
+    }
+    ```
++ 實際應用經驗總結
+    + 處理運行時異常時，採用邏輯合理規避，同時輔助`try-catch`處理
+    + 在多重 catch 代碼區塊內，可以加個 `catch(Exception)` 處理可能會被遺漏的異常
+    + 對於不確定的代碼，也可以加上`try-catch`，處理潛在異常
+    + 盡量去處理異常，切忌只是簡單地調用`printStackTrace()`印出
+    + 具體如何處理異常，要根據不同業務需求和異常類型決定
+    + 盡量添加`finally`代碼塊，釋放占用的資源
+
 
 > IO 流 | Synchronized vs Asynchronized
