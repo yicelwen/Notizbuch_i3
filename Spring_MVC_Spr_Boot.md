@@ -779,15 +779,15 @@ public HikariDataSource datasource() {
 
 
 # Spring Boot notes
-### SpringBoot 介紹
+## SpringBoot 介紹
 
 + Spring Boot 是由 Pivotal 團隊在 2013 年開始研發、2014年4月發布第一個版本。所以它是一個新型的框架
 
-+ 它基於 Spring 4.0 設計 (以及之後的 5.0)，不僅繼承了 Spring 框架原有的優秀特性，而且還透過簡化配置進一步簡化了 Spring 應用的整個搭建和開發過程
++ 它基於 Spring 4.0 設計 (以及之後的 5.0)，不僅繼承了 Spring 框架原有的優秀特性，而且還透過**簡化配置**進一步簡化了 Spring 應用的整個搭建和開發過程
 
 + Spring Boot 透過集成大量的框架使得依賴套件的版本一致，解決了多套件版本間衝突的問題
 
-+ 官網文件：https://spring.io/projects/spring-boot
++ [Link to 官網文件](https://spring.io/projects/spring-boot)
 
 + Spring Boot 也內建了 Tomcat，讓開發者不用擔心 Web 容器的環境問題
 
@@ -806,13 +806,13 @@ public HikariDataSource datasource() {
 
 ### Spring Boot 的特性
 
-+ Spring Boot makes it easy to create stand alone, production grade Spring based Applications that you can "just run".
+> Spring Boot makes it easy to create stand alone, production grade Spring based Applications that you can "just run".
 
 + 使用 Spring Boot 可輕鬆地完成獨立的，可用於企業營運級別(production grade) 的Spring應用系統，您可以直接執行它
 
 #### 特性：
-+ 基於約定優於配置 (convention over configuration) 的精神，提供非常多的預設配置作為應用系統的預設值。若有需要也可以自行設定 (Override) 預設值
-+ 依專案需要的功能來挑選適當的 Starter 就可使用預設配置
++ 基於**約定優於配置 (convention over configuration)** 的精神，提供非常多的預設配置作為應用系統的預設值。若有需要也可以自行設定 (Override) 預設值
++ 依**專案需要**的功能來挑選適當的 Starter 就可使用預設配置
 + 快速自動設定的功能 (Auto Config)
 
 
@@ -833,16 +833,16 @@ public HikariDataSource datasource() {
 
 ### 用官網快速建立 Spring Boot 專案
 #### 常用的 Spring Boot 整合套件
-1. Spring Web
+1. `Spring Web`
     + 可使用 Restful, MVC, 且內建 Tomcat, 預設連線池 (Connection Pool) 為HikariCP
 
-2. SpringBoot DevTools
-    + 快速重啟專案的擴充功能，可以 Live Reload(改變程式碼時，馬上重新啟動專案)
+2. `SpringBoot DevTools`
+    + 快速重啟專案的擴充功能，可以 Live Reload (改變程式碼時，馬上重新啟動專案)
    
-3. Spring Data JPA
-    + 與Spring整合的Hibernate，可簡化 Hibernate 的設定
+3. `Spring Data JPA`
+    + 與 Spring 整合的 Hibernate，可簡化 Hibernate 的設定
 
-4. 資料庫Driver
+4. `資料庫Driver`
 
 
 ### Spring Boot 專案架構
@@ -850,9 +850,9 @@ public HikariDataSource datasource() {
 ![image info](./images/spring-boot-framework.png)
 
 
-# Spring Boot 組態檔設定
+## Spring Boot 組態檔設定
 
-## 觀察 Spring Boot 的 Maven 設置
+### 觀察 Spring Boot 的 Maven 設置
 + Spring Starter 專案內的 pom.xml 都參考一個父專案。
     ```xml
     <parent>
@@ -862,7 +862,7 @@ public HikariDataSource datasource() {
         <relativePath/>
     </parent>
     ```
-+ **spring-boot-starter-parent**：為所有 Spring Boot Starter 專案的父專案。父專案存在的目的不在編寫程式，其目的之一在定義一組可讓多個專案使用的依賴標籤以及此組標籤之間的版本搭配。
++ **spring-boot-starter-parent**：為所有 Spring Boot Starter 專案的父專案。父專案存在的目的不在編寫程式，其目的之一在定義一組可讓多個專案使用的依賴標籤以及此組標籤之間的版本搭配 
 
 + `spring-boot-starter-parent` 的父專案：
     ```XML
@@ -870,7 +870,6 @@ public HikariDataSource datasource() {
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
         <version>2.x.x.RELEASE</version> 
-        <relativePath/>
     </parent>
     ```
 
@@ -878,15 +877,12 @@ public HikariDataSource datasource() {
 
 + `spring-boot-dependencies` 專案統一管理子專案之依賴的版本與無須定義 就可使用依賴
 
-+ Spring Boot 提供的啟動器 (Starter)，參考6.1.5章節
-https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using.build-systems.starters
++ Spring Boot 提供的啟動器 (Starter)，參考 [6.1.5章節 Starters](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using.build-systems.starters)
 
 
++ 定義一組特定功能所需要的相關依賴 (Dependencies)，需要此特定功能的 Spring Boot 專案只需要引入此特定功能對應的 Starter 而不需自行定義，**啟動器為各種 Spring 特定功能提供一站式 (one-stop-shop) 的服務**，大幅提升系統的初始建置效率。啟動器自動幫專案加入一組相關的 jars 檔到專案的類別路徑。 (常命名為 spring-boot-starter-xxx)
 
-### 觀察 Spring Boot 的 Maven 設置
-+ 定義一組特定功能所需要的相關依賴 (Dependencies)，需要此特定功能的 Spring Boot 專案只需要引入此特定功能對應的Starter而不需自行定義，啟動器為各種Spring特定功能提供一站式(one-stop-shop) 的服務，大幅提升系統的初始建置效率。啟動器 自動幫專案加入一組相關的 jars 檔到專案的類別路徑。 (常命名為 spring boot starter xxx)
-
-+ 對於開發任何大型應用系統而言，依賴管理至關重要。由於使用依賴的數量之多，以及不同依賴之間的版本搭配，以人工來手動管理並不理想。您花在此事的時間越多，意味花在專案開發的時間就越少。啟動器就是來解決這樣的問題。每個啟動器都由一組相關且實用的依賴標籤(<dependency>)組成，可在自己的專案中引用他
++ 對於開發任何大型應用系統而言，依賴管理至關重要。由於使用依賴的數量之多，以及不同依賴之間的版本搭配，以人工來手動管理並不理想。您花在此事的時間越多，意味花在專案開發的時間就越少。啟動器就是來解決這樣的問題。每個啟動器都由一組相關且實用的依賴標籤(`<dependency>`)組成，可在自己的專案中引用它
 
 + 專案屬性設定
 + Spring Boot 可以直接指定 Java 版本 (當然要有 JRE)
@@ -940,16 +936,17 @@ https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using.buil
 + 專案若需要使用 Thymeleaf 來作為產生 HTML 文件的模板引擎，只要在 pom.xml 中使用 spring-boot-starter-thymeleaf 依賴標籤，專案就會引入一組與 thymeleaf 相關且版本完全搭配 Spring 版本的 Jar 檔
 
 ## 專案屬性設置
-+ 使用 application.properties 檔案
++ 使用 `application.properties` 檔案
 + properties 檔是一個 key-value 配對的資料型態(屬性=值)
    例如設定 Base Url:
+   ```properties
    server.servlet.context-path=/my-app
-+ 常用設定請參考官網提供的參考文件 (Google Spring application properties)
-https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html
+   ```
++ 常用設定請參考官網提供的[參考文件](https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html) (Google Spring application properties)
 
-+ 下一頁提供本課程會使用到的設定屬性
 
-本課程專案屬性設置(1)
+### 本課程專案屬性設置
+```properties
 # 記得改properties為UTF-8
 # port config (預設本來就是 8080，若須修改可以從這邊)
  server.port=8080
@@ -965,178 +962,251 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.SQLServer2012Diale
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.hibernate.ddl-auto=update
-  // 對應 entity 製作資料表
+  ### 對應 entity 製作資料表
 spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-  //根據 Entity(JavaBean的@column(name="__")文字命名每一列的名稱
+  ### 根據 Entity(JavaBean的@column(name="__")文字命名每一列的名稱
 
 # JSP Config
 spring.mvc.view.prefix:/WEB-INF/jsp/
 spring.mvc.view.suffix:.jsp
-    註1: #為註解，後面必須有一個空格
-    註2: =前後不須空格
+```
+> 註1: #為註解，後面必須有一個空格<br/> 註2: =前後不須空格
 
-Spring Boot 的 View(視圖)常見種類
-1. Thymeleaf: Spring Boot 官方範例用的模板引擎 (template engine)
-2. Jsp: 透過 Servlet 編譯後的視圖頁面
-3. 不負責 View 端：屬於前後端分離的架構 (Ajax + Restful)，單純用 JSON 溝通前後端資訊。
-   前端通常使用目前JS三大框架中的其中之一(Angular, React, Vue)
-   註：前兩種為MVC架構，第三種為前後端完全分離的架構
+### Spring Boot 的 View (視圖) 常見種類
+1. `Thymeleaf`: Spring Boot 官方範例用的模板引擎 (template engine)
+2. `Jsp`: 透過 Servlet 編譯後的視圖頁面
+3. 不負責 View 端：屬於前後端分離的架構 (Ajax + Restful)，單純用 JSON 溝通前後端資訊。前端通常使用目前JS三大框架中的其中之一
+    + Angular, React, Vue   
+    + 註：前兩種為MVC架構，第三種為前後端完全分離的架構
 
 
-Spring Boot 的 Web 專案啟動
-Spring Boot 如何啟動專案
-↠ 啟動專案的方式：直接執行最高層的 Java 檔案
-↠ 須注意專案檔案層級：其他Java檔案必須在本package底下
-↠ 須要有 spring boot starter web 的套件
-      <dependency>
+## Spring Boot 的 Web 專案啟動
+### Spring Boot 如何啟動專案
++ 啟動專案的方式：直接執行最高層的 Java 檔案
++ 須注意專案檔案層級：其他 Java 檔案必須在本 package 底下
++ 須要有 `spring-boot-starter-web` 的套件
+    ```XML
+    <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-web</artifactId>
-      </dependency>
+    </dependency>
+    ```
+    ```Java
+    @SpringBootApplication
+    public class SpringbootdemoApplication {
+        public static void main(String[] arg) {
+            SpringApplication.run(SpringbootdemoApplication.class, args);
+        }
+    }
+    ```
 
-      @SpringBootApplication
-      public class SpringbootdemoApplication {
-      
-          public static void main(String[] arg) {
-              SpringApplication.run(SpringbootdemoApplication.class, args);
-          }
-      }
+### Spring Boot 如何啟動專案
 
-Spring 如何啟動專案
++ `@SpringBootApplication` 為一複合註釋，具有下列三個註釋的功能：
+    + `@Configuration`
+        + 表示本類別為一個Spring Boot下的一個 @Configuration 類別，能以 @Bean 修飾的方法來提供 Bean 的定義
+    + `@EnableAutoConfiguration`
+        + 啟動自動組態配置，會根據專案的啟動套件、屬性設定檔等來源設定專案。
+    + `@ComponentScan`
+        + Spring Boot 會自動掃描主類所處之套件下的所有 (廣義) 子套件，因此直接或間接位於此套件之下，使用有註釋修飾的 Bean 是自動被 IoC 容器發現的 (`@Component`, `@Service`, `@Repository`, `@Bean`)
 
-@SpringBootApplication 為一複合註釋，具有下列三個註釋的功能：
-
-@Configuration
-  表示本類別為一個Spring Boot下的一個@Configuration類別，能以@Bean修飾的方法來提供Bean的定義
-
-@EnableAutoConfiguration
-  啟動自動組態配置，會根據專案的啟動套件、屬性設定檔等來源設定專案。
-
-@ComponentScan
-  Spring Boot 會自動掃描主類所處之套件下的所有(廣義)子套件，因此直接或間接位於此套件之下，使用有
-  註釋修飾的 Bean 是自動被 IoC 容器發現。(@Component, @Service, @Repository, @Bean)
-
-若看到 Tomcat started on port(s): 8080(http) with context path 字樣，表示成功啟動
++ 若看到 Tomcat started on port(s): 8080(http) with context path 字樣，表示成功啟動
 Spring Boot! 如下圖 --
+    ``` 
     Adding welcome page template: index
     LiveReload server is running on port 35729
     Tomcat started on port(s): 8080(http) with context path ''
     Started SpringbootThyApplication in 7.752 seconds (JVM running for 9.047)
+    ```
+
+## Spring MVC 實作及常用方法
+
+### Spring MVC 架構
++ Spring Boot 開發 Web 應用程式主要使用 MVC 模式。MVC是Model(模型)、View(視圖)、Controller (控制器) 的縮寫
+    + **Model**：**模型**，單純**存取資料的物件或POJO** (Plain Old Java Objects)
+    + **View**：**視圖**，主要**用來解析、處理、顯示內容**
+    + **Controller**：控制器，用來處理視圖中的回應
+        + 它決定如何呼叫 Model
+        + 如何呼叫業務層 (Service) 的資料增加、删除、修改和查詢等業務操作
+        + 如何將結果傳回視*圖
+        + ✨盡量不要在控制器中放入業務邏輯
+   > 註：MVC只是一種常用的架構，可能會因為需求不同改用其他模式
+
++ Spring MVC 主要透過 **DispatcherServlet 物件封裝 Servlet 相關的功能**，例如 **http 請求 (Controller, HandlerMapping)**，**view 的處理(View Resolver)**等功能
++ 再加上**業務邏輯的 Service**、**掌控資料庫的 DAO(Repository)**，一起交由 spring 控管，這種架構的專案就稱為 Spring MVC 架構
+
+    ![image](./images/dispatcher_servlet.png)
+
+### Spring MVC 主要流程
+1. 使用者由瀏覽器發出請求，由 Tomcat 接收並轉交給 DispatcherServlet 處理
+2. DispatcherServlet 比對控制器中設定的對應路徑，進行下一步處理
+3. ViewResolver 將 ModelAndView 或 Exception 解析成 View ，且根據 ModelAndView 中的資料渲染頁面
+
+### Spring MVC 三層式架構
+1. **表現層 (UI)**：顯示使用者介面 UI，使用者可送出和接收請求
+2. **資料存取層 (DAO|Repository)**：與資料庫進行互動的持久層，在 Spring Data JPA 中透過 Hibernate 來實作
+3. **業務邏輯層 (Service)**：三層架構中的服務層，負責處理業務邏輯，通常會呼叫 DAO 幫忙做事情
+
+## Spring MVC 常用方法
+### Spring MVC 常用註釋 (Annotation)
++ `@Controller`
+    + 控制器，編寫在類別上，表示是 SpringMVC 的 Controller
+    + 負責處理由 DispatcherServlet 接收並分發過來的請求
++ `@RequestMapping`
+    + 寫在 Controller 內的方法，真正處理請求位址對應的註釋 
+    + 若編寫在類別上，則該類別所有回應請求的方法都以該位址為父路徑
++ `@PathVariable`
+    + 將請求 URL 中的變數對應到功能處理方法的參數上
+    + 就是取得 URL 中的變數作為程式的參數
++ `@RestController`
+    + 用來標記 RESTful 風格的控制器類別
+    + 等於 `@Controller`+`@ResponseBody`✨
+    + 會直接回傳字串，常用於回應 JSON 格式的字串
++ Spring Boot
+    + `@GetMapping("/")` 相當等於 `@RequestMapping(value="/",method=RequestMethod.GET)` 
+    + 上述用法也可以用在以下註釋
+
+        ```Java
+        @PostMapping
+        @DeleteMapping
+        @PutMapping
+        ```
+### Spring MVC 其它請求設定
++ 正常的瀏覽器的 FORM 表單只能提出 GET 與 POST 請求，並不能提出 PUT 與 DELETE 等方法， spring3.0 新增一個過濾器，可以將 POST 請求轉換為 PUT 與 DELETE 方法
++ `org.springframework.web.filter.HiddenHttpMethodFilter`
+    + HiddenHttpMethodFilter 過濾器會監看前端程式送來的請求參數中是否含有名為 `_method` 的欄位，若有，則將請求之HTTP 方法依照此欄位的內含值來修改：
+        + 若為 PUT（不分大小寫）則將 HTTP 方法改為 PUT
+        + 若為 DELETE（不分大小寫）則將 HTTP 方法改為 DELETE
+        + 提出此請求時，**原始的 HTTP 方法必須為 POST**
++ 在 Spring Boot 2.2 版以前不需要做任何設定，因為它會自動配置 HiddenHttpMethodFilter ，但自 Spring Boot 2.2 版（含）開始，它不再自動為應用系統配置此過濾器，我們必須自行配置，方式有兩種 --
+    + 方法一：在 application.properties 內加入下列設定
+        ```properties
+        spring.mvc.hiddenmethod.filter.enabled=true
+        ```
+    + 方法二：以程式加入此過濾器（非 Boot 專案時使用）
+        + Spring Boot 提供一個 `FilterRegistrationBean` ，讓應用系統加入所需的過濾器：
+        + 我們只需在任何以 @Configuration 修飾的 Java 類別中加入以下方法即可
+
+            ```Java
+            @Bean
+            FilterRegistrationBean<Filter> hiddenHttpMethodFilter(){
+                FilterRegistrationBean<Filter> filterBean = new FilterRegistrationBean<>();
+                filterBean.setFilter(new HiddenHttpMethodFilter());
+                return filterBean;
+            }
+            ``` 
+### Spring MVC 中 HTTP 常用功能
++ 處理訊息的類型 Content Type
+    + 在 HTTP 協定的 header 中， content type 表示實際請求中的媒體類型
+    + PC 端常用的是 *text/html* 格式，手機則是使用 *JSON*
++ 比較特別且常用的格式如下
+    + `application/json` : JSON 資料格式
+    + `application/pdf` : PDF 資料格式
+    + `multipart/form data` : 若在表單 ( 中上傳資料，需使用此格式
+ 
+## Spring Boot 中常用的取得參數方式
+### Spring Boot 常用的取得參數方式
+1. 
+2. 
+3. 
+4. 
+5. 
+6. 
+
+## Spring Boot 使用 JSP 時需要的設定
+## JSON
+## RESTful API
+## Ajax 非同步請求搭配 Restful API
+## Spring JPA 實作與應用
+## 分頁物件 Page 的實作與應用
 
 
-Spring MVC 實作及常用方法
+## JpaRepository 的 Query 方法：
+1. 即 HQL，在 SpringJpa 內 Hibernate 交由 Spring 控管，因此使用的是 JPA 的 API 名稱： JPQL(Java Persistence Query Language)
+2. JPQL 用法與 HQL (Hibernate Query Language) 相同，是操作 **Entity 內的屬性**而非 Table 中的欄位
+3. JpaRepository 在寫 HQL 當需要參數時有比較方便的編寫方式，如下節
 
-Spring MVC 架構
+### JpaRepository 的 HQL 中參數的寫法
+1. 根據參數位置（第幾個問號對應底下方法第幾個參數）
+    ```Java
+    @Query(value = "from customer where name = ?1")
+    Person findCustomerByName (String Name);
+    ```
 
-↠ Spring Boot 開發 Web 應用程式主要使用 MVC 模式。
-   MVC是Model(模型)、View(視圖)、Controller (控制器) 的縮寫。
-↠ Model：模型，單純存取資料的物件或POJO(Plain Old Java Objects)
-↠ View：視圖，主要用來解析、處理、顯示內容。
-↠ Controller：控制器，用來處理視圖中的回應。它決定如何呼叫Model、如何呼叫業務層(Service)的
-   資料增加、删除、修改和查詢等業務操作，以及如何將結果傳回視圖。盡量不要在控制器中放入業務邏輯。
-   註：MVC只是一種常用的架構，可能會因為需求不同改用其他模式
+2. 用`:`及 `@Param` 做對應
+    ```Java
+    @Query("from Customer where name = :name")
+    public List<Customer> findByName (@Param(value ="name") String name);
+    ```
 
-↠ Spring MVC 主要透過 DispatcherServlet 物件封裝 Servlet 相關的功能，例如 http 請求
-   (Controller, HandlerMapping)，view 的處理(View Resolver)等功能。
+### JpaRepository 中寫原生SQL 的寫法
++ 若要使用原生SQL 做查詢，須在後面加上`nativeQuery=true`
++ 用原生SQL 查詢 (nativeQuery=true) **就不是對Entity操作了，會變為對Table 操作**，因此操作的屬性就變為 table 裡的屬性
+    ```Java
+    @Query(value="select * from Customer where name= :name",nativeQuery=true)
+    public List<Customer> findByName2(@Param(value = "name") String name);
+    ```
 
-↠ 再加上業務邏輯的 Service、掌控資料庫的 DAO(Repository)，一起交由spring控管，這種架構的
-   專案就稱為 Spring MVC 架構
+### JpaRepository 中@Query 須注意 
++ 用`@Query`查詢時，若是需要**修改資料**或**刪除資料**的情況，須在 @Query 上方加入`@Modifying` 標註：
+    ```Java
+    @Modifying
+    @Query(value = "delete from customer where id=?1",nativeQuery = true)
+    void delAccount(int id);
+    ```
 
+### JpaRepository 中直接透過方法名稱查詢
++ Spring提供了一套可以透過命名規則進行查詢。這套機制會把方法過濾一些關鍵字，比如`find…By`, `read…By`, `query…By`, `count…By` 和`get…By`
++ [JPQL snippet Keyword Sample 官方參考文件](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.query-methods.query-creation)
 
+    + **And** ----
+        + findByLastnameAndFirstname ---- where x.lastname = ?1 and
+    + **Or** ----
+        + findByLastnameOrFirstname ---- where x.lastname = ?1 or x.firstname = ?2
+    + **Is,Equals** ----
+        + findByFirstnameIs,findByFirstnameEquals ---- where x.firstname = ?1
+    + **Between** ----
+        + findByStartDateBetween ---- where x.startDate between ?1 and ?2
+    + **LessThan** ----
+        + findByAgeLessThan ---- where x.age < ?1
+    + **LessThanEqual** ----
+        + findByAgeLessThanEqual ---- where x.age ⇐ ?1
 
+    + **GreaterThan** ---- 
+        + findByAgeGreaterThan ---- where x.age > ?1
+    + **GreaterThanEqual** ---- 
+        + findByAgeGreaterThanEqual ---- where x.age>= ?1
+    + **After** ---- 
+        + findByStartDateAfter ---- where x.startDate > ?1
+    + **Before** ----  
+        + findByStartDateBefore ---- where x.startDate < ?1
+    + **IsNull** ----  
+        + findByAgeIsNull ---- where x.age is null
+    + **IsNotNull,NotNull** ----  
+        + findByAge(Is)NotNull ---- where x.age not null
+    + **Like** ----  
+        + findByFirstnameLike ---- where x.firstname like ?1
+    + **NotLike** ----  
+        + findByFirstnameNotLike ---- where x.firstname not like ?1
+    + **StartingWith** ----  
+        + findByFirstnameStartingWith ---- where x.firstname like ?1 (parameter bound with appended %)
+    + **EndingWith** ----  
+        + findByFirstnameEndingWith ---- where x.firstname like ?1 (parameter bound with prepended %)
+    + **Containing** ----  
+        + findByFirstnameContaining ---- where x.firstname like ?1 (parameter bound wrapped in %)
+    + **OrderBy** ----  
+        + findByAgeOrderByLastnameDesc ---- where x.age = ?1 order by x.lastname desc
+    + **Not** ---- 
+        + findByLastnameNot ---- where x.lastname <> ?1
+    + **In** ---- 
+        + findByAgeIn (Collection ages) ---- where x.age in ?1
 
+    + **NotIn** ---- 
+        + findByAgeNotIn (Collection age) ---- where x.age not in ?1
+    + **TRUE** ---- 
+        + findByActiveTrue() ---- where x.active = true
+    + **FALSE** ---- 
+        + findByActiveFalse() ---- where x.active = false
+    + **IgnoreCase** ---- 
+        + findByFirstnameIgnoreCase ---- where UPPER( x.firstame ) = UPPER(?1)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Spring MVC 主要流程
-
-(1) 使用者由瀏覽器發出請求，由 Tomcat 接收並轉交給 DispatcherServlet 處理。
-(2) DispatcherServlet 比對控制器中設定的對應路徑，進行下一步處理。
-(3) ViewResolver 將 ModelAndView 或 Exception 解析成View，且根據 ModelAndView 中的資料
-    渲染頁面。
-
-
-Spring MVC 與三層式架構
-三層式架構分為表現層(UI)、業務邏輯層(Service)、資料存取層(DAO或Repository)，詳細分層說明如下
-  (1) 表現層：
-      顯示使用者介面UI，使用者可以送出和接收請求
-  (2) 資料存取層：
-      與資料庫進行互動的持久層，在 Spring Data JPA 中透過 Hibernate 來實作
-  (3) 業務邏輯層：
-      是三層架構的服務層，負責處理業務邏輯，通常會呼叫 DAO 幫忙做事情。
-
-
-Spring MVC 常用方法
-Spring MVC 常用註釋(Annotation)：
-@Controller
-  控制器，編寫在類別上，表示是 SpringMVC 的 Controller，負責處理由 DispatcherServlet 接收
-  並分發過來的請求。
-@RequestMapping
-  寫在 Controller 內的方法，真正處理請求位址對應的註釋 。若編寫在類別上，則該類別所有回應請求的
-  方法都以該位址為父路徑。
-
-@PathVariable
-  將請求 URL 中的變數對應到功能處理方法的參數上，就是取得 URL 中的變數作為程式的參數。
-
-@RestController
-  用來標記 RESTful 風格的控制器類別，等於 @Controller 加上 @ResponseBody，會直接回傳字串，
-  常用於回應 JSON 格式的字串。
-
-Spring Boot還提供了更簡潔的編寫URL對應的方法：
-
-@GetMapping("/")：
-  相當等於
-  @RequestMapping(value="/", method=RequestMethod.GET)
-
-上述用法也可以使用在以下註釋：
-  @PostMapping
-  @DeleteMapping
-  @PutMapping
-
-↠ 正常的瀏覽器的 FORM 表單只能提出 GET 與 POST 請求，並不能提出 PUT 與 DELETE 等方法，
-   spring3.0新增一個過濾器，可以將 POST 請求轉換為 PUT 與 DELETE 方法。
-
-↠ org.springframework.web.filter.HiddenHttpMethodFilter
-   HiddenHttpMethodFilter 過濾器會監看前端程式送來的請求參數中是否含有名為 _method 的欄位，
-   若有，則將請求之 HTTP 方法依照此欄位的內含值來修改：
-
-↠ 若為 PUT (不分大小寫) 則將 HTTP 方法改為 PUT
-↠ 若為 DELETE (不分大小寫) 則將 HTTP 方法改為 DELETE
-↠ 提出此請求時，原始的 HTTP 方法必須為 POST
-
-↠ 在Spring Boot 2.2 版以前不需要做任何設定，因為它會自動配置 HiddenHttpMethodFilter，
-   但自 Spring Boot 2.2 版(含)開始，它不再自動為應用系統配置此過濾器，我們必須自行配置。
-
-↠ 有兩種方式：
-Option#1：
-   在application.properties內加入下列設定：spring.mvc.hiddenmethod.filter.enable=true
-
-Option#2：
-   以程式加入此過濾器 (非Boot專案時使用)
-   ↠ Spring Boot 提供一個 FilterRegistrationBean，讓應用系統加入所需的過濾器：
-      @Bean
-    FilterRegistrationBean<Filter> hiddenHttpMethodFilter(){
-        F
-        F
-        f
-        r
-    }
-
-   ↠ 我們只需在任何以 @Configuration 修飾的 Java 類別中加入上面的方法即可。
-
-    52/106

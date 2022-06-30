@@ -100,6 +100,7 @@
 
 + **IoC 是 Spring 框架的核心內容**，使用多種方式完美的實現了 IoC，可以使用 xml 配置，也可以使用註解，新版本的 Spring 也可以零配置實現 IoC
 + Spring 容器在初始化時先讀取配置文件，根據配置文件或 metadata(元數據) 創建與組織對象存入容器中，程式使用時再從 IoC 容器中取出需要的物件
+(`newClassPathXmlApplicationContext.java`)
 
     ![image info](./images/spring-ioc-container_zh.png)
 
@@ -107,7 +108,10 @@
 　
     > **控制反轉是一種通過描述（XML或註釋）並通過第三方去生產或獲取特定對象的方式。在 Spring 中實現控制反轉的是 IoC 容器，實現方法是依賴注入（Dependency Injection, DI）。**
 
+
+
 ## 05. HelloSpring
++ 主要是透過 `setStr()` 方法進行注入
 
 ```Java
 public class Hello {
@@ -133,10 +137,15 @@ public class Hello {
     ```xml
     <!-- beans.xml 
     使用 Spring 來創建物件，在 Spring 這些都稱為 Bean 
-    bean = 物件   new Hello();
+    bean = 物件   Hello hello = new Hello();
+    🎇 id = 變數物件名稱 
+    🎇 class = bean 物件所對應的全限定名稱 套件名 + 類別名
+    🎇 name = 也是別名，且 name 可以同時取多個別名
     -->
-    <bean id="hello" class="com.kuang.pojo.Hello">
-        <property name="str" value="Spring"/>   <!--類別的屬性"str" | 新建的物件名稱 Spring -->
+    <!--實例化物件 | 給 Spring 託管-->
+    <bean id="hello" class="com.yicelwen.pojo.Hello">
+        <property name="str" value="Spring"/>   
+        <!--類別的屬性"str" | 新建的物件名稱 Spring -->
     </bean>
     ```
     ```java
@@ -149,38 +158,285 @@ public class Hello {
             Hello hello = (Hello) context.getBean("hello");  // bean id=hello, Object 強制轉型為 Hello 
             System.out.println(hello.toString());
         }
-        
     }
     ```
-2. 
+    ```xml
+    <bean id="mysqlImpl" class="com.yicelwen.dao.UserDaoMysqlImpl"/>
+    <bean id="oracleImpl" class="com.yicelwen.dao.UserDaoOracleImpl"/>
+    
+    <bean id="UserServiceImpl" class="com.yicelwen.service.UserServiceImpl">
+        <property name="userDao" ref="mysqlImpl"/> <!--用戶變更資料庫,只需要修改 ref 的值-->
+    </bean>
+        <!--
+            ref 標籤: 引用 Spring 容器中已經創建好的物件
+            value 標籤: 具體的值，基本資料型別
+        -->
+    ```
+![image info](./images/classpathxmlAppContext.png)
+
++ 現在要實現不同操作，只需要在 xml 配置文件中進行修改。物件由 Spring 來創建、管理、裝配
+
+    ```java
+    public class MyTest {
+        public static void main(String[] args) {
+            // 獲取 ApplicationContext: 通過 beans.xml 拿到 Spring 容器
+            ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+            
+            // 容器在手，天下我有，需要什麼，就直接 get 什麼
+            UserServiceImpl userServiceImpl = (UserServiceImpl) context.getBean("UserServiceImpl");
+
+            userServiceImpl.getUser();
+    }
+    ```
 
 ## 06. IOC 創建對象方式
 
+1. 建一個 POJO (plain old java object)
+    + 預設的方法：使用無參數建構子創建對象
+    + 有參數建構子
+```Java
+public class User {
+    private String name;
+
+    public void User(){
+        System.out.println("User 的無參數建構子")
+    }
+    public void User(String name){
+        this.name = name;
+    }
+    public String getName(){
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void show() {
+        System.out.println("name=" + name);
+    }
+}
+```
+2. 把 User 類別放到 `beans.xml` 配置文件
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="user" class="com.yicelwen.pojo.User">
+        <!--無參建構子: 預設注入方法
+            <property name="name" value="arrietty"/>
+        -->
+        <!--有參建構子#1: 索引賦值
+            <constructor-arg index="0" value="Benjamin"/> 
+        -->
+        <!--有參建構子#2: 通過資料型別類型創建
+            <constructor-arg type="java.lang.String" value="radioactive"/>
+        -->
+        <!--有參建構子#3: 直接通過參數名稱來設置-->
+        <constructor-arg name="name" value="xxx"/>
+    </bean>
+
+
+</beans>
+```
+3. 在 main 方法取得 spring container
+```Java
+public class MyTest {
+    public static void main(String[] args) {
+        ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+        
+        User user = (User) context.getBean("user");
+        user.show();  // name=arrietty | Benjamin | raioactive | xxx 
+    }
+}
+```
+> **小結**：在配置文件加載的時候，容器中管理的物件就已經初始化了
+
+
 ## 07. Spring 配置說明
++ 別名 `<alias>`
+    ```XML
+    <!--別名，如果加了別名，我們也可以使用別名獲取到這個物件-->
+    <alias name="user" alias="userSansa"/>
+    ```
++ Bean 的配置
+    ```xml
+    <!--
+        id: bean 的唯一標識符，相當於物件名稱
+        class: bean 物件對應的全限定名 (package + class name)
+        name: 也是別名，可以用, | ; 區分多個別名
+    -->
+    <bean id="userTwo" class="com.yicelwen.pojo.UserTwo" name="user1,u2,u3;u4">
+        <property name="name" value="HippyHooray"/>
+    </bean>
+    ```
++ `import`
+    + 一般用於團隊開發使用，可以將多個配置文件，導入合併為同一個
+    + 假設目前項目有多個成員開發，mem1~mem3要複製不同的類開發，不同類別需要註冊在不同的 bean 中，可以用 import 將所有人的 bean.xml 合併為一個總配置
+        + Angela, Benji, Carlos 各自的 xml
+        + `applicationContext.xml`
+            使用的時候直接用總配置就可以了
+            ```xml
+            <beans ......>
+                <import resource="angelabean.xml"/>
+                <import resource="benjibean.xml"/>
+                <import resource="carlosbean.xml"/>
+            </beans>
+            ```
 
 ## 08. DI 依賴注入環境
++ 建構子注入
++ 拓展方式注入 (引入其它約束)
+
+## 09. 依賴注入 - Set 注入
++ `set`方式注入 (本節重點)
+    + 依賴注入本質是 set 注入
+        + 依賴：bean 物件的創建依賴於容器
+        + 注入：bean 物件中的所有屬性由容器來注入
+    + 【環境搭建】
+        1. 複雜類型
+            ```Java
+            @Getter
+            @Setter
+            public class Address {
+                private String address;
+
+                @Override
+                public String toString() {
+                    return "Address{" +
+                            "address='" + address + '\'' +
+                            '}';
+                }
+            }
+                
+             
+            ```
+        2. 真實測試物件
+            ```Java
+            @Getter 
+            @Setter
+            public class Student {
+                private String name;     //value
+                private Address address; //ref 賦值
+                private String[] books;        
+                private List<Student> hobby;     // list
+                private Map<String,String> card; // map
+                private Set<String> games;       // set
+                private String friend;           // null
+                private Properties info;         // props
+
+                @Override
+                public String toString() {
+                    return "Student{" +
+                           "name='" + name + '\'' +
+                           ", address=" + address.toString() +
+                           ", books=" + Arrays.toString(books) +
+                           ", hobbys=" + hobbys +
+                           ", card=" + card +
+                           ", games=" + games +
+                           ", friend='" + friend + '\'' +
+                           ", info=" + info +
+                           '}';
+                }
+            }
+            ```
+        3. 注入值到 Student @ `beans.xml`
+            ```xml
+            <bean id="student" class="com.yicelwen.pojo.Student">
+                <!-- 第一種: 普通值注入，直接使用 value -->
+                <property name="name" value="arrietty"/>
+                <!-- 第二種: bean 注入，使用 ref -->
+                <property name="card" ref="address">
+                <!--Array 陣列注入: ref-->
+                <property name="books">
+                    <array>
+                        <value>A song of ice and fire</value>
+                        <value>A clash of kings</value>
+                        <value>A storm of swords</value>
+                    </array>
+                </property>
+
+                <!-- List -->
+                <property name="hobbies">
+                    <list>
+                        <value>read</value>
+                        <value>code</value>
+                        <value>swim</value>
+                    </list>
+                </property>
+
+                <!-- Map -->
+                <property name="card">
+                    <map>
+                        <entry key="學生證" value="12345"/>
+                        <entry key="健保卡" value="1234"/>
+                        <entry key="借書證" value="123"/>
+                    </map>
+                </property>
+
+                <!-- Set -->
+                <property name="games">
+                    <set>
+                        <value>The Gift</value>
+                        <value>Minecraft</value>
+                        <value>Magic Awakened</value>
+                    </set>
+                </property>
+
+                <!--  空值注入: 字符串的寫法
+                      <property name = "name" value=""/>
+                      相當於 Student.setName("");  -->
+
+                <!-- NUL 值注入 -->
+                <property name="friend">
+                    <null/>
+                </property>
+
+                <!--Properties-->
+                <property name="info">
+                    <props>
+                        <prop key="driver">20220630</prop>
+                        <prop key="url">男</prop>
+                        <prop key="username">小明</prop>
+                        <prop key="password">123</prop>
+                    </props>
+                </property>
+            </bean>
+            ```
+
+        4. 測試類別
+            ```Java
+            public class MyTest {
+                public static void main(String[] args) {
+                    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+                    Student student = (Student) context.getBean("student");
+                    System.out.println(student.toString());
+                }
+            }
+            ```
 
 ## 09. RequestMapping 說明
 
-## 10. RestFul 風格講解
+## 10. c命名和 p命名空間注入
 
-## 11. 重定向和轉發
+## 11. Bean 的作用域
 
-## 12. 接收請求參數以及數據回顯
+## 12. 自動裝配 Bean
 
-## 13. 亂碼問題解決
+## 13. 註解實現自動裝配
 
-## 14. 什麼 JSON
+## 14. Spring 註解開發
 
-## 15. Jackson 使用
+## 15. 使用 JavaConfig 實現配置
 
-## 16. Fastjson 使用
+## 16. Throwback
 
-## 17. ssm 整合：Mybatis 層
+## 17. 靜態代理模式
 
-## 18. ssm 整合：Spring 層
+## 18. 靜態代理 再理解
 
-## 19. ssm 整合：SpringMVC 層
+## 19. 動態代理
 
 ## 20. AOP 實現方式一
 
