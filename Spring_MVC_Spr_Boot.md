@@ -1102,24 +1102,349 @@ Spring Boot! 如下圖 --
 + 比較特別且常用的格式如下
     + `application/json` : JSON 資料格式
     + `application/pdf` : PDF 資料格式
-    + `multipart/form data` : 若在表單 ( 中上傳資料，需使用此格式
+    + `multipart/form data` : 若在表單(form)中上傳資料，需使用此格式
  
 ## Spring Boot 中常用的取得參數方式
 ### Spring Boot 常用的取得參數方式
-1. 
-2. 
-3. 
-4. 
-5. 
-6. 
+#### 1. 取得路徑中的值 `http://localhost:8080/getProduct/{id}`
+    ```Java
+    @GetMapping("/getProduct/{id}")
+    public String getProduct1(@PathVariable int productId) {
+        // ... find product code
+        return "some-page";
+    }
+    ```
+#### 2. 取得路徑中的參數 `http://localhost:8080/getProduct/?productId=5`
+    ```Java
+    @GetMapping("/getProduct") 
+    public String getProduct(int productId) {
+        // ... find product code
+        return "some-page";
+    }
+    ```
+
+#### 3. 用`@ModelAttribute`取得參數
++ `@ModelAttribute`：用於從 Form, Model 請求參數中取得屬性值
+
+    ```Java
+    @PostMapping("/postProduct")               // 通常是 JAVA BEAN
+    public String sendProduct(@ModelAttribute ProductModel product) {
+        // ... find product code
+        return "some-page";
+    }
+    ```
+
+#### 4. 用`HttpServletRequest`接收參數
++ 註：可以用 `getParameter` 方法從 form 的 name 屬性拿到對應的值
+    ```Java
+    @PostMapping("/login")
+    public String checkLogin(HttpServletRequest request) {
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        // ...
+    }
+    ```
+
+#### 5. 用 `@RequestParam` 導入參數
++ 註：當請求參數不存在時不想報錯，可以使用 `required=false` 來指定該參數不是必須的
+    ```Java
+    @GetMapping("/getProduct/")
+    public String getProduct2(@RequestParam(value="id",required=false) int id) {
+        // ... find product code
+        return "some-page";
+    }
+    ```
+
+#### 6. 用 `@RequestBody` 導入參數
++ `@RequestBody` 用來接收格式為 JSON 的資料
+    ```Java
+    @PostMapping("/ajaxLogin")
+    public String checkLoginWithAjax(@RequestBody LoginAjaxDto loginDto) {
+        
+        String username = loginDto.getLoginUsername();
+        String password = loginDto.getLoginPassword();
+    }
+    ```
 
 ## Spring Boot 使用 JSP 時需要的設定
-## JSON
-## RESTful API
-## Ajax 非同步請求搭配 Restful API
-## Spring JPA 實作與應用
-## 分頁物件 Page 的實作與應用
++ 因 Spring Boot 開始流行的年代（約2017 左右），網路應用程式開發剛好流行「前後端分離」的模式，所以 Spring 本身不建議開發者使用 JSP 或模板引擎 (Thymeleaf, FreeMarker ,... 等)
++ 但後來技術者們發現，在有些沒有那麼大的專案其實沒有必要做前後端分離，有時候也不需要那麼專業的前端技術（也可能為了省前端工程師的成本），所以原本 MVC 模式的開發還是很流行，只是有些功能會混合使用 ajax + restful api
++ 使用 JSP 也違背了 Spring Boot 的「開箱即用」精神，除了上述的前後端分離外， Thymeleaf 模板引擎跟 Spring 有很好的整合，所以也有一些團隊由 JSP 轉為 Thymeleaf
++ 因上述歷史背景， Spring Boot 若要使用 jsp 則需要以下額外設定
 
++ `application.properties` 中需要的設定
+
+    ```properties
+    spring.mvc.view.prefix: /WEB-INF/jsp/
+    spring.mvc.view.suffix: .jsp
+    ```
++ `pom.xml` 中需要增加兩個套件的標籤
+    ```xml
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>jstl</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-jasper</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    ```
+
+## JSON
++ JSON 是目前最流行的一種資料交換格式
++ 基礎結構為鍵與值的配對 `key-value`
++ 雖然 JSON 是以 JavaScript 語法為基礎，但可獨立使用，且許多程式設計環境亦可讀取（解析）並產生 JSON 
++ JSON 可能是物件或字串。當你想從 JSON 中讀取資料時， JSON 可作為物件；當要跨網路傳送 JSON 時，就會是字串
++ [Link to MDN web - JSON](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON)
+
+    ```JSON
+    {
+        "brand": "VolksWagen",
+        "color": "Silver",
+        "year": 2
+    }
+    ```
++ JSON 物件可儲存於檔案中，副檔名為 .json 的文字檔案
++ JSON 是單純的資料格式 僅具備鍵與值（key-value），而無函式
++ JSON 的 MIME 型別（MIME TYPE）為`application/json`
+    ```json
+    {
+        "firstName": "Yicel",
+        "lastName": "Wen",
+        "sex": "female",
+        "age": 21,
+        "address": 
+        {
+            "streetAddress": "21 fake street",
+            "city": "Pseudo Town",
+            "state": "PT",
+            "postalCode": "12345"
+        },
+        "phoneNumber":
+        [
+            {
+              "type": "home",
+              "number": "212 313-4145"
+            },
+            {
+              "type": "fax",
+              "number": "646 535-4243"
+            }
+        ]
+    }
+    ```
++ JSON 鍵值配對`key-value`中，值可以是整數、符點數、字串、布林值
++ JSON 用冒號(:) 分隔 key 與 value，鍵/名稱永遠在左側，而值永遠在右
+    + **所有的 KEY 一定要有雙引號包起來**
++ Java 環境中通常使用 Java POJO 屬性值對應 JSON 鍵值
+    ```Java
+    public class Users {
+        private int id;
+        private String username;
+        private String userPassword; // ...
+    }
+    ```
+    ```Json
+    {
+        "id": 1,
+        "username":"Metro",
+        "userPassword":"qwert"
+    }
+    ```
++ JSON 與前後端分離的開發模式
+    > JSON 格式有非常明顯的**跨平台**優勢，因此 JSON 是網路上最常使用的交換資訊格式
+
+    ![image info](./images/json-rest.png)
+    
+## RESTful API
++ API 簡介
+    + Application Programming Interface 應用程式介面 
+    + Interface 於此不是 java 抽象介面，而是使用應用程式的一種方法
+    + 工程師寫好一個程式提供他人使用，並提供一個介面給他人，稱之為 API
+    + 在網路應用程式中，API 會是一個網址，且會搭配說明文件，說明該 API 的用法與需要的參數、會回傳的資訊等
++ RESTful API 簡介
+    + RESTful API 中文為表現層狀態轉換（原文：**Re**presentational **S**tate **T**ransfer ，縮寫 REST）是 Roy Thomas Fielding 提出來的一種全球資訊網軟體架構風格
+    + 因每位工程師開發出來的 API 規格不一致，導致應用他人的 API 時容易造成混亂，因此才有了 RESTful API
+    + RESTful API 為一種開發風格，經過長時間的試煉，成為許多工程師公認目前最好的 API 風格
+
++ RESTful API 與 RESTful 風格
+    + RESTful 風格
+        + 用約定俗成的方式排列透過 URL 發出 http 的請求， http 回應可以是頁面或 JSON 格式的資料
+    + RESTful API 
+        + 符合上述條件，而且 Http 回應（ResponseBody）為 JSON 格式 (早期用 XML)
+            |http method|動作(可帶參數)|CRUD|
+            |-|-|-|
+            |POST|新增資料|create|
+            |PUT|修改資料|update|
+            |DELETE|刪除資料|delete|
+            |GET|查詢資料|read|
+
+        > 嚴格來說，若回應的資料不是 JSON ，不能說這是 RESTful api ，只能說他是一般的 REST 風格
+
++ RESTful 風格
+    1. 用 http 的 method 表示動作
+    2. 透過 url 路徑可以知道資源間的階層關係
+        |http url|說明|
+        |-|-|
+        |GET/post|取得所有文章|
+        |GET/post/99|取得 id 為 99 的文章|
+        |GET/post/99/comments|取得 id 為 99 的文章的所有留言|
+        |GET/post/99/comments/2|取得上述中 id 為 2 的留言|
+        |GET/post/99/like|取得 id 為 99 的文章的按讚數|
++ 用 http 的 method 表示動作 
+    + 透過 url 路徑可以知道資源間的階層關係
+    + Http 回應（Response Body）為 JSON 格式（早期用 XML）
+
++ RESTful API 如何在 Spring Boot 中實作
+    + 傳統網路應用系統和 REST API 之間的根本差別在於網路應用系統送的給前端瀏覽器的回應通常是一份含有 HTML, CSS, JavaScript 的 HTML 文件，而 REST API 則是送回 JSON 格式的資料
+    + 這種差異正反映在 `@Controller` 和 `@RestController` 兩個註釋中
+        + `@Controller` 的工作是彙整要送回給客戶端的資料並存入屬性物件內，然後傳回一個視圖的邏輯名稱
+        + 但 `@RestController `只返回物件，此物件會自動轉換為 JSON 格式的資料
+        + 因為 Spring 提供的 HTTP message converter 會自動呼叫 `MappingJackson2Http MessageConverter` 將 POJO轉換為 JSON 格式的字串
+    + `@RestController` 是 Spring 4.0 新增的註釋
+        + 類別層級的註釋
+        + 作用: 標示類別為控制器類別
+        + `@RestController` 類別中的所有方法會傳回 POJO 物件而非視圖的邏輯名稱
+        + 為 **@Controller 與 @ResponseBody**註釋的簡寫
+
+## Ajax 非同步請求搭配 Restful API
++ 在非同步請求 (Asynchronous request) 還沒被開發之前，如果我們要瀏覽一則留言，就必須向 Server 重新 request一個完整的頁面。等待頁面切換的這段時間畫面往往會卡住不動，直到接收 response ，才會重新渲染 (render) 畫面
++ 而 Ajax 技術的出現，讓瀏覽器可以向 Server 請求資料而不需費時等待。當瀏覽器接收到 response 之後，新的內容就會即時地添入原本網頁。這也是為什麼當我們瀏覽Facebook、Twitter 內容時，不會看見整個網頁一直重新整理
++ 在一般的情境下，瀏覽器每次發出請求，都會接收到一個完整的HTML 網頁，而伺服器回傳新網頁、瀏覽器重新演算網頁的過程，有一小段空白的等待時間。若使用者在網路不穩定的地方連線，或者傳遞的資料量龐大時，這一小段的空白時間就會嚴重影響到使用者體驗
++ 另外，從效率考量，有些請求 回應其實只更新了局部的畫面，不需要每次都重新載入一個全新的網頁。因此，為了提升使用者體驗、並提高網頁的效率，而有了 AJAX 技術。透過 AJAX 技術，client 可以向 server 發出非同步請求，索取局部內容的資料進行抽換，大幅度降低每次請求與回應的資料量，從而提高了瀏覽速度
++ 使用 AJAX 不僅可以讓使用者在不刷新畫面的情況下繼續操作，不會有在操作途中「中斷」與「等候」的時間，創造了更佳的使用者體驗
+
+## Spring JPA 實作與應用
+### 1. SpringData JPA
++ **JPA(Java Persistence API)** 是 SUN 針對 ORM 技術提出的規範
+    + 目的：簡化持久化的開發工作以及整合各家 ORM 技術
++ **Spring Data JPA** 是 Spring 根據 ORM 框架和 JPA 規範而封裝的 JPA 應用框架
+    + 目的：降低存取資料層的工作量，讓開發人員只需寫出 JpaRepository 的介面，而 Spring 自動實作其功能，達到快速開發的效果
+### 2. SpringData JPA 與 Spring Boot 的整合
++ 開發者可以使用 Spring Boot 與 SpringData JPA 整合好的套件直接開發，該套件的名稱為 `spring-boot-starter-data-jpa`
++ 直接在 Maven 的 pom.xml 加入該套件，就可以使用 SpringData JPA
+
+### 3. JpaRepository 的用法
++ 先看一下 JpaRepository 的介面定義
+    ```Java
+    public interface JpaRepository<T, ID> extends PagingAndSortingRepository<T, ID>, QueryByExampleExecutor<T> {};
+    ```
++ 再看 PagingAndSortingRepository 的介面定義
+    ```Java
+    public interface PagingAndSortingRepository<T, ID> extends CrudRepository<T, ID> {};
+    ```
++ 可以看出
+    + JpaRepository 繼承了介面 PagingAndSortingRepository 和QueryByExampleExecutor。
+    + 而 PagingAndSortingRepository 又繼承 CrudRepository
+        + 因此 `JpaRepository` 介面同時擁有**基本 CRUD 功**能以及**分頁功能**
+        + `QueryByExampleExecutor<T>`則提供根據　Entity 查詢的功能（其實就是 HQL）
++ 
+    1. 下載測試 API 工具 PostMan
+    2. 為測試 JpaRepository，先不寫 Service 層
+    3. 準備 Customer Entity 類別，屬性：id, name, level
+    4. 建個 `Customer Repository 介面`， 實作 `JpaRepository<Customer, Long>`
+    5. 寫個 CustomerController 測試此介面（搭配`@ResponseBody`輸出 JSON 格式的資料）
++ CrudRepository<T, ID> 提供的內建方法
+    ```Java
+    <S extends T> S save(S entity);
+        // 可以回傳 T 型別，或是被 T 繼承的子類別
+    <S extends T> Iterable<S> saveAll(Iterable<S> entities);
+
+    Optional<T> findById(ID id);
+    
+    boolean existsById(ID id);
+    
+    Iterable<T> findAll();
+    
+    Iterable<T> findAllById(Iterable<ID> ids);
+    
+    long count();
+    
+    void deleteById(ID id);
+    
+    void delete(T entity);
+    
+    void deleteAllById(Iterable<? extends ID> ids);
+    
+    void deleteAll(Iterable<? extends T> entities);
+    
+    void deleteAll();
+    ```
+
++ 測試方法
+    1. 儲存一個 Entity（實體類別）
+        ```Java
+        <S extends T> S save(S entity);
+        ```
+    2. 儲存多個可迭代的實體類別
+        ```Java
+        <S extends T> Iterable<S> saveAll(Iterable<S> entities);
+        ```
+    3. 透過 id 找到 Optional 物件
+        ```Java
+        Optional<T> findById(ID id);
+        ```
+        + ✨Optional 說明：
+            + 可能包含，也可能不包含的值，通常拿來代替 null
+            + 因為有時 null 的語意較含糊不清，而導致系統報錯時有多種可能，造成 debug 困難
+            + Optional 物件的`isPresent()`方法可以判斷是否有拿到物件
+            + Optional 物件的`get()`方法可以拿到該物件
+
+    5. 找到本 Entity 全部的資料
+        ```Java
+        Iterable<T> findAll();
+        ```
+    6. 透過 ID 刪除某資料
+        ```Java
+        void deleteById(ID id);
+        ```
+    7. 透過 Entity 刪除某資料
+        ```Java
+        void delete(T entity);
+        ```
+
+<br/>
+
+## 分頁物件 Page 的實作與應用
+1. 分頁功能的物件 `PagingAndSortingRepository`
+    ```Java
+    public interface PagingAndSortingRepository<T, ID> extends CrudRepository<T, ID> {
+        Iterable<T> findAll(Sort sort);
+        Page<T> findAll(Pageable pageable);
+    }
+    ```
+    + Sort 可決定降冪或升冪排序
+        + `Sort.Direction.DESC` 降冪排序
+        + `Sort.Direction.ASC`  升冪排序
+
+2. Pageable 物件的使用
++ 常用方式：
+    + 透過 `PageRequest.of` 拿到 Pageable 物件
+        + Pageable request = PageRequest.of(**從第幾頁開始(0)**, **一頁幾筆資料**, **排序方式**, **根據 Entity 哪一個屬性排序**);
+            ```Java
+            Pageable request = PageRequest.of(0, 3, Sort.Direction.DESC, "added");
+            // 表示從第0頁開始，根據 added 屬性降冪排列
+            ```
+        + 拿到 Pageable 物件後就可以使用 PagingAndSortingRepository 內的 `findAll (Pageable pageable)` 方法取得 Page 物件
+
+3. Page 物件常用的方法
++ 取得 Page 物件內的總頁數
+    + `int getTotalPages();`
++ 取得 Page 物件元素的總數
+    + `long getTotalElements();`
++ 取得目前的頁數 (Page 繼承的 Slice 物件內的方法)
+    + `int getNumber();`
++ 取得 Page 物件內的資料
+    + `List<T> getContent();`
+    > 若在 jsp 內使用 Page 物件，記得使用`物件.屬性`的方式拿到屬性內的值
+    ```jsp
+    ${page.totalPages} 
+    ${page.content}
+    ${page.number}
+     ```
 
 ## JpaRepository 的 Query 方法：
 1. 即 HQL，在 SpringJpa 內 Hibernate 交由 Spring 控管，因此使用的是 JPA 的 API 名稱： JPQL(Java Persistence Query Language)
