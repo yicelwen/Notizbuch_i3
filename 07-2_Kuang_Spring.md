@@ -309,8 +309,6 @@ public class MyTest {
                             '}';
                 }
             }
-                
-             
             ```
         2. 真實測試物件
             ```Java
@@ -388,7 +386,7 @@ public class MyTest {
                       <property name = "name" value=""/>
                       相當於 Student.setName("");  -->
 
-                <!-- NUL 值注入 -->
+                <!-- NUL 注入 -->
                 <property name="friend">
                     <null/>
                 </property>
@@ -396,10 +394,10 @@ public class MyTest {
                 <!--Properties-->
                 <property name="info">
                     <props>
-                        <prop key="driver">20220630</prop>
-                        <prop key="url">男</prop>
-                        <prop key="username">小明</prop>
-                        <prop key="password">123</prop>
+                        <prop key="driver">oracledb</prop>
+                        <prop key="url">oracledburl</prop>
+                        <prop key="username">thermos</prop>
+                        <prop key="password">12345</prop>
                     </props>
                 </property>
             </bean>
@@ -409,6 +407,7 @@ public class MyTest {
             ```Java
             public class MyTest {
                 public static void main(String[] args) {
+                    // new CPX (IDEA 快捷鍵)
                     ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
                     Student student = (Student) context.getBean("student");
                     System.out.println(student.toString());
@@ -416,25 +415,494 @@ public class MyTest {
             }
             ```
 
-## 09. RequestMapping 說明
+## 10. 拓展方式注入：c命名和 p命名空間注入
++ [XML shortcut with the p-namespace](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-p-namespace)
+    1. 導入表頭文件約束
+        ```xml
+        <beans ...
+        xmlns:p="http://www.springframework.org/schema/p">
+        ```
+    2. p 命名空件注入，可以直接注入屬性的值：property
+        ```xml
+        <bean id="user" class="com.yicelwen.pojo.User" p:name="yicelwen" p:age="18"/>
+        ```
 
-## 10. c命名和 p命名空間注入
++ [XML shortcut with the c-namespace](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-c-namespace)
+    1. 導入表頭文件約束
+        ```xml
+        <beans ...
+        xmlns:c="http://www.springframework.org/schema/c">
+        ```
+    2. 需要有`有參數`+`無參數建構子`才能使用 c-namespace 注入
+        ```xml
+        <bean id="user2" class="com.yicelwen.pojo.User" c:age="17" c:name="arrietty"/>
+        ```
+    > 注意：p命名空間和c命名空間都要先導入約束才能使用
 
 ## 11. Bean 的作用域
+[Bean factory scope](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#beans-factory-scopes)
+|Scope|Description|
+|-|-|
+|**singleton**✨|(Default) Scopes a single bean definition to a single object instance for each Spring IoC container.|
+|**prototype**✨|Scopes a single bean definition to any number of object instances.|
+|**request**🎇|	Scopes a single bean definition to the lifecycle of a single HTTP request. That is, each HTTP request has its own instance of a bean created off the back of a single bean definition. Only valid in the context of a web-aware Spring `ApplicationContext`.|
+|**session**🎇|	Scopes a single bean definition to the lifecycle of an HTTP `Session`. Only valid in the context of a web-aware Spring `ApplicationContext`.|
+|**application**|	Scopes a single bean definition to the lifecycle of a `ServletContext`. Only valid in the context of a web-aware Spring `ApplicationContext`.|
+|**websocket**|Scopes a single bean definition to the lifecycle of a `WebSocket`. Only valid in the context of a web-aware Spring `ApplicationContext`.|
+
++ **Singleton 單例設計模式** 
+    + 無論用幾個 DAO 去拿，只有一個 Entity
+        ```Java
+        System.out.println(user1==user2); //true
+        ```
+        > Only one instance is ever created... and this same shared instance is injected into each collaborating object.
+    + 單例工廠模式是預設/默認的機制
+        ```xml
+        <bean id="user2" class="com.yicelwen.pojo.User" c:age="18" c:name="yicelwen" scope="singleton">
+        ```
++ **Prototype 原型設計模式**
+    + 每次從容器中 get 的時候都會產生一個新物件
+        ```Java
+        System.out.println(user1.hashCode());  //999609945
+        System.out.println(user2.hashCode());  //615634843
+        System.out.println(user1==user2);      //false
+        ```
+        > A brand new bean instance is created ... each and every time the prototype is referenced by collaborating beans.
+        ```xml
+        <bean id="accountService" class="com.yicelwen.pojo.AccountService" scope="prototype">
+        ```
+    + 其餘的 request, session, application 只有在 web 開發中使用到
+
+        > 紙筆考單例設計模式實作
 
 ## 12. 自動裝配 Bean
++ 自動裝配是 Spring 滿足 bean 依賴的一種方式
++ Spring 會在上下文中自動尋找，並自動給 bean 裝配屬性
++ 三種裝配方式
+    1. 在 xml 中顯示的配置
+    2. 在 java 中顯示配置
+    3. 隱式的自動裝配 bean ✨
+
++ 測試
+    ```Java
+    public class Cat {
+        public void makeSound(){
+            System.out.println("meow");
+        }
+    }
+    ```
+    ```Java
+    public class Dog {
+        public void makeSound(){
+            System.out.println("woof");
+        }
+    }
+    ```
+    ```Java
+    public class Person {
+        private Cat cat;
+        private Dog dog;
+        private String name;
+        // getter // setter // toString
+    }
+    ```
+    ```xml
+    <bean id="cat" class="com.yicelwen.pojo.Cat"/>
+    <bean id="dog" class="com.yicelwen.pojo.Dog"/>
+    <bean id="people" class="com.yicelwen.pojo.People">
+        <property name="name" value="Arrietty"/>
+        <property name="dog" ref="dog"/>
+        <property name="cat" ref="cat"/>
+    </bean>
+    ```
+    ```Java
+    public class MyTest {
+        @Test
+        public void test1() {
+            ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+
+            People people = context.getBean("people", People.class);
+            people.getDog().makeSound();
+            people.getCat().makeSound();
+        }
+    }
+    ```
++ ByName 自動裝配
+    + 會自動在容器上下文 (beans.xml) 中查找和自己物件 set 方法後面的值對應的 bean id
+    ```XML
+    <bean id="people" class="com.yicelwen.pojo.People" autowire="byName">
+        <property name="name" value="Arrietty"/>
+    </bean>
+    ```
++ ByType 自動裝配
+    + Spring 容器上下文中，自動查找和自己**物件屬性類型**相同的 bean
+
++ Conclusion
+    + ByName: 需要確保所有 bean 的 **id 唯一**，且這個 bean 需要和自動注入的屬性的 set 方法的值一致
+    + ByType: 需要確保所有 bean 的 **class 唯一**，且這個 bean 需要和自動注入的屬性的類型一致
 
 ## 13. 註解實現自動裝配
++ jdk 1.5 支援註解、spring 2.5 支援註解
+    > The introduction of annotation-based configuration raised the question of whether this application is "better" than XML. The short answer is "it depends." The long answer is that each approach has its pros and cons, and usually it's up to the developer to decide which strategy suits them better. Due to te way they are defined, annotation provide a lot of context in their declaration, leading to shorter and more concise configuration. However, XML excels at wiring up components without touching their source code or recompiling them. Some developers prefer having the wiring close to the source while others argue that annotated classes are no longer POJOs and, furthermore, that the configuration becomes decentralized and harder to control.
 
-## 14. Spring 註解開發
++ 要使用註解須知：
+    1. 導入約束: context 約束
+    2. **配置註解的支持: `context:annotation-config/`✨**
+
+        ```xml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <beans xmlns="http://www.springframework.org/schema/beans"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:context="http://www.springframework.org/schema/context"
+            xsi:schemaLocation="http://www.springframework.org/schema/beans
+                https://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/context 
+                https://www.springframework.org/schema/context/spring-context.xsd
+                http://www.springframework.org/schema/aop
+                https://www.springframework.org/schema/aop/spring-aop.xsd">
+            
+            <!--開啟註解支援-->
+            <context:annotation-config/>
+
+            <bean id="cat" class="com.yicelwen.pojo.Cat"/>
+            <bean id="dog" class="com.yicelwen.pojo.Dog"/>
+            <bean id="people" class="com.yicelwen.pojo.People"/>
+
+        </beans>
+        ```
+        ```Java
+        public class People {
+            @Autowired
+            private Cat cat;
+            @Autowired
+            private Dog dog;
+        }
+        ```
++ `@Autowired`註解
+    + 直接在屬性上使用即可，也可以在 set 方法上使用
+    + 使用 Autowired 可以以不用再寫 set 方法了，但前提是此自動裝配的屬性存在於 IOC 容器中，且符合名字 **byName**
+    + Default true 喜蝦密
+        ```Java
+        public @interface Autowired {
+            boolean required() default true;
+        }
+        ```
+        ```Java
+        public class People {
+            // 如果顯示定義了 Autowired 的 required 屬性為 false，就說明了這個物件可以為 null
+            @Autowired(required = false)
+            private Cat cat;
+
+            @Autowired
+            @Qualifier(value="dog222") // 指定實現特定一個 bean id
+            private Dog dog;
+        }
+        ```
++ `@Qualifier(value="")`註解
+    + 如果`@Autowired`自動裝配的環境比較複雜，自動裝配無法通過一個註解`@Autowired`完成的時候，我們可以使用`@Qualifier(value="xxx")`+`@Autowired`，指定一個唯一的 bean 物件注入
+
+        ```xml
+        <bean id="dog222" class="com.yicelwen.pojo.Dog">
+        ```
++ `@Resource`註解
+    + 通過名字去找，再通過類型去找
+    + 也可以用 `name=""` 指定單一 bean id
+        ```Java
+        public class People {
+            @Resource(name = "cat2")
+            private Cat cat;
+
+            @Resource
+            private Dog dog;
+        }
+        ```
++ `@Nullable`註解
+    + 說明這個字段可以為 null
+        ```Java       
+        public People(@Nullable String name) {
+            this.name = name;
+        }
+        ```
+
+||@Resource|@Autowired|
+|-|-|-|
+|相同之處|自動裝配、放在屬性字段上|自動裝配、放在屬性字段上|
+|實現方式|**默認通過 byName 實現，如果找不到名字，則通過 byType 實現，都找不到的話報錯**|**通過 byName 的方式實現**，而且必須要求該物件存在|
+|執行順序|@Resource 預設透過 byName 方式實現|@Autowired 透過 byType 方式實現|
+
+
+## 14. Spring 使用註解開發
+Spring 4 之後，如果要用註解開發，必須先確認 AOP dependencies 是否已經導入
+1. bean
+2. 屬性如何注入
++ 使用註解需要導入 context 約束，增加註解支持
+    1. 在 src/main/resources 建立一個 `ApplicationContext.xml`，貼上自動裝配需要的約束 (beans網址)
+        ```xml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <beans xmlns="http://www.springframework.org/schema/beans"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:context="http://www.springframework.org/schema/context"
+               xsi:schemaLocation="http://www.springframework.org/schema/beans
+                https://www.springframework.org/schema/beans/spring-beans.xsd
+                http://www.springframework.org/schema/context 
+                https://www.springframework.org/schema/context/spring-context.xsd
+                http://www.springframework.org/schema/aop
+                https://www.springframework.org/schema/aop/spring-aop.xsd">
+            
+            <!-- 指定要掃描的套件, 這個套件下的註解就會生效 -->
+            <context:component-scan base-package="com.yicelwen"/>
+            <context:annotation-config/>
+        </beans>
+        ```
+        ```Java
+        // @Component 組件
+        // 相當於 <bean id="user" class="com.yicelwen.pojo.User">
+        @Component 
+        public class User {
+
+            private String name; 
+
+            // 相當於 bean 標籤中的 <property name="name" value="arrietty"/>
+            @Value("arrietty")
+            public void setName(String name) {
+                this.name = name;
+            }
+        }
+        ```
+3. 衍生的註解
++ `@Component` 註解
+    + 組件，放在類別上面，說明這個類別被 Spring 管理了，就是 bean
+    + 有幾個衍生註解，web 開發中會按照 mvc 三層架構分層
+        + DAO 資料存取層 `@Repository`
+        + Service 業務層 `@Service`
+        + Controller  `@Controller`
+        > 加入註解就代表該物件被 Spring 託管了。Component, Repository, Service, Controller 這四個註解都代表將某個類別註冊到 Spring 容器中裝配。
+
++ `@Value` 註解
+    + 如果要注入的值比較複雜，還是建議用配置文件
+
+
+4. 自動裝配置：`@Autowired`、`@Qualifier`、`@Nullable`、`@Resource`
+
+5. 作用域
+    ```Java
+    @Component
+    @Scope("singleton")  // @Scope("prototype")
+    public class User {
+
+        public String name;
+
+        // 相當於 <property name="name" value="yicelwen">
+        @Value("yicelwen")
+        public void setName(String name) {
+            this.name = name;
+        }
+    }
+    ```
+6. 小結
+
+|XML|Annotation|
+|-|-|
+|更加萬能，適用於任何場合，維護簡單方便|不是自己類別的話使用不了，維護相對複雜|
+|用來管理所有的bean|負責完成屬性的注入|
+> 應注意的問題：<br/>必須讓註解生效，就需要開啟註解支持 <br/>(1) context:annotation-config <br/>(2) 掃描指定套件 context:component-scan
 
 ## 15. 使用 JavaConfig 實現配置
++ 本節完全不用 Spring xml 配置了，全權交給 Java 來做
++ JavaConfig 是 Spring 的一個子項目，在 Spring 4 之後，變成了一個核心功能
+    + #### 配置類別
+        ```Java
+        // @Configuration 也會被 Spring 容器託管，因為 Configuration 本來就是一個 @Component
+        // @Configuration 代表配置類，與`beans.xml`等價
+        @Configuration
+        @ComponentScan("com.yicelwen.pojo")
+        public class YicelConfig {
+            /*
+            註冊一個 bean，相當於 bean 標籤
+            此方法的名字，相當於 bean 標籤的 id 屬性
+            此方法的回傳值，相當於 bean 標籤中的 class 屬性
+            */
+            @Bean
+            public User getUser(){
+                return new User();  // 回傳要注入到 bean 的物件
+            }
+        }
+        ```
+    + 一個POJO + 註解說明這個類別被 Spring 接管(i.e. 註冊到了容器中)
+    + #### 實體類別
+        ```Java
+        @Component
+        public class User {
+            private String name;
 
-## 16. Throwback
+            public String getName(){
+                return name;
+            }
+            @Value("Benjamin")
+            public void setName(String name) {
+                this.name = name;
+            }
+            @Override
+            public String toString() {
+                return "User{" +
+                       "name='" + name + '\'' +
+                       '}';
+            }
+        }
+        ```
+    + #### 測試類別
+        ```Java
+        public class MyTest {
+            public static void main(String[] args) {
+                // 如果完全用配置類方式，我們就只能通過 AnnotationConfig 上下文去獲取容器，通過配置類的 class 物件加載
+                ApplicationContext context = new AnnotationConfigApplicationContext(YicelConfig.class);
+                User getUser = (User) context.getBean("getUser");
+                System.out.println(getUser.getName());
+            }
+        }
+        ```
+    + 將第二個配置類整合為一個類別
+        + 寫另一個 config.java
+            ```Java
+            @Configuration
+            public class YicelConfig2{
+                ...
+            }
+            ```
+        + 在配置類#1 類別上加一個 `@Import`
+            ```Java
+            @Configuration
+            @ComponentScan("com.yicelwen.pojo")
+            @Import(YicelConfig2.class)
+            public class YicelConfig {
+                ...
+            }
+            ```
+            > 純 Java 的配置方式在 Spring Boot 中隨處可見
+
+<br/>
 
 ## 17. 靜態代理模式
+為什麼要學代理模式？ 因為這就是 Spring AOP 的底層
 
-## 18. 靜態代理 再理解
++ 代理模式的分類
+    + 靜態代理
+        ![image info](./images/proxy-intro.png)
+    + 動態代理
+
+### 靜態代理
++ 角色分析：
+    + *抽象角色*：一般會使用`介面`或者`抽象`類別來解決
+    + *真實角色*：被代理的角色
+    + *代理角色*：代理真實角色
+        + 代理真實角色後，一般會做一些附屬操作
+    + *客戶*：訪問代理對象的人
+
+1. 介面
+    ```java
+    // 租房
+    public interface Rent {
+        public void rent();
+    }   
+    ```
+2. 真實角色
+    ```java
+    // 房東
+    public class LandLady implements Rent {
+        // 方法重寫
+        public void rent() {
+            System.out.println("房東要出租房子");
+        }
+    }
+    ```
+3. 代理角色
+    ```Java
+    public class Proxy {
+
+        private LandLady landl; // 多用組合少用繼承(extends) 
+
+        public Proxy(){}
+
+        public Proxy(LandLady landl) {
+            this.landl = landl;
+        }
+
+        public void rent() {
+            seeHouse();
+            landl.rent();
+            signContract();
+            chargeFare();
+        }
+
+        // 看房
+        public void seeHouse() {
+            System.out.println("仲介帶你看房");
+        }
+
+        // 收仲介費
+        public void chargeFare() {
+            System.out.println("收仲介費");
+        }
+
+        // 簽合約
+        public void signContract() {
+            System.out.println("簽租賃合約");
+        }
+    }
+    ```
+4. 客戶訪問代理角色
+    ```Java
+    public class Client {
+        public static void main(String[] args) {
+            LandLady landl = new LandLady();
+            // landl.rent();  // 房東要出租房子
+
+            /* 代理：仲介幫房東租房子
+               But 代理角色一般會有一些附屬操作  */
+            Proxy proxy = new Proxy(landl);
+
+            // 客戶直接找仲介租房子即可
+            proxy.rent();   
+        }
+    }
+    ```
+
++ 代理模式的好處
+    + 可以使真實角色的操作更加純粹，不用去關注一些公共業務
+    + 公共業務就交給了代理角色，實現了業務的分工
+    + 公共業務發生擴展的時候，方便集中管理
++ 缺點
+    + 一個角色就會產生一個代理角色，代碼量會翻一倍，開發效率變低
+        > 動態代理可以解決
+
+## 18. 靜態代理 加深理解
+```Java
+public interface UserService {
+    public void add();
+    public void delete();
+    public void update();
+    public void query();
+}
+```
+```Java
+public class UserServiceImpl implements UserService {
+    public void add(){
+        System.out.println("增加了一個用戶");
+    }
+
+    public void delete(){
+        System.out.println("刪除了一個用戶");
+    }
+
+    public void update(){
+        System.out.println("修改了一個用戶");
+    }   
+
+    public void query(){
+        System.out.println("查詢了一個用戶");
+    }
+}
+```
 
 ## 19. 動態代理
 
@@ -443,12 +911,6 @@ public class MyTest {
 ## 21. AOP 實現方式二
 
 ## 22. 註解實現 AOP
-
-## 23. 回顧 Mybatis
-
-## 24. 整合 Mybatis 方式一
-
-## 25. 整合 Mybatis 方式二
 
 ## 26. 事務回顧
 
