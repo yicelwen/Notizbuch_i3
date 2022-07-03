@@ -903,10 +903,221 @@ public class UserServiceImpl implements UserService {
     }
 }
 ```
+```Java
+public class Client {
+    public static void main(String[] args) {
+        UserServiceImpl userService = new UserServiceImpl();
+
+        UserServiceProxy proxy = new UserServiceProxy();
+        proxy.setUserService(userService);
+
+        proxy.add();
+
+    }
+}
+```
++ 在不改變原有業務下增加功能，此時代理就非常好用
+    > 改動原有的代碼在公司中是大忌🚨
+
+    ```Java
+    public class UserServiceProxy implements UserService {
+    
+        private UserServiceImpl userService;
+
+        public void setUserService(UserServiceImpl userService) {
+            this.userService = userService;
+        }
+
+        public void add(){
+            log("add");
+            userService.add();
+        }
+
+        public void delete(){
+            log("delete");
+            userService.delete();
+        }
+
+        public void update(){
+            log("update");
+            userService.update();
+        }   
+
+        public void query(){
+            log("query");
+            userService.query();
+        }
+
+        // 日志方法
+        public void log(String msg){
+            System.out.println("[Debug] 使用了"+msg+"方法");
+        }
+    }
+    ```
+    ![image info](./images/static-proxy.png)
 
 ## 19. 動態代理
++ 動態代理和靜態代理角色一樣
++ 動態代理的代理類是動態生成的，不是直接寫好的
+
++ 動態代理兩大類：
+    1. 基於介面的動態代理 - `JDK` (本節重點)
+    2. 基於類別的動態代理 - `cglib`
+    3. java 字節碼實現 - `JAVAssist` (JBOSS用, 非tomcat)
+
++ 需要了解兩個類別：Proxy 代理、Invocationhandler 調用處理程序
+    + `java.lang.reflect.Invocationhandler`
+        + 是由代理實例的 *調用處理程序* 實現的介面
+        + 每個代理實例都有一個關聯的調用處理程序，當在代理實例上調用方法時，方法調用將被編碼並分派到其調用處理程序的 invoke 方法 (透過反射的方式執行一個方法)
+
+            ```java
+            Object invoke (Object proxy,
+                            方法 method,
+                            Object[] args)
+                   throws Throwable
+            ```
+    + `java.lang.reflect.Proxy`
+        + Proxy 提供了創建動態代理類和實例的靜態方法
+
+            |Proxy|Invocationhandler|
+            |-|-|
+            |用來生成動態代理這個實例的|用來調用處理程序並返回一個結果的|
++ 動態代理的好處：
+    + 靜態代理的好處都有
+        + 可以使真實角色的操作更加純粹，不用去關注一些公共業務
+        + 公共業務就交給了代理角色，實現了業務的分工
+        + 公共業務發生擴展的時候，方便集中管理
+    ---
+    + 一個動態代理的是一個介面，一般就是對應的一類業務
+    + 一個動態代理類可以代理多個類，只要是實現了同一個介面即可
+
+```java
+// 等會要用此類別自動生成代理類
+public class ProxyInvocationHandler implements InvocationHandler {
+
+    // #1 被代理的介面            [代理誰]
+    // private Rent rent;
+    private Object target;
+
+    public void setTarget(Object target) {
+        this.target = target;
+    }
+
+    public void setRent (Rent rent) {
+        this.rent = rent;
+    }
+
+    // #2 生成得到代理類別         [生成代理類]
+    // xx.newProxyInstance(自己類別的getClassLoader, 被代理的介面，invocationHandler);
+    // 這串代碼是固定的，只需要改 rent 部分
+    public Object getProxy(){
+        Proxy.newProxyInstance(this.getClass().getClassLoader(),
+                    target.getClass().getInterfaces(), this);  
+                    // target - formerly rent
+    }
+
+    // #3 處理代理實例，並回傳結果  [調用代理程序的執行方法]
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        // 動態代理的本質就是使用反射機制來實現
+        // seeHouse();
+        log(method.getName()); ✨
+        Object result = method.invoke(target, args); 
+        // chargeFare();
+        return result;
+    }
+
+    public void log(String msg){
+        System.out.println("執行了" +msg+ "方法");
+    }
+
+    // public void seeHouse(){
+    //     System.out.println("動態仲介帶你看房子");
+    // }
+
+    // public void chargeFare(){
+    //     System.out.println("動態仲介抽傭金收仲介費了");
+    // }
+}
+```
+```java
+public class Client {
+    public static void main(String[] args) {
+        // 真實角色
+        LandLady landl = new LandLady();
+        
+        // 代理角色: null
+        ProxyInvocationHandler pih = new ProxyInvocationHandler();
+        // 透過調用程序處理角色來處理我們要調用的介面物件
+        pih.setRent(landl);
+        Rent proxy = (Rent) pih.getProxy();  // 這裡的 proxy 是動態生成的, 我們並沒有寫
+        proxy.rent();
+    }
+}
+```
+```Java
+public class Client2 {
+    public static void main(String[] args) {
+        // 真實角色
+        UserServiceImpl userService = new UserServiceImpl();
+
+        // 代理角色，不存在
+        ProxyInvocationHandler pih = new ProxyInvocationHandler();
+
+        pih.setTarget(userService);  // 設置要代理的對象
+
+        // 動態生成代理類
+        UserService proxy = (UserService) pih.getProxy();
+
+        proxy.delete();
+    }
+}
+```
+<br/>
 
 ## 20. AOP 實現方式一
++ AOP (Aspect Oriented Programming) 面向導向程式設計：
+    + 通過預編譯方式和運行期動態代理實現程式功能統一維護的一種技術
+    + AOP 是 OOP 的延續，是軟體開發的一個熱點，是 Spring 框架中的一個重要內容，是函數式程式設計的一種衍生范型
+    + 利用 AOP 可以對業務邏輯的各個部分進行隔離，從而使業務邏輯各部分之間的耦合度降低，提高程式的可重用性，同時提高開發效率
+        ![image info](./images/aop-.png)
+
++ 提供聲明式事務：允許用戶自定義切面
+    + 橫切關注點
+        + 跨越應用程序多個模塊的方法或功能，即是與我們業務邏輯無關的，但是我們需要關注的部分，就是橫切關注點
+            + e.g. 日誌、安全、緩存、事務 ...
+    + 切面（Aspect）
+        + 橫切關注點被模塊化的特殊對象，i.e. 它是一個類別
+    + 通知（Advice）
+        + 切面必須要完成的工作，i.e. 它是類別中的一個方法
+    + 目標（Target）
+        + 被通知的物件
+    + 代理（Proxy）
+        + 向目標物件應用通知之後創建的物件
+    + 切入點（PointCut）
+        + 切面通知執行的 **地點** 的定義
+    + 連接點（JointPoint）
+        + 與切入點匹配的執行點
+
++ Spring AOP 中，透過 Advice 定義橫切邏輯，Spring 中支持五種類型的 Advice
+    |通知類型|連接點|實現介面|
+    |-|-|-|
+    |前置通知|方法方法前|`org.springframework.aop.MethodBeforeAdvice`|
+    |後置通知|方法後|`org.springframework.aop.AfterReturningAdvice`|
+    |環繞通知|方法前後|`org.aopalliance.intercept.MethodInterceptor`|
+    |異常跳出通知|方法拋出異常|`org.springframework.aop.ThrowsAdvice`|
+    |引介通知|類別中增加新的方法屬性|`org.springframework.aop.IntroductionInterceptor`|
+    > 即 AOP 在不改變原有代碼的情況下，去增加新的功能
+
++ 使用 Spring 實現 AOP
+    + 使用 AOP 織入，需要導入一個依賴包
+        ```xml
+        <!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>1.9.4</version>
+        </dependency>
+        ```
 
 ## 21. AOP 實現方式二
 
