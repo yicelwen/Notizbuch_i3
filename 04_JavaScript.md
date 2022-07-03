@@ -587,143 +587,167 @@ Javascript 是 event-driven language
          |**Math.floor(x)** |   **Math.log(x)**||
          
    6. **內建物件 - Date**
-            方法           │  說明
-──────────────────────┴─────────────────────────────
-Wed Feb 24 2022 11:49:18 GMT+0800 (台北標準時間)
-──────────────────────┬─────────────────────────────
-getDate() | getUTCDate()  │ 24
-──────────────────────┼─────────────────────────────
-getDay() | getUTCDay()    │ 3 (一星期的第幾天，週日為 0)
-──────────────────────┼─────────────────────────────
-getFullYear()             │ 2022
-──────────────────────┼─────────────────────────────
-getHours()                │ 11 (0 ~ 23)
-──────────────────────┼─────────────────────────────
-getMilliseconds()         │ 
-──────────────────────┼─────────────────────────────
-getMinutes()              │ 49
-──────────────────────┼─────────────────────────────
-getMonth()                │ 1 (0 代表 1 月)
-──────────────────────┼─────────────────────────────
-getSeconds()              │ 18
-──────────────────────┼─────────────────────────────
-getTime()                 │ 從 UNIX 時間戳記至日前的總毫秒數
+      + Wed Feb 24 2022 11:49:18 GMT+0800 (台北標準時間)
+         |方法|說明|
+         |-|-|
+         |getDate() \| getUTCDate()|24|
+         |getDay() \| getUTCDay() |3 (一星期的第幾天，週日為 0)|
+         |getFullYear()|2022|
+         |getHours()|11 (0 ~ 23)|
+         |getMilliseconds()||
+         |getMinutes()|49|
+         |getMonth() |1 (0 代表 1 月)|
+         |getSeconds()|18|
+         |getTime()|從 UNIX 時間戳記至日前的總毫秒數|
 
-
-方法
-────────────────────────────────────────────────────
-Wed Feb 24 2022 11:54:59 GMT +0800 (台北標準時間)
-──────────────────────┬─────────────────────────────
-toDateString()            │ Wed Feb 24 2022
-──────────────────────┼─────────────────────────────
-toISOString()             │ 2022-2-24T03:54:59.889Z
-──────────────────────┼─────────────────────────────
-toJSON()                  │ 2022-2-24T03:54:59.889Z
-──────────────────────┼─────────────────────────────
-toLocaleDateString()      │ 2022/2/24
-──────────────────────┼─────────────────────────────
-toLocalString()           │ 2022/2/24 上午11:54:59
-──────────────────────┼─────────────────────────────
-toLocaleTimeString()      │ 上午 11:54:59
-──────────────────────┼─────────────────────────────
-toString() | toUTCString  │ Wed Feb 24 2022 11:54:59 GMT+0800
-──────────────────────┼─────────────────────────────
-toTimeString()            │ 11:54:59 GMT+0800
+      + 方法：`Wed Feb 24 2022 11:54:59 GMT +0800 (台北標準時間)`
+         |||
+         |-|-|
+         |toDateString()|Wed Feb 24 2022|
+         |toISOString() |2022-2-24T03:54:59.889Z|
+         |toJSON()|2022-2-24T03:54:59.889Z|
+         |toLocaleDateString()|2022/2/24|
+         |toLocalString() |2022/2/24 上午11:54:59|
+         |toLocaleTimeString()|上午 11:54:59|
+         |toString() \| toUTCString|Wed Feb 24 2022 11:54:59 GMT+0800|
+         |toTimeString()|11:54:59 GMT+0800|
  
+    7. **內建物件 - RegExp**
+         + 更改時間的方法
+            ```Javascript
+            setDate()
+            setFullYear()
+            setHours()
+            setMilliseconds()
+            setMinutes()
+            setMonth()   // 0 代表 1 月
+            setSeconds()
+            ```
 
-(7) 內建物件 - RegExp
-更改時間的方法
-  setDate()
-  setFullYear()
-  setHours()
-  setMilliseconds()
-  setMinutes()
-  setMonth()   *0 代表 1 月*
-  setSeconds()
+         + 屬性：
+            + `global` | `ignoreCase` | `lastIndex` | `multiline` | `source`
+         + 方法： 
+            + `compile()`  |  `exec()`  |  `test()`
 
-方法
-compile()  |  exec()  |  test()
+    8. **自訂物件 - Object**
 
-屬性
-global  |  ignoreCase  |  lastIndex  |  multiline  |  source
+   + 目的：產生與定義自訂物件
+   + 建立物件：
+      ```javascript
+      let obj = new Object();
+      let obj = {};
 
-(8) 自訂物件 - Object 
-目的：產生與定義自訂物件
-建立物件：
-let obj = new Object();
-let obj = {};
+      let obj = new Object(name:'Anan',age:10);
+      let obj = {name:'Anan',age:10};
+      ```
 
-let obj = new Object(name:'Anan',age:10);
-let obj = {name:'Anan',age:10};
-
-[ex]
-let obj = {
-    name:'Anan',
-    age:10,
-    favoriteColors:{'blue','green','gray'},
-    gender:'M',
-    student:true,
-    today:new Date(),
-};
+   + 範例：
+      ```javascript
+      let obj = {
+         name:'Anan',
+         age:10,
+         favoriteColors:{'blue','green','gray'},
+         gender:'M',
+         student:true,
+         today:new Date(),
+      };
+      ```
 
 ## 簡介 ES6
+[淺談JS版本差異！ES5、ES6](https://medium.com/andy-blog/day15-%E6%B7%BA%E8%AB%87js%E7%89%88%E6%9C%AC%E5%B7%AE%E7%95%B0-es5-es6-d60ff5e882ff)
 ### 1. var | let | const
-ES5 => var(variable) 宣告的變數可以改變
-ES6 => let    宣告的變數可以改變
-       const  宣告的變數不可以改變(不能被reassigned)
++ ES5
+   + var(variable) 宣告的變數可以改變
++ ES6 
+   + **let    宣告的變數可以改變**
+   + **const  宣告的變數不可以改變** (不能被reassigned)
 
-var 和 let 的差別在 #作用域(scope)
-for(let j=0; j < 5; j++){
++ var 和 let 的差別在 #作用域(scope)
+   ```
+   for(let j=0; j < 5; j++){
+      console.log(j);
+   }
    console.log(j);
-}
-console.log(j);
-------------------
-#hosting(提升)
-JS可以補宣告
+   ```
+ 
 
 ### 2. object shorthand 物件縮寫
-(1).屬性縮寫
-(2).函數縮寫
++ 屬性縮寫 & 函數縮寫
 
 ### 3. destructing assignment 解構賦值
-目的：便利的取出元素。
-(1).陣列解構
-(2).物件解構
-(3).方法(函數)參數的解構
-    陣列解構
-    let numArray = [1,3,5,7,9];
-    let first = numArray[0];
-    let second = numArray[1];
-    let third = numArray[2];
++ 目的：便利的取出元素。
+   1. 陣列解構
+   2. 物件解構
+   3. 方法(函數)參數的解構
+      + 陣列解構
+         ```Javascript
+         let numArray = [1,3,5,7,9];
+         let first = numArray[0];
+         let second = numArray[1];
+         let third = numArray[2];
+         ```
+    
+
 
 ### 4. string template 字串模板
-(1).字串串接
-(2).插入表達式
-(3).多行字串
+   + 字串串接 (backtick)
+   + 插入表達式
+   + 多行字串
+
+      ```JavaScript
+      // ✨改變了以往字串的寫法，不用再用 + 來進行字串與變數的結合
+      const name = 'Andy';
+      // ES5寫法 
+      var str = 'Hello' + name + "！";  
+      // ES6寫法 
+      const str = `Hello ${name}！`;
+  
+      // ✨也可以多行一起串接
+
+      //ES5寫法
+      var html = "<div>";
+      html +=    "<p>Hello World</p>";
+      html +=    "</div>";
+
+      // ES6寫法 
+      const html = `
+         <div>
+            <p>Hello World</p>
+         </div>
+      `
+      ```
 
 ### 5. arrow function 箭頭函數
-(1).宣告方式
-    函數傳遞一個參數，不用加小括號
-    函數不傳參數或傳遞不只一個參數，一定要加小括號
-    傳回值的敘述只有一行，可以省略大括號，也可以省略 return
-
-Arrow 函式 (或是 fat arrow 符號) 是最近被加到 JavaScript 的 (在2015年釋出的 ES6 首度出現)。它們簡化了簡短匿名函式的定義，以下摘要了這個語法中最重要的部分：
-
-  ① 把參數放在小括號中，然後函式的主體放在大括號裡面：
+1. 宣告方式
+   + 函數傳遞一個參數，不用加小括號
+   + 函數不傳參數或傳遞不只一個參數，一定要加小括號
+   + 傳回值的敘述只有一行，可以省略大括號，也可以省略 return
+---
++ **Arrow 函式** (或是 fat arrow 符號) 是最近被加到 JavaScript 的 (在2015年釋出的 ES6 首度出現)。它們簡化了簡短匿名函式的定義，以下摘要了這個語法中最重要的部分：
+   1. 把參數放在小括號中，然後函式的主體放在大括號裡面：
+      ```Javascript
       (a, b, c) => {statements}
-  ② 如果只有一個參數，那就不一定需要小括號：
+      ```
+
+   2. 如果只有一個參數，那就不一定需要小括號：
+      ```Javascript
       a => {statements}
-  ③ 如果沒有參數，請使用一個空的小括號：
+      ```
+
+   3. 如果沒有參數，請使用一個空的小括號：
+      ```Javascript
       () => {statements}
-  ④ 如果函式的主體是只有一條敘述，則大括號和分號都是可選用的，
-     而且計算之後的值將會成為此函式的傳回值：
+      ```
+
+   4. 如果函式的主體是只有一條敘述，則大括號和分號都是可選用的，而且計算之後的值將會成為此函式的傳回值：
+      ```Javascript
       (a, b, c) => expression;
+      ```
 
-Arrow 函式並沒有 this 或是 arguments 變數：取而代之的，this 和 arguments 的值會被保留自封閉的範圍。因此，arrow 函式不能被使用在你需要 this 的情況；如果你需要 this，就需要使用 function 關鍵字去定義函式或 callback。
-
-
-(2).語法簡短
-(3).自動綁定
-    一般的JS context(情境)：this 代表執行當下的外層物件
-    所以 this 在執行當下才有意義
-(4).this
++ Arrow 函式並沒有 this 或是 arguments 變數：取而代之的，this 和 arguments 的值會被保留自封閉的範圍。因此，**arrow 函式不能被使用在你需要 this 的情況**；如果你需要 this，就需要使用 function 關鍵字去定義函式或 callback。
+---
+2. 語法簡短
+3. 自動綁定
+   + 一般的JS context(情境)：this 代表執行當下的外層物件
+   + 所以 this 在執行當下才有意義
+4. `.this`
