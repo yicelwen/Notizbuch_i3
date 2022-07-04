@@ -1118,7 +1118,52 @@ public class Client2 {
             <version>1.9.4</version>
         </dependency>
         ```
+    + 方式一：使用 Spring 的介面
+        + 前置日誌增強類
+            ```Java
+            public class Log implements MethodBeforeAdvice {
+                // method: 要執行的目標對象的方法
+                // object: 參數
+                // target: 目標對象
+                public void before(Method method, Object[] args, Object target) throws Throwable {
+                    System.out.println(target.getClass().getName()+"的"+method.getName()+"被執行了");
+                }
+            }
+            ```
+            ```Java
+            public interface MethodBeforeAdvice extends BeforeAdvice {
+                void before(Method var1, Object[] var2, @Nullable Object var3) throws Throwable;
+            }
+            ```
+        + 後置日誌增強類
+            ```Java
+            import org.springframework.aop.AfterReturningAdvice;
+            import java.lang.reflect.Method;
 
+            public class AfterLog implements AfterReturningAdvice {
+
+                // returnValue 返回值
+                public void afterReturning(Object returnValue, Method method, Object[] args) throws Throwable {
+                    System.out.println("執行了"+method.getName()+"方法，返回結果為"+returnValue);
+
+                }
+            }
+            ```
+        + `applicationContext.xml` 
+
+            ```xml
+            <?xml version="1.0" encoding="UTF-8"?>
+            <beans xmlns="http://www.springframework.org/schema/beans"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.springframework.org/schema/beans
+                 https://www.springframework.org/schema/beans/spring-beans.xsd">
+
+                <!--註冊 bean-->
+                <bean id="userService" class="com.">
+            </beans>
+            ```
+
+    
 ## 21. AOP 實現方式二
 
 ## 22. 註解實現 AOP
