@@ -581,7 +581,7 @@ public class MyTest {
 + `@Autowired`註解
     + 直接在屬性上使用即可，也可以在 set 方法上使用
     + 使用 Autowired 可以以不用再寫 set 方法了，但前提是此自動裝配的屬性存在於 IOC 容器中，且符合名字 **byName**
-    + Default true 喜蝦密
+    + Default true 喜蝦密 for Autowired interface
         ```Java
         public @interface Autowired {
             boolean required() default true;
@@ -627,8 +627,8 @@ public class MyTest {
 ||@Resource|@Autowired|
 |-|-|-|
 |相同之處|自動裝配、放在屬性字段上|自動裝配、放在屬性字段上|
-|實現方式|**默認通過 byName 實現，如果找不到名字，則通過 byType 實現，都找不到的話報錯**|**通過 byName 的方式實現**，而且必須要求該物件存在|
-|執行順序|@Resource 預設透過 byName 方式實現|@Autowired 透過 byType 方式實現|
+|實現方式|**默認通過 byName 實現，如果找不到名字，則通過 byType 實現，都找不到的話報錯**|**通過 `byType` 的方式實現**，而且必須要求該物件存在，否則nullpointer例外|
+|執行順序|@Resource 預設透過 byName 方式實現|@Autowired 透過 `byType` 方式實現|
 
 
 ## 14. Spring 使用註解開發
@@ -684,7 +684,7 @@ Spring 4 之後，如果要用註解開發，必須先確認 AOP dependencies �
 
 4. 自動裝配置：`@Autowired`、`@Qualifier`、`@Nullable`、`@Resource`
 
-5. 作用域
+5. 作用域 `@Scope`
     ```Java
     @Component
     @Scope("singleton")  // @Scope("prototype")
@@ -787,6 +787,7 @@ Spring 4 之後，如果要用註解開發，必須先確認 AOP dependencies �
 
 + 代理模式的分類
     + 靜態代理
+
         ![image info](./images/proxy-intro.png)
     + 動態代理
 
@@ -948,7 +949,7 @@ public class Client {
             userService.query();
         }
 
-        // 日志方法
+        // 日誌方法
         public void log(String msg){
             System.out.println("[Debug] 使用了"+msg+"方法");
         }
@@ -983,13 +984,12 @@ public class Client {
             |-|-|
             |用來生成動態代理這個實例的|用來調用處理程序並返回一個結果的|
 + 動態代理的好處：
-    + 靜態代理的好處都有
+    1. 靜態代理的好處都有
         + 可以使真實角色的操作更加純粹，不用去關注一些公共業務
         + 公共業務就交給了代理角色，實現了業務的分工
         + 公共業務發生擴展的時候，方便集中管理
-    ---
-    + 一個動態代理的是一個介面，一般就是對應的一類業務
-    + 一個動態代理類可以代理多個類，只要是實現了同一個介面即可
+    2. 一個動態代理的是一個介面，一般就是對應的一類業務
+    3. 一個動態代理類可以代理多個類，只要是實現了同一個介面即可
 
 ```java
 // 等會要用此類別自動生成代理類
@@ -1074,8 +1074,8 @@ public class Client2 {
 ```
 <br/>
 
-## 20. AOP 實現方式一
-+ AOP (Aspect Oriented Programming) 面向導向程式設計：
+## 20. AOP 實現方式一：Spring 的 API 介面
++ AOP (Aspect Oriented Programming) 剖面導向程式設計：
     + 通過預編譯方式和運行期動態代理實現程式功能統一維護的一種技術
     + AOP 是 OOP 的延續，是軟體開發的一個熱點，是 Spring 框架中的一個重要內容，是函數式程式設計的一種衍生范型
     + 利用 AOP 可以對業務邏輯的各個部分進行隔離，從而使業務邏輯各部分之間的耦合度降低，提高程式的可重用性，同時提高開發效率
@@ -1104,7 +1104,7 @@ public class Client2 {
     |前置通知|方法方法前|`org.springframework.aop.MethodBeforeAdvice`|
     |後置通知|方法後|`org.springframework.aop.AfterReturningAdvice`|
     |環繞通知|方法前後|`org.aopalliance.intercept.MethodInterceptor`|
-    |異常跳出通知|方法拋出異常|`org.springframework.aop.ThrowsAdvice`|
+    |異常拋出通知|方法拋出異常|`org.springframework.aop.ThrowsAdvice`|
     |引介通知|類別中增加新的方法屬性|`org.springframework.aop.IntroductionInterceptor`|
     > 即 AOP 在不改變原有代碼的情況下，去增加新的功能
 
@@ -1118,21 +1118,69 @@ public class Client2 {
             <version>1.9.4</version>
         </dependency>
         ```
-    + 方式一：使用 Spring 的介面
+    + 寫一些增刪改查
+        ```Java
+        public interface UserService {
+            public void add();
+            public void delete();
+            public void update();
+            public void select();
+        }
+        ```
+        ```Java
+        public class UserServiceImpl implements UserService {
+            @Override
+            public void add(){
+                System.out.println("新增了個用戶");
+            }
+            @Override
+            public void delete(){
+                System.out.println("刪除了個用戶");
+            }
+            @Override
+            public void update(){
+                System.out.println("修改了個用戶");
+            }
+            @Override
+            public void select(){
+                System.out.println("查詢了個用戶");
+            }
+        }
+        ```
+    + 方式一：使用 Spring 的 API 介面
         + 前置日誌增強類
             ```Java
+            import org.springframework.aop.MethodBeforeAdvice;
+            import java.lang.reflect.Method;
+
             public class Log implements MethodBeforeAdvice {
                 // method: 要執行的目標對象的方法
                 // object: 參數
                 // target: 目標對象
+                @Override
                 public void before(Method method, Object[] args, Object target) throws Throwable {
                     System.out.println(target.getClass().getName()+"的"+method.getName()+"被執行了");
                 }
             }
             ```
+        + MethodBeforeAdvice 的 source code
             ```Java
+            /**
+             * Advice invoked before a method is invoked. Such advices cannot 
+             * prevent the method call proceeding, unless they throw a Throwable.
+             */
             public interface MethodBeforeAdvice extends BeforeAdvice {
-                void before(Method var1, Object[] var2, @Nullable Object var3) throws Throwable;
+                /**
+                 * Callback before a given method is invoked.
+                 * @param method method being invoked
+                 * @param args arguments to the method
+                 * @param target target of the method invocation. May be {@code null}.
+                 * @throws Throwable if this object wishes to abort the call.
+                 * Any exception thrown will be returned to the call if it's
+                 * allowed by the method signature. Otherwise the exception
+                 * will be wrapped as a runtime exception
+                 */
+                void before(Method method, Object[] args, @Nullable Object target) throws Throwable;
             }
             ```
         + 後置日誌增強類
@@ -1143,36 +1191,197 @@ public class Client2 {
             public class AfterLog implements AfterReturningAdvice {
 
                 // returnValue 返回值
+                @Override
                 public void afterReturning(Object returnValue, Method method, Object[] args) throws Throwable {
                     System.out.println("執行了"+method.getName()+"方法，返回結果為"+returnValue);
-
                 }
             }
             ```
-        + `applicationContext.xml` 
+        + `applicationContext.xml` - 把上述類別註冊到 Spring 中
 
             ```xml
             <?xml version="1.0" encoding="UTF-8"?>
             <beans xmlns="http://www.springframework.org/schema/beans"
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:aop="http://www.springframework.org/schema/aop"
                 xsi:schemaLocation="http://www.springframework.org/schema/beans
-                 https://www.springframework.org/schema/beans/spring-beans.xsd">
+                 https://www.springframework.org/schema/beans/spring-beans.xsd
+                 http://www.springframework.org/schema/aop
+                 https://www.springframework.org/schema/aop/spring-aop.xsd">
 
                 <!--註冊 bean-->
-                <bean id="userService" class="com.">
+                <bean id="userService" class="com.yicelwen.service.UserServiceImpl">
+                <bean id="log" class="com.yicelwen.log.Log">
+                <bean id="afterLog" class="com.yicelwen.log.AfterLog">
+
+                <!-- 方式一：使用原生 Spring API 介面 -->
+                <!-- 配置 AOP: 需要導入 AOP 約束  (1) xmlns:aop 
+                                                 (2) xsi:schemaLocation -->
+                <aop:config>
+                    <!-- 切入點: expression 表達式, execution(要執行的位置 
+                    * 返回的類型    * 要攔截的套件名    * 類別名    *(..) 方法名與參數 ) -->
+                    <aop:pointcut id="pointcut" expression="execution(* com.yicelwen.service.UserServiceImpl.*(..))">
+                    <!-- UserServiceImpl.*   這個類別下的所有方法
+                         (..)                代表任意的參數 -->
+                    
+                    <!-- 執行環繞增加: 把 log 類別切入到UserServiceImpl的所有方法內 -->
+                    <aop:advisor advice-ref="log" pointcut-ref="pointcut"/>
+                    <aop:advisor advice-ref="afterLog" pointcut-ref="pointcut"/>
+                </aop:config>
             </beans>
             ```
-
+        + 測試類
+            ```Java
+            public class MyTest {
+                public static void main(String[] args) {
+                    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+                                                                 // bean id
+                    UserService userService = context.getBean("userService", UserService.class);
+                    // UserServiceImpl userService = context.getBean("userService", UserServiceImpl.class);
+                    /* 如果 getBean() 有寫第#2個參數 `UserServiceImpl.class` 的話，
+                     * 就不用每次都強制轉型。這裡用的是動態代理，代理的是介面 */
+                    userService.add();
+                    userService.select();
+                }
+            }
+            ```
     
-## 21. AOP 實現方式二
+## 21. AOP 實現方式二：使用自定義類 
++ DIY 一個切面定義
+    ```java
+    package com.yicelwen.diy;
 
+    public class DiyPointCut {
+        public void before() {
+            System.out.println("========方法執行前========");
+        }
+        public void after() {
+            System.out.println("========方法執行後========");
+        }    
+    }
+    ```
++ 到 ApplicationContext.xml 註冊 DiyPointCut 類別以及 AOP
+    + [AspectJ 的切入點表達式 - execution 語法](https://blog.csdn.net/corbin_zhang/article/details/80576809)
+    
+        ```xml
+        <?xml version="1.0" encoding="UTF-8"?>
+        <beans xmlns="http://www.springframework.org/schema/beans"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:aop="http://www.springframework.org/schema/aop"
+            xsi:schemaLocation="http://www.springframework.org/schema/beans
+             https://www.springframework.org/schema/beans/spring-beans.xsd
+             http://www.springframework.org/schema/aop
+             https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+            <!--註冊 bean-->
+            <bean id="userService" class="com.yicelwen.service.UserServiceImpl">
+            <bean id="log" class="com.yicelwen.log.Log">
+            <bean id="afterLog" class="com.yicelwen.log.AfterLog">
+
+            <!-- 方式二：自定義類別 -->
+            <bean id="diy" class="com.yicelwen.diy.DiyPointCut"/>
+        
+            <aop:config>
+                <!--自定義切面: 把類別定義成切面。ref 要引用的類 id-->
+                <aop:aspect ref="diy">
+                  <!--切入點-->
+                    <aop:pointcut id="point" expression="execution(* com.yicelwen.service.UserServiceImpl.*(..))"/>
+                    <!--通知-->
+                    <aop:before method="before" pointcut-ref="point"/>
+                    <aop:after method="after" pointcut-ref="point"/>
+                </aop:aspect>
+            </aop:config>
+        </beans>
+        ```
++ 測試類
+    ```Java
+    public class MyTest {
+        public static void main(String[] args) {
+            ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+            UserService userService = (UserService) context.getBean("userService");
+            userService.add();
+        }
+    }
+    ```
 ## 22. 註解實現 AOP
++ 方法三：使用註解實現 AOP `AnnotationPointCut.java`
+    ```Java
+    import org.aspectj.lang.annotation.After;
+    import org.aspectj.lang.annotation.Around;
+    import org.aspectj.lang.annotation.Aspect;
+    import org.aspectj.lang.annotation.Before;
 
-## 26. 事務回顧
+    @Aspect // 標註這是一個切面
+    public class AnnotationPointCut {
 
-## 27. Spring 聲明式事務
+        // 請導入 aspectj 不要導入 junit 的 .Before
+        @Before("execution(* com.yicelwen.service.UserServiceImpl.*(..))") 
+        public void before() {
+            System.out.println("======方法執行前======");
+        }
 
-## 28. Conclusion
+        @After("execution(* com.yicelwen.service.UserServiceImpl.*(..))") 
+        public void after() {
+            System.out.println("======方法執行後======");
+        }
+
+        // 在環繞增強中，我們可以給定一個參數，代表我們要獲取處理處理切入的點
+        @Around("execution(* com.yicelwen.service.UserServiceImpl.*(..))") 
+        public void around(ProceedingJoinPoint jp) {
+            System.out.println("環繞前");
+            // 獲得簽名 
+            Signature signature = jp.getSignature(); 
+            System.out.println("signature:"+signature);
+            // 執行方法
+            Object proceed = jp.proceed();
+
+            System.out.println("環繞後");
+        }
+    }
+    ```
+    |getSignature()|getSourceLocation()|getStaticPart()|getTarget()|getThis()|toLongString()|
+    |-|-|-|-|-|-|
+    
+
++ 配置文件註冊
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <beans xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+         https://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/aop
+         https://www.springframework.org/schema/aop/spring-aop.xsd">
+
+        <!--註冊 bean-->
+        <bean id="userService" class="com.yicelwen.service.UserServiceImpl">
+        <bean id="log" class="com.yicelwen.log.Log">
+        <bean id="afterLog" class="com.yicelwen.log.AfterLog">
+
+        <!-- 方式三：自定義類別 -->
+        <bean id="annotationPointCut" class="com.yicelwen.log.AnnotationPointCut"/>
+        <!-- 開啟註解支持 JDK (預設 proxy-target-class="false") 
+                              如果改成 true 就改由 cglib 執行 -->
+        <aop:aspectj-autoproxy proxy-target-class="false"/>
+    </beans>
+    ```
+
+## 26. 事務 (Transaction) 回顧
++ 把一組業務當成一個業務來做；要嘛都成功，要嘛都失敗
+    + 事務在項目開發中十分重要，涉及到數據一致性問題，不能馬虎
+    + 確保完整性和一致性
++ 事務 ACID 原則
+    1. 原子性
+        + 沒有一邊成功另一邊失敗
+    2. 一致性
+        + 事務的資源狀態保持一致
+    3. 隔離性
+        + 多個業務可能操作同一個資源，防止數據損壞
+    4. 持久性
+        + 事務一旦提交，無論系統發生什麼問題，結果都不會再被影響，被持久化的寫到存儲器中
+
+> reflect method 遲早都要學會
 
 
 
