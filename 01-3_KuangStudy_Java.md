@@ -99,7 +99,7 @@
     <Host name="" appBase="webapps"
           unpackWARs="true" autoDeploy="true">
     ```
-#### 面試難題：網站是如何進行訪問的
+#### 面試難題🎭：網站是如何進行訪問的
 1. 輸入一個網域名，enter
 2. 檢查本機端 `C:\Windows\System32\drivers\etc\hosts` 配置文件下有沒有這個域名映射
     1. 有：直接返回對應 ip 地址，這地址中有我們需要訪問的 web 程式，可直接訪問
@@ -140,28 +140,202 @@
 
 ### 4.3 HTTP 請求
 + 客戶端---發請求 (Request)---服務器
-    ```java
-    Request URL: https://www.yicelwen.com/  
-    Request Method:GET
-    Status Code:200 ok
+    ```
+    Request URL: https://www.yicelwen.com/   請求地址
+    Request Method:GET                       get/post
+    Status Code:200 ok                       
     Remote Address: xx.xxx.xxx
     ```
+    ```
+    Accept:text/html
+    Accept-Encoding:gzip, deflate, br
+    Accept-Language:zh-CN,zh;q=0.9      語言
+    Cache-Control:max-age=0
+    Connection:keep-alive
+    ```
+    #### 1. 請求行
+    + 請求行中的請求方式：GET
+    + 請求方式：GET, POST, HEAD, DELETE, PUT, TRACE ...
+        + **GET**：請求能夠攜帶的參數比較少，大小有限制，會在瀏覽器的 URL 地址欄顯示數據內容，不安全但高效
+        + **POST**：請求能夠攜帶的參數沒有限制，大小沒有限制，不會在瀏覽器的 URL 地址欄顯示數據內容，安全但不高效
+
+    #### 2. 消息頭
+    ```
+    Accept            告訴瀏覽器它所支持的數據類型
+    Accept-Encoding:  告訴瀏覽器支持哪種編碼格式
+    Accept-Language:  告訴瀏覽器它的語言環境
+    Cache-Control:    緩存控制
+    Connection:       告訴瀏覽器, 請求完成是斷開還是保持連接
+    HOST:             主機
+    ```
+     
 
 ### 4.4 HTTP 響應
-+ 服務器響應給客戶端
++ 服務器---響應(Response)---客戶端
+    ```
+    Cache-Control: private   緩存控制
+    Connection: keep-Alive   連接(保持連接)
+    Content-Encoding: gzip   編碼
+    Content-Type: text/html  類型
+    ```
 
+    #### 1. 響應體
+    ```
+    Accept            告訴瀏覽器它所支持的數據類型
+    Accept-Encoding:  告訴瀏覽器支持哪種編碼格式
+    Accept-Language:  告訴瀏覽器它的語言環境
+    Cache-Control:    緩存控制
+    Connection:       告訴瀏覽器, 請求完成是斷開還是保持連接
+    HOST:             主機
+    Refresh:          告訴客戶端多久刷新一次
+    Location:         讓網頁重新定位: 
+    ```
 
+    #### 2. 響應狀態碼
+    |200| 請求響應成功|
+    |-|-|
+    |3XX|請求重定向 <br/>(你重新到我給你新位置去)|
+    |4XX|找不到資源 <br/>(資源不存在) 404|
+    |5XX|服務器代碼錯誤 500 <br/> 網關錯誤 502 |
 
-
-
+    > **面試難題🎭**：當你的瀏覽器中地址欄輸入地址 enter 一瞬間到頁面能展示回來，經歷了些什麼？
 
 ## javaweb-05. Maven 環境搭建
-## javaweb-06. IDEA 中 Maven 操作
-## javaweb-07. 疑難雜症解決
-## javaweb-08. HelloServlet
+為什麼要學習 Maven？
+1. 在 Javaweb 開發中，需要大量的 jar 包，我們手動去導入
+2. 如何能夠讓一個東西自動幫忙導入和配置這個 jar 包？Maven 誕生原因
+
+### 5.1 Maven 架構管理工具
++ 用來就是方便導入 jar 包
++ Maven 的核心思想：**約定大於配置**
+    + 有約束，不要去違反
++ Maven 會規定好你該如何去編寫 Java 代碼，必須要按照這個規範
+
 ## javaweb-09. Servlet 原理
-## javaweb-10. ServletContext 對象
-## javaweb-11. ServletContext 應用
+Servlet 是由 Web Server 調用，只有首次訪問會產生一個 servlet
+
+![image](./images/servlet-concept.png)
+
++ HelloServlet.java
+    ```java
+    public class HelloServlet extends HttpServlet {
+        
+        // 由於 get 或者 post 只是請求實現的不同方式, 可以相互調用, 業務邏輯都一樣
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            System.out.println("進入doGet方法");
+            // ServletOutputStream outputStream = resp.getOutputStream();
+            PrintWriter writer = resp.getWriter();  // 響應流
+            writer.print("Hello,Servlet");
+        }
+
+        @Override
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {...
+        }
+    }
+    ```
++ `web.xml`
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+                          http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+             version="4.0"
+             metadata-complete="true">
+
+        <!--註冊 Servlet-->
+        <servlet>
+            <servlet-name>hello</servlet-name>
+            <servlet-class>com.yicelwen.servlet.HelloServlet</servlet-class>
+        </servlet>
+        <!--Servlet 的請求路徑-->
+        <!--localhost:8080/s1/hello/xxxxxjko-->
+        <servlet-mapping>
+            <servlet-name>hello</servlet-name>
+            <url-pattern>/hello/*</url-pattern>
+        </servlet-mapping>
+    </web-app>
+    ```
+
+### Mapping 問題
+1. 一個 Servlet 可以指定一個映射路徑
+    ```xml
+    <servlet-mapping>
+        <servlet-name>hello</servlet-name>
+        <url-pattern>/hello</url-pattern>
+    </servlet-mapping>
+    ```
+2. 一個 Servlet 可以指定多個映射路徑
+    + `localhost:8080/s1/hello1` & `localhost:8080/s1/hello2` 都走得到請求
+        ```xml
+        <servlet-mapping>
+            <servlet-name>hello</servlet-name>
+            <url-pattern>/hello1</url-pattern>  
+        </servlet-mapping>
+        <servlet-mapping>
+            <servlet-name>hello</servlet-name>
+            <url-pattern>/hello2</url-pattern>
+        </servlet-mapping>
+        ```
+3. 一個 Servlet 可以指定通用映射路徑
+    + hello下的各請求都可以被映射 eg. `localhost:8080/hello/asdfgjkl`
+        ```xml
+        <servlet-mapping>
+            <servlet-name>hello</servlet-name>
+            <url-pattern>/hello/*</url-pattern>  
+        </servlet-mapping>
+        ```
+4. 默認請求路徑
+    + 盡量不要這樣寫，會覆蓋掉 index
+        ```xml
+        <!--默認請求路徑 會把首頁給幹掉-->
+        <servlet-mapping>
+            <servlet-name>hello</servlet-name>
+            <url-pattern>/*</url-pattern>
+        </servlet-mapping>
+        ```
+5. 指定一些後綴或者前綴等等
+    + 注意：*前面不能加項目映射的路徑，`/` 或者 `/hello/` 都不行
+        ```xml
+        <!--可以自定義後綴實現請求映射-->
+        <servlet-mapping>
+            <servlet-name>hello</servlet-name>
+            <url-pattern>*.do</url-pattern>  
+        </servlet-mapping>
+        ```
+6. 優先級問題
+    + 指定了固有的映射路徑優先級最高，如果找不到就會走默認的處理請求
+    + 404 error servlet
+        ```xml
+        <!--404-->
+        <servlet>
+            <servlet-name>error</servlet-name>
+            <servlet-class>com.yicelwen.servlet.ErrorServlet</servlet-class>
+        </servlet>
+        <servlet-mapping>
+            <servlet-name>error</servlet-name>
+            <url-pattern>/*</url-pattern>  
+        </servlet-mapping>
+        ```
+        ```java
+        public class ErrorServlet extends HttpServlet {
+            @Override
+            protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                resp.setContentType("text/html");
+                resp.setCharacterEncoding("utf-8"); 
+
+                PrintWriter writer = resp.getWriter();
+                writer.print("<h1>404</h1>");
+            }
+
+            @Override
+            protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                doGet(req, resp);
+            }
+        }
+        ```
+
 ## javaweb-12. Response 下載文件
 ## javaweb-13. Response 驗證碼實現
 ## javaweb-14. Response 重定向
