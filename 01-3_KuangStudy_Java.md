@@ -336,18 +336,351 @@ Servlet 是由 Web Server 調用，只有首次訪問會產生一個 servlet
         }
         ```
 
-## javaweb-12. Response 下載文件
-## javaweb-13. Response 驗證碼實現
 ## javaweb-14. Response 重定向
-## javaweb-15. Request 應用
-## javaweb-16. Cookie 講解
-## javaweb-17. Session 講解
+```JSP
+<% page contentType="text/html; charset=utf-8" language="java" %>
+<html>
+<head>
+    <title>登錄</title>
+</head>
+<body>
+<h1>登錄</h1>
+<div style="text-align: center">
+    <!--這裡表單用意：以 post 方式提交表單，提交到我們的 login 請求-->
+    <form action="${pageContext.request.contextPath}/login" method="post">
+        用戶名：<input type="text" name="username"> <br>
+        密碼：<input type="password" name="password"> <br>
+        愛好：
+        <input type="checkbox" name="hobbys" value="water"> water
+        <input type="checkbox" name="hobbys" value="code"> code
+        <input type="checkbox" name="hobbys" value="songs"> songs
+        <input type="checkbox" name="hobbys" value="movies"> movies
+        <br>
+        <input type="submit">
+    </form>
+</div>
+</body>
+</html>
+```
+
+```Java
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
+
+public class LoginServlet entends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // 後台接收中文亂碼問題
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+        String[] hobbys = req.getParameterValues("hobbys");  // 獲取多選框 
+        Sysstem.out.println("======================");
+        System.out.println(username);
+        System.out.println(password);
+        System.out.println(Arrays.toString(hobbys));
+        System.out.println("======================");
+
+        System.out.println(req.getContextPath());
+        // 通過請求轉發, 到 success.jsp
+        // 這裡的 / 代表當前的 web 應用
+        req.getRequestDispatcher("/success.jsp").forward(req,resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+}
+```
+
++ **面試難題🎭：請說明重新定向和轉發的區別？**
+
+||重新定向 (頁面重導)|請求轉發 (調派請求)|
+|-|-|-|
+|相同|頁面實現跳轉|頁面實現跳轉|
+|不同|重定向時，URL地址欄會發生變化<br/>(status: 302)|請求轉發時，URL不會產生變化 <br/>(status: 307)|
+||response.**sendRedirect**(String path)|request.**getRequestDispatcher**(String path).**forward**(request, response);|
+
+## javaweb-16、17. Cookie  Session 
+#### 會話
++ **會話**：用戶打開一個瀏覽器，點擊很多超連結，訪問多個 web 資源，關閉瀏覽器
++ **有狀態會話**：一個 client 再次訪問時，可知道此人曾經來過
+    + 怎麼證明你是這棟樓的房客？
+        |你|大廈管理員|
+        |-|-|
+        |1.合約|管理員給你一式兩份租賃合約|
+        |2.房門鑰匙|管理員給你鑰匙|
+
+    + 一個網站，怎麼證明你來過？
+        |Client|Server|
+        |-|-|
+        |Cookie|server 給 client 發了個 cookie，client 下次訪問時帶著即可|
+        |Session|server 登記 client 來過，下次client再訪問時，server來匹配client|
+
+#### 保存會話的兩種技術
++ ##### Cookie
+    + 客戶端技術（響應、請求）
+
+
+    ```java
+    public class CookieDemo01 extends HttpServlet {
+
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            // Server 告訴你來的時間，把它封裝成一個信件，下次帶來，我就知道你來了
+
+            // 解決中文亂碼
+            req.setCharacterEncoding("utf-8");
+            resp.setCharacterEncoding("utf-8");
+
+            
+            PrintWriter out = resp.getWriter();
+
+            //Cookie，服務器端從客戶端獲取
+            Cookie[] cookies = req.getCookies(); // 這裡返回陣列，說明Cookie可能存在多個
+
+            // 判斷 Cookie 是否存在
+            if (cookies!=null) {
+                // 如果存在，則遍歷此陣列
+                out.write("你上一次訪問的時間是:");
+
+                for (int i = 0; i < cookies.length; i++) {
+                    Cookie cookie = cookies[i];
+                    // 獲取 cookie 的名字
+                    if (cookie.getName().equals("lastLoginTime")) {
+                        // 獲取 cookie 中的值
+                        long lastLoginTime = Long.parseLong(cookie.getValue());
+                        Date date = new Date(lastLoginTime);
+                        out.write(date.toLocaleString());
+                    }
+                }
+            } else {
+                out.write("這是您第一次訪問本網站");
+            }
+
+            // 服務器給客戶端響應一個 cookie
+            // cons: cookie 只能存字串、不能存物件
+            Cookie cookie = new Cookie("lastLoginTime", System.currentTimeMillis()+"");
+
+            // 設置 cookie 有效期為一天
+            cookie.setMaxAge(24*60*60);
+
+            resp.addCookie(cookie);
+        }
+
+        @Override
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            super.doGet(req, resp);
+        }
+    }
+    ```
++ `web.xml`
+    ```xml
+    <servlet>
+        <servlet-name>CookieDemo01</servlet-name>
+        <servlet-class>com.yicelwen.servlet.CookieDemo01</servlet-class>
+    </servlet-name>
+    <servlet-mapping>
+        <servlet-name>CookieDemo01</servlet-name>
+        <url-pattern>/c1<url-pattern>
+    </servlet-mapping>
+    ```
+
++ `Cookie.java`
+    ```Java
+    private String comment;
+    private String domain;   // 有效域
+    private int maxAge = -1; // 有效期間
+    private String path;
+    private boolean secure;
+    private int version = 0;
+
+    /**
+     * @param expiry   an integer specifying the maximum age
+     * of the cookie in seconds; if negative, means the cookie
+     * is not stored; if zero, delets the cookie
+     */
+    public void setMaxAge(int expiry) {
+        maxAge = expiry;
+    }
+    ```
+
+#### Cookie
+1. 從請求中拿到 cookie 訊息
+2. Server 響應給客戶端 cookie
+    ```java
+    Cookie[] cookies = req.getCookies();  // 獲得 Cookie
+    cookie.getName();    // 獲得 Cookie 中的 key
+    cookie.getValue();   // 獲得 Cookie 中的 value
+    new Cookie("lastLoginTime", System.currentTimeMillis()+"");   // 新建一個 cookie
+    cookie.setMaxAge(24*60*60);   // 設置 cookie 的有效期
+    resp.addCookie(cookie);       // 響應給客戶端一個 cookie
+    ```
+
++ **cookie: 一般會保存在本地的用戶目錄下 appdata**
++ 一個網站 cookie 是否存在上限？ **細節問題**
+    + 一個 Cookie 只能保存一個訊息
+    + 一個 web 站點可以給瀏覽器發送多個 cookie，最多存放 20 個 cookie
+    + Cookie 的大小有限制 4kb () \[4096個字節]
+    + 瀏覽器的 cookie 上限 300 個 
+
++ **刪除 Cookie 方法**：
+    + 不設置有效期，關閉瀏覽器，自動失效
+    + 設置有效期時間為 0
+
++ 寫一個刪除 Cookie 的 servlet demo: 
+    ```Java
+    public class CookieDemo02 extends HttpServlet {
+
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            // 創建一個 cookie，名字必須要和刪除的名字一致
+            Cookie cookie = new Cookie("lastLoginTime", System.currentTimeMillis()+"");
+
+            // 將 cookie 有效期設置為 0，立刻馬上過期
+            cookie.setMaxAge(0);
+
+            resp.addCookie(cookie);
+        }
+
+        @Override
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            doGet(req, resp);
+        }
+    }
+    ```
++ 寫完記得要去 `web.xml` 註冊此 servlet
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+            http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+             version="4.0"
+             metadata-complete="true">
+
+        <servlet>
+            <servlet-name>CookieDemo02</servlet-name>
+            <servlet-class>com.yicelwen.servlet.CookieDemo02</servlet-class>
+        </servlet>
+        <servlet-mapping>
+            <servlet-name>CookieDemo02</servlet-name>
+            <url-pattern>/c2</url-pattern>
+        </servlet-mapping>
+    ```
+
++ 寫一個傳遞中文參數 servlet demo: 
+    ```Java
+    public class CookieDemo03 extends HttpServlet {
+
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            req.setCharacterEncoding("utf-8");
+            resp.setCharacterEncoding("utf-8");
+
+            // Cookie 服務器端從客戶端獲取
+            Cookie[] cookies = req.getCookies();  // 這裡返回陣列，說明 Cookie 可能存在多個
+            PrintWriter out = resp.getWriter();
+
+            // 判斷 Cookie 是否存在
+            if (cookies != null) {
+                // 如果存在怎麼辦
+                out.write("你上一次訪問的時間是：");
+                for (int i = 0; i < cookies.length; i++) {
+                    Cookie cookie = cookie [i];
+                    // 獲取 cookie 的名字
+                    if (cookie.getName().equals("")){
+                        // 解碼✨
+                        out.write(URLDecoder.decode(cookie.getValue(), "UTF-8"));
+                    }
+                }
+            } else {
+                out.write("這是您第一次訪問本站");
+            }
+
+            // 編碼✨
+            Cookie cookie = new Cookie("name", URLEncoder.encode("yicelwen", "utf-8"));
+            resp.addCookie(cookie);
+        }
+
+        @Override
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            doGet(req, resp);
+        }
+    }
+    ```
++ 去 `web.xml` 註冊此 servlet
+    ```xml
+        <servlet>
+            <servlet-name>CookieDemo03</servlet-name>
+            <servlet-class>com.yicelwen.servlet.CookieDemo03</servlet-class>
+        </servlet>
+        <servlet-mapping>
+            <servlet-name>CookieDemo03</servlet-name>
+            <url-pattern>/c3</url-pattern>
+        </servlet-mapping>
+    ```
+
++ ##### Session 【✨重點✨】
+服務器技術，利用此技術可保存用戶的會話訊息？開發者可以把訊息或數據保存在 session 中
+> 常見：登錄網站後，只要不換瀏覽器/電腦，下次不用再登錄了
+
++ 何謂 Session
+    + 服務器會給每一個用戶（瀏覽器）創建一個 Session 物件
+    + 一個 Session 獨佔一個瀏覽器，只要瀏覽器沒有關閉，這個 Session 就存在
+    + 用戶登錄之後，整個網站它都可以訪問 
+        + 保存用戶訊息、保存購物車訊息......
+
++ Session 和 Cookie 區別
+    ```Java
+    public class SessionDemo01 extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            // 解決亂碼
+            req.setCharacterEncoding("UTF-8");
+            resp.setCharacterEncoding("UTF-8");
+            // 設置瀏覽器響應的格式
+            resp.setContentType("text/html;charset=UTF-8");  
+
+            // 得到 Session
+            HttpSession session = req.getSession();
+
+            // 給 Session 中存東西
+            session.setAttribute("name", "yicelwen");
+
+            // 獲取 Session 的 ID
+            String sessionId = session.getId();
+
+            // 判斷是不是新創建的 Session
+            if(session.isNew()){
+                resp.getWriter().write("session創建成功,ID:"+sessionId);
+            } else {
+                resp.getWriter().write("session已經在服務器中存在了,ID:"+sessionId);
+            }
+        }
+
+        @Override
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            doGet(req, resp);
+        }
+    }
+    ```
+---
++ 延伸閱讀：
+    + [HttpSession 攻擊與防護](https://devco.re/blog/2014/06/03/http-session-protection/)
+
+
 ## javaweb-18. JSP 原理剖析
 ## javaweb-19. JSP 基礎與法和指令
 ## javaweb-20. JSP 內置對象及作用域
 ## javaweb-21. JSP、JSTL 標籤
 ## javaweb-22. JavaBean 與作業
 ## javaweb-23. MVC 三層架構
+
 ## javaweb-24. 過濾器 filter
 ## javaweb-25. 監聽器
 ## javaweb-26. 監聽器 GUI 中理解
