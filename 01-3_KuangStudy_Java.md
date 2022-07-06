@@ -492,6 +492,7 @@ public class LoginServlet entends HttpServlet {
 
 + `Cookie.java`
     ```Java
+    ...
     private String comment;
     private String domain;   // 有效域
     private int maxAge = -1; // 有效期間
@@ -603,7 +604,7 @@ public class LoginServlet entends HttpServlet {
             }
 
             // 編碼✨
-            Cookie cookie = new Cookie("name", URLEncoder.encode("yicelwen", "utf-8"));
+            Cookie cookie = new Cookie("name", URLEncoder.encode("麩質膚質、全麥泉脈", "utf-8"));
             resp.addCookie(cookie);
         }
 
@@ -626,8 +627,9 @@ public class LoginServlet entends HttpServlet {
     ```
 
 + ##### Session 【✨重點✨】
-服務器技術，利用此技術可保存用戶的會話訊息？開發者可以把訊息或數據保存在 session 中
-> 常見：登錄網站後，只要不換瀏覽器/電腦，下次不用再登錄了
+    + 服務器技術，利用此技術可保存用戶的會話訊息？開發者可以把訊息或數據保存在 session 中
+
+        > 常見：登錄網站後，只要不換瀏覽器/電腦，下次不用再登錄了
 
 + 何謂 Session
     + 服務器會給每一個用戶（瀏覽器）創建一個 Session 物件
@@ -635,7 +637,7 @@ public class LoginServlet entends HttpServlet {
     + 用戶登錄之後，整個網站它都可以訪問 
         + 保存用戶訊息、保存購物車訊息......
 
-+ Session 和 Cookie 區別
++ 使用 Session
     ```Java
     public class SessionDemo01 extends HttpServlet {
         @Override
@@ -661,6 +663,9 @@ public class LoginServlet entends HttpServlet {
             } else {
                 resp.getWriter().write("session已經在服務器中存在了,ID:"+sessionId);
             }
+            // Session 創建的時候做了什麼事情
+            // Cookie cookie = new Cookie("JSESSIONID", sessionId);
+            // resp.addCookie(cookie);
         }
 
         @Override
@@ -669,13 +674,250 @@ public class LoginServlet entends HttpServlet {
         }
     }
     ```
++ 手動註銷 Session 的寫法：
+    + removeAttribute()、invalidate()
+        ```Java
+        public class SessionDemo03 extends HttpServlet {
+            @Override
+            protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                HttpSession session = req.getSession();
+                session.removeAttribute("name");
+            
+                // 手動註銷 Session
+                session.invalidate();
+            }
+
+            @Override
+            protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+                doGet(req, resp);
+            }
+        }
+        ```
+    + web.xml 設置預設的失效時間
+        ```xml
+        <!--設置 Session 默認的失效時間-->
+        <session-config>
+            <!--15 分鐘後 Session 自動失效，以分鐘為單位-->
+            <session-timeout>15</session-timeout>
+        </session-config>
+        ```
+
++ Session 和 Cookie 區別：
+    1. Cookie 是把用戶的數據寫給用戶的瀏覽器，瀏覽器保存
+        + 可以保存多個
+    2. Session 把用戶的數據寫到用戶獨佔 Session，Server 端保存
+        + 保存重要的訊息，減少服務器資源的浪費
+    3. Session 物件由 Server 端建立 
+
++ 使用場景：
+    + 保存一個登錄用戶的訊息
+    + 購物車訊息
+    + 在整個網站中經常會使用的數據，我們將它保存在 Session 中
+
+
+
 ---
 + 延伸閱讀：
     + [HttpSession 攻擊與防護](https://devco.re/blog/2014/06/03/http-session-protection/)
 
 
 ## javaweb-18. JSP 原理剖析
-## javaweb-19. JSP 基礎與法和指令
++ 什麼是 JSP
+    + Java Server Pages: java Server 端頁面
++ 瀏覽器向 Server 發送請求，不管訪問什麼資源，其實都是在訪問 Servlet
++ JSP 最終也會被轉換成為一個 Java 類別
++ **JSP 本質上就是一個 Servlet**
+    ```java
+    // 初始化   
+    public void _jspInit() {
+    }
+    // 銷毀
+    public void _jspDestroy() {
+    }
+    // JSPService
+    public void _jspService(.HttpServletRequest request.HttpServletResponse response) {
+    }
+    ```
+1. 判斷請求
+
+2. 內置一些對象
+    ```java
+    final javax.servlet.jsp.PageContext pageContext; // 頁面上下文
+    javax.servlet.http.HttpSession session = null;   // session
+    final javax.servlet.ServletContext application;  // applicationContext
+    final javax.servlet.ServletConfig config;        // config
+    javax.servlet.jsp.JspWriter out = null;          // out
+    final java.lang.Object page = this;              // page: 當前
+    HttpServletRequest request                       // 請求
+    HttpServletResponse response                     // 響應
+    ```
+3. 輸出頁面前增加的代碼
+    ```java
+    response.setContentType("text/html");   // 設置響應的頁面類型
+    pageContext = _jspxFactory.getPageContext(this, request, response, 
+                                              null, true, 8192, true);
+    _jspx_page_context = pageContext;
+    application = pageContext.getServletContext();
+    config = pageContext.getServletConfig();
+    session = pageContext.getSession();
+    out = pageContext.getOut();
+    _jspx_out = out;
+    ```
+4. 以上的這些物件我們可以在 JSP 頁面中直接使用
+
+5. 在 JSP 頁面中，只要是 JAVA code 就會被原封不動輸出，如果是 HTML 就會被轉換為`out.write`
+    ```Java
+    out.write("<html>\r\n");
+    ```
+
+## javaweb-19. JSP 基礎語法和指令
+### 
++ web.xml 導入 dependencies
+    ```xml
+    <dependencies>
+        <!--Servlet 依賴-->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+        </dependency>
+        <!--JSP 依賴-->
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>javax.servlet.jsp-api</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+        <!-- 導入 JSTL 表達式的依賴  -->
+        <dependency>
+            <groupId>javax.servlet.jsp.jstl</groupId>
+            <artifactId>jstl-api</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <!-- 導入 mvnrepository.com/artifact/taglibs/standard -->
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+    </dependencies>
+    ```
++ JSP 作為 java 技術的應用，擁有自己擴充的語法 — **JSP 表達式** `<% %>`
+    ```JSP
+    <%@ page contentType="text/html;charset=utf-8" language"java" %>
+    <html>
+        <head>
+            <title>$Title$</title>
+        </head>
+        <body>
+        <!--JSP 表達式
+        作用：用來將程序的輸出，輸出到客戶端
+            <%= 變數或者表達式%>
+        -->
+        <%= new java.util.Date() %>
+
+        <hr>
+
+        <!-- JSP 腳本片段 -->
+        <%
+          int sum = 0;
+          for (int i = 0; i <= 100; i++) {
+            sum += i;
+          }
+          out.println("<h1>Sum="+sum+"</h1>");
+        %>
+
+        <%
+          int x = 10;
+          out.println(x);
+        %>
+        <p>這是一個 JSP 文件</p>
+        <%
+          int y = 2;
+          out.println(x);
+        %>
+        <hr>
+
+        <!-- 在程式碼中嵌入 HTML 元素-->
+        <%
+          for (int i = 0; i < 5; i++) {
+        %>
+          <h1> Hello, World! <%=i%> </h1>
+        <%
+          }
+        %>
+
+        <hr>
+
+        <!--  -->
+        <%!
+          static {
+            System.out.println("Loading Servlet!");
+          } 
+          
+          private int globalVar = 0;
+
+          public void yicelwen() {
+            System.out.println("進入了方法yokohama! ");
+          }
+        %>
+        </body>
+    </html>
+    ```
++ JSP 聲明會被編譯到 JSP 生成的 Java 類別中，其他的就會被生成到`_jspService` 方法中
+
++ EL 表達式
+    ```jsp
+    <!-- EL 表達式 -->
+    <%  for (int i = 0; i < 5; i++) { %>
+        <h1> Hello, World ${i} </h1>
+    <% } %>
+    ```
++ JSP 的注釋，不會在客戶端顯示
+    |注釋|敘述|
+    |-|-|
+    |<% ... %>|jsp 腳本片段<br/>放 java code - within the main `service()` method of the JSP |
+    |<%= ... %> |變數或者表達式|
+    |<%! ... %> |放 java code - **OUTSIDE** the main `service()` method |
+    |<%-- ... --%>|JSP 的注釋|
+
++ 錯誤頁面
+    ```xml
+    <error-page>
+        <error-code>404</error-code>
+        <location>/error/404.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/error/500.jsp</location>
+    </error-page>
+    ```
+
++ JSP 指令
+    ```jsp
+    <%@ page contentType="text/html;charset=utf-8" language"java" %>
+    <html>
+    <head>
+        <title>Title</title>
+    </head>
+
+    <body>
+        <!-- @include 將兩個頁面合二為一 -->
+        <%@include file="common/header.jsp"%>
+        <h1>網頁主體</h1>
+        <%@include file="common/footer.jsp"%>
+        <hr>
+
+        <!-- JSP 標籤 
+        jsp:include 拼接頁面，本質還是三個 
+        -->
+        <jsp:include page="/common/header.jsp"/>
+        <h1>網頁主體</h1>
+        <jsp:include page="/common/footer.jsp"/>
+
+    </body>
+    </html>
+    ```
+
 ## javaweb-20. JSP 內置對象及作用域
 ## javaweb-21. JSP、JSTL 標籤
 ## javaweb-22. JavaBean 與作業
