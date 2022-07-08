@@ -2190,6 +2190,62 @@ public class Triangle {
     */
 }
 ```
+---
+## Java
+```Java
+public class Triangle {
+	public static void main(String[] args) {
+		int rows = 8;
+        for (int i = 1; i <= rows; i++) {
+            for (int j = rows; j >= i; j--) {  // 印出左半三角形旁邊的空格
+                System.out.print(" ");
+            }
+            for (int j = 1; j <= i; j++) {  // 印出三角形左半邊
+                System.out.print("*");
+            } 
+            for (int j = 1; j < i ; j++) {  // 印出右半邊
+                System.out.print("*");       
+            }
+            System.out.println();
+        }
+	}
+}
+
+```
+---
+## Diamond
+```Java
+public class Diamond {
+	public static void main(String[] args) {
+ 
+		
+		int rows = 3;
+		// upper diamond
+		for (int i = 1; i < rows; i++) {
+			for (int j = 0; j <= rows-i; j++) {
+				System.out.print(" ");
+			}
+			for (int k = 1; k <= 2*i-1; k++) {
+				System.out.print("*");
+			}
+			System.out.println();
+		}
+		// lower diamond
+		for (int i = rows; i > 0; i--) {
+			for (int j=0; j <= rows-i; j++) {
+				System.out.print(" ");
+			}
+			for (int k = 1; k <= 2*i-1; k++) {
+				System.out.print("*");
+			}
+			System.out.println();
+		}
+	}
+
+}
+```
+---
+
 ## method-01. 何謂方法
 + `System.out.println()` 
     + 調用 `System` 類別中 `out` 物件 中的 `println` 方法
