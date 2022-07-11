@@ -1,5 +1,7 @@
 package w0002_addTwoNums;
 
+import Shapes.ListNode;
+
 public class addTwoNums {
 	/**
 	 * 兩個非空值的鏈表 linked list, 包含兩個存相反的正整數 (即 [2,4,3] 相當於 342; [5,6,4]=465)

@@ -1,5 +1,7 @@
 package w0021_MergeTwoSortedLists;
 
+import Shapes.ListNode;
+
 public class MergeTwoSortedLists {
 	/* Linked List | Recursion
 	 */
