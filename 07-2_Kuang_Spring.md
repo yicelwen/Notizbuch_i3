@@ -1387,10 +1387,182 @@ public class Client2 {
 
 # 4. Spring MVC latest tutorial 🧩
 ## 01. 學習方法說明
+SSM: mybatis + Spring + Spring MVC
+
+1. JavaSE - study diligently, easier to access
+2. JavaWeb - same as above
+3. 框架 - studying official API, self-learning, note-taking skills, 
+
+SpringMVC + Vue + SpringBoot + SpringCloud + Linux
++ Spring: IoC - n - AOP
++ SpringMVC 的執行流程
+    + SSM 框架整合 
++ SpringMVC 做的項目越多，理解越透徹
 
 ## 02. 回顧 MVC 架構
++ Model (模型)：Dao, Service
+    + 
++ View (視圖)：JSP
++ Controller (控制器)：Servlet - 接收前端數據，把數據交給 Service 層處理
+    + 轉發、重定向
+> JSP + Servlet + JavaBean：典型 MVC 架構
+
++ 前端、數據傳輸、實體類
+    + 實體類：用戶名、密碼、生日、愛好...20個
+    + 前端：用戶名、密碼
+    + POJO
+    + VO (view object) - 還是實體類但是拆掉了不必要的東西
+    + DTO
++ Model1 era: 視圖層、模型層
+    + Pros：架構簡單，比較適合小型項目開發
+    + Cons：JSP 職責不單一，職責過重不便於維護
+> 面試：你的專案架構是設計好的還是演進的？演進<br/>
+Alibaba PHP <br>隨著用戶量越來越大，併發量受限而轉 Java <br/> MySQL -> AliSQL、AliRedis <br/>All in one -> 微服務
+
++ Model2 era：視圖、模型、控制器
+    + 流程
+        1. 用戶發請求
+        2. Servlet 接收請求數據，並調用對應的業務邏輯方法
+        3. 業務處理完畢，返回更新後的數據給 Servlet
+        4. Servlet 轉向到 JSP，由 JSP 渲染頁面
+        5. 響應給前端更新後的頁面
+    + Controller 控制器職責
+        + 取得表單數據
+        + 調用業務邏輯
+        + 轉向指定的頁面
+    + Model 模型
+        + 業務邏輯
+        + 保存數據的狀態
+    + View 視圖
+        + 顯示頁面
 
 ## 03. 回顧 Servlet
+1. 建一個 Maven project
+2. 刪除 src folder
+3. 在 pom.xml 導入 dependencies 
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <project xmlns="http://maven.apache.org/POM/4.0.0"
+             xmlns:xsi="http:///www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+        <movelVersion>4.0.0</movelVersion>
+
+        <groupId>com.yicelwen</groupId>
+        <artifactId>SpringMVC</artifactId>
+        <version>1.0-SNAPSHOT</version>
+
+        <!--依賴-->
+        <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.12</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-webmvc</artifactId>
+                <version>5.1.9.RELEASE</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>jstl</artifactId>
+                <version>1.2</version>
+            </dependency>
+        </dependency>
+    ```
+    3. 右鍵專案 -> New -> Module -> 設定 artifactId 
+        + src 
+            + main
+            + text
+    4. 當前 module 右鍵 -> Add Framework Support
+    5. 打勾 Web Application -> version 4.0 -> 打勾 `create web.xml` -> 出現了 web folder
+    6. 導入 servlet - n - jsp 的 dependency
+    ```xml
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+    </dependency>
+
+    <dependency>
+        <groupId>javax.servlet.jsp</groupId>
+        <artifactId>jsp-api</artifactId>
+        <version>2.2</version>
+    </dependency>
+    ```
+
+    7. 寫一個 java class 繼承 servlet
+    ```java
+    public class HelloServlet extends HttpServlet {
+        @Override
+        protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            // 1. 獲取前端參數
+            String method = req.getMethod("method");
+            if (method.equals("add")) {
+                req.getSession().setAttribute("msg", "執行了add方法");
+            }
+            if (method.equals("delete")){
+                req.getSession().setAttribute("msg","執行了delete方法");
+            }
+
+            // 2. 調用業務層
+
+            // 3. 視圖轉發或重新定向
+            // req.getRequestDispatcher(path) 轉發
+            // resp.sendRedirect(); 重定向
+            req.getRequestDispatcher("/WEB-INF/jsp/test.jsp").forward(req, resp);
+        }
+        @Override
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            goGet(req, resp);
+        }
+    }
+    ```
+    + 轉發
+    ```jsp
+    <% page contentType="text/html;charset=utf-8" language="java" %>
+    <html>
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+        ${msg}
+    </body>
+    </html>
+    ```
+    + 
+    ```jsp
+    <head>
+        <title>Title</title>
+    </head>
+    <body>
+    <form action="/hello" method="post">
+        <input type="text" name="method">
+        <input type="submit">
+    </form>
+
+    </body>
+    ```
+
+    8. 到 `web.xml` 配置 servlet
+    ```xml
+    <servlet>
+        <servlet-name>hello</servlet-name>
+        <servlet-class>com.yicelwen.servlet.HelloServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>hello</servlet-name>
+        <url-pattern>/hello</url-pattern>
+    </servlet-mapping>
+    <!--session-config-->
+        <!--session-timeout>15</session-timeout-->
+    <!--session-config-->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+    ```
 
 ## 04. 初識 SpringMVC
 
