@@ -1545,6 +1545,11 @@ Alibaba PHP <br>隨著用戶量越來越大，併發量受限而轉 Java <br/> M
 
     </body>
     ```
+    + MVC 框架要做哪些事情
+        1. 將 url 映射到 java class 或 java class 的方法
+        2. 封裝用戶提交的數據
+        3. 處理請求 -- 調用相關的業務處理 -- 封裝響應數數據
+        4. 將響應數據進行渲染，jsp / html 等表示層的數據
 
     8. 到 `web.xml` 配置 servlet
     ```xml
@@ -1563,8 +1568,13 @@ Alibaba PHP <br>隨著用戶量越來越大，併發量受限而轉 Java <br/> M
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
     ```
-
-## 04. 初識 SpringMVC
+    + MVVM: M V ViewModel(雙向綁定-前後端分離)
+ 合
+    4. 約定優於配置
+    5. 功能強大：RESTful、數據驗證、格式化、本地化、主題
+    6. 簡潔靈活
++ DispatcherServlet
+    + 請求分發
 
 ## 05. SpringMVC 執行原理
 
